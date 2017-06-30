@@ -27,7 +27,7 @@ import com.bluetooth.modbus.snrtools.manager.AppStaticVar;
 public class AppUtil {
 	
 	/**
-	 * ¼ì²éÊÇ·ñÒÑ¾­¿ªÆôÀ¶ÑÀ£¬Èç¹ûÃ»ÓĞ¿ªÆô»áµ¯³ö¿ªÆôÀ¶ÑÀ½çÃæ
+	 * æ£€æŸ¥æ˜¯å¦å·²ç»å¼€å¯è“ç‰™ï¼Œå¦‚æœæ²¡æœ‰å¼€å¯ä¼šå¼¹å‡ºå¼€å¯è“ç‰™ç•Œé¢
 	 * 
 	 */
 	public static boolean checkBluetooth(Context context) {
@@ -53,8 +53,8 @@ public class AppUtil {
 	}
 
 	/**
-	 * msg.what ==Constans.NO_DEVICE_CONNECTED ÓëÉè±¸Á¬½ÓÊ§°Ü£¬Çë·µ»ØÖØĞÂÁ¬½Ó£¡ msg.what
-	 * ==Constans.CONNECT_IS_JIM ÓëÉè±¸Í¨Ñ¶¶ÂÈû£¬Í¨Ñ¶Ê§°Ü£¡
+	 * msg.what ==Constans.NO_DEVICE_CONNECTED ä¸è®¾å¤‡è¿æ¥å¤±è´¥ï¼Œè¯·è¿”å›é‡æ–°è¿æ¥ï¼ msg.what
+	 * ==Constans.CONNECT_IS_JIM ä¸è®¾å¤‡é€šè®¯å µå¡ï¼Œé€šè®¯å¤±è´¥ï¼
 	 * 
 	 */
 	public static void modbusWrite(String className, final Handler handler, CommandRead command, int waittime) {
@@ -99,7 +99,7 @@ public class AppUtil {
 				for (int ii = 0; ii < totalTemp.length; ii++) {
 					cmd += totalTemp[ii];
 				}
-				System.out.println("======·¢ËÍÃüÁî=====" + cmd);
+				System.out.println("======å‘é€å‘½ä»¤=====" + cmd);
 				byte[] sendB = CRC16.getSendBuf2(totalTemp);
 				synchronized (os) {
 					try {
@@ -158,7 +158,7 @@ public class AppUtil {
 								if (handler != null)
 									handler.sendMessage(msg);
 							} else {
-								System.out.println("==Î´Í¨¹ıCRCĞ£Ñé==" + CRC16.getBufHexStr(buf_data));
+								System.out.println("==æœªé€šè¿‡CRCæ ¡éªŒ==" + CRC16.getBufHexStr(buf_data));
 								Message msg = new Message();
 								msg.what = Constans.ERROR_START;
 								if (handler != null)

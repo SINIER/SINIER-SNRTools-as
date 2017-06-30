@@ -10,35 +10,35 @@ import com.bluetooth.modbus.snrtools.bean.Parameter;
 
 public class AppStaticVar {
 	public final static Byte[] locks = new Byte[0]; 
-	/** È¡µÃÄ¬ÈÏµÄÀ¶ÑÀÊÊÅäÆ÷ */
+	/** å–å¾—é»˜è®¤çš„è“ç‰™é€‚é…å™¨ */
 	public static BluetoothAdapter mBtAdapter;
-	/** µ±Ç°Á¬½ÓµÄÀ¶ÑÀµØÖ·*/
+	/** å½“å‰è¿æ¥çš„è“ç‰™åœ°å€*/
 	public static String mCurrentAddress;
-	/** µ±Ç°Á¬½ÓµÄÀ¶ÑÀÃû³Æ*/
+	/** å½“å‰è¿æ¥çš„è“ç‰™åç§°*/
 	public static String mCurrentName;
-	/** À¶ÑÀsocket*/
+	/** è“ç‰™socket*/
 	public static BluetoothSocket mSocket;
-	/** ÃÜÂëµÈ¼¶*/
+	/** å¯†ç ç­‰çº§*/
 	public static int PASSWORD_LEVEAL = -1;
-	/** ÃÜÂëµÈ¼¶1²é¿´²ÎÊı¸öÊı*/
+	/** å¯†ç ç­‰çº§1æŸ¥çœ‹å‚æ•°ä¸ªæ•°*/
 	public static int PASSWORD_LEVEAL1_COUNT = 0;
-	/** ÃÜÂëµÈ¼¶2²é¿´²ÎÊı¸öÊı*/
+	/** å¯†ç ç­‰çº§2æŸ¥çœ‹å‚æ•°ä¸ªæ•°*/
 	public static int PASSWORD_LEVEAL2_COUNT = 0;
-	/** ÃÜÂëµÈ¼¶3²é¿´²ÎÊı¸öÊı*/
+	/** å¯†ç ç­‰çº§3æŸ¥çœ‹å‚æ•°ä¸ªæ•°*/
 	public static int PASSWORD_LEVEAL3_COUNT = 0;
-	/** ÃÜÂëµÈ¼¶4²é¿´²ÎÊı¸öÊı*/
+	/** å¯†ç ç­‰çº§4æŸ¥çœ‹å‚æ•°ä¸ªæ•°*/
 	public static int PASSWORD_LEVEAL4_COUNT= 0;
-	/** ÃÜÂëµÈ¼¶5²é¿´²ÎÊı¸öÊı*/
+	/** å¯†ç ç­‰çº§5æŸ¥çœ‹å‚æ•°ä¸ªæ•°*/
 	public static int PASSWORD_LEVEAL5_COUNT = 0;
-	/** ²ÎÊıÁĞ±í*/
+	/** å‚æ•°åˆ—è¡¨*/
 	public static List<Parameter> mParamList;
-	/** ÕıÏò×ÜÁ¿²ÎÊıÎ»ÖÃ*/
+	/** æ­£å‘æ€»é‡å‚æ•°ä½ç½®*/
 	public static int ZXZLPosition = -1;
-	/** ·´Ïò×ÜÁ¿²ÎÊıÎ»ÖÃ*/
+	/** åå‘æ€»é‡å‚æ•°ä½ç½®*/
 	public static int FXZLPosition = -1;
-	/** ÊÇ·ñÊÇÖ÷¶¯¶Ï¿ª*/
+	/** æ˜¯å¦æ˜¯ä¸»åŠ¨æ–­å¼€*/
 	public static boolean isExit = false;
-	/** ÓÃÓÚÍ¨ÖªÃÜÂëÒ³Ãæ¿ªÊ¼·¢ËÍÖ¸Áî*/
+	/** ç”¨äºé€šçŸ¥å¯†ç é¡µé¢å¼€å§‹å‘é€æŒ‡ä»¤*/
 	public static MyObservable mObservable;
 	public static boolean isSNRMainPause = false;
 	public static boolean isCheckPwdPause = false;

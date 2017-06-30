@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.bluetooth.modbus.snrtools.R;
 
 /**
- * 自定义进度条
+ * 鑷畾涔夎繘搴︽潯
  * 
  * @author David
  */
@@ -155,7 +155,7 @@ public class CustomDialog extends AlertDialog
 		}
 	}
 
-	// 防止打开dialog的时候会出现异常
+	// 闃叉鎵撳紑dialog鐨勬椂鍊欎細鍑虹幇寮傚父
 	public void show(boolean isBlock)
 	{
 		try

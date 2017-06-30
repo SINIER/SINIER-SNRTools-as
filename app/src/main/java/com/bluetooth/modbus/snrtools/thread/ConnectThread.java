@@ -23,7 +23,7 @@ public class ConnectThread extends Thread {
 	
 	public void run() {
 		try {
-			//´´½¨Ò»¸öSocketÁ¬½Ó£ºÖ»ĞèÒª·şÎñÆ÷ÔÚ×¢²áÊ±µÄUUIDºÅ
+			//åˆ›å»ºä¸€ä¸ªSocketè¿æ¥ï¼šåªéœ€è¦æœåŠ¡å™¨åœ¨æ³¨å†Œæ—¶çš„UUIDå·
 			if(mHanlder == null){
 				return ;
 			}
@@ -31,7 +31,7 @@ public class ConnectThread extends Thread {
 				return;
 			}
 			AppStaticVar.mSocket = mDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-			//Á¬½Ó
+			//è¿æ¥
 			Message msg2 = new Message(); 
 			msg2.obj = Constans.mApplicationContext.getResources().getString(R.string.string_progressmsg3)+AppStaticVar.mCurrentName;
 			msg2.what = Constans.CONNECTING_DEVICE;
