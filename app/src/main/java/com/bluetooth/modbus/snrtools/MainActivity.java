@@ -50,7 +50,7 @@ public class MainActivity extends TabActivity
 			@Override
 			public void onTabChanged(String tabId)
 			{
-				System.out.println("=============²Ëµ¥ÇĞ»»");
+				System.out.println("=============èœå•åˆ‡æ¢");
 				if ("CheckPasswordActivity".equals(tabId))
 				{
 					AppStaticVar.isSNRMainPause = true;
@@ -68,7 +68,7 @@ public class MainActivity extends TabActivity
 				}
 			}
 		});
-		int count = tabHost.getTabWidget().getChildCount();// TabHostÖĞÓĞÒ»¸ögetTabWidget()µÄ·½·¨
+		int count = tabHost.getTabWidget().getChildCount();// TabHostä¸­æœ‰ä¸€ä¸ªgetTabWidget()çš„æ–¹æ³•
 		for (int i = 0; i < count; i++)
 		{
 			View view = tabHost.getTabWidget().getChildTabViewAt(i);

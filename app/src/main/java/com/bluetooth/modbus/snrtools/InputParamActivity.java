@@ -58,7 +58,7 @@ public class InputParamActivity extends BaseWriteParamActivity
 				}
 				if (p != null)
 				{
-					// TODO ¸ù¾ÝÊäÈëµÄÊý¾ÝÀàÐÍ£¬×ª»»³É¶ÔÓ¦µÄÊ®Áù½øÖÆ×Ö·û´®
+					// TODO æ ¹æ®è¾“å…¥çš„æ•°æ®ç±»åž‹ï¼Œè½¬æ¢æˆå¯¹åº”çš„åå…­è¿›åˆ¶å­—ç¬¦ä¸²
 					double valueIn = 0;
 					valueIn = Double.parseDouble(mEtParam.getText().toString().trim());
 					if (valueIn > p.maxValue)

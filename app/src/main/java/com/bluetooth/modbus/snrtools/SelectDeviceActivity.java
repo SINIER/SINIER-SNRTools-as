@@ -119,6 +119,10 @@ public class SelectDeviceActivity extends BaseActivity
 				{
 					return;
 				}
+				if (getResources().getString(R.string.string_tips_msg7).equals(info))
+				{
+					return;
+				}
 				String address = info.substring((info.length() - 17) > 0 ? info.length() - 17 : 0);
 				String name = info.substring(0, (info.length() - 17) > 0 ? info.length() - 17 : 0);
 				AppStaticVar.mCurrentAddress = address;
