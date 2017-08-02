@@ -270,7 +270,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <com.bluetooth.modbus.snrtools.view.NoFocuseTextview
+    <com.bluetooth.modbus.snrtools2.view.NoFocuseTextview
         android:id="@+id/tvAlarm"
         android:layout_width="match_parent"
         android:layout_height="50dp"

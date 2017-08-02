@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bluetooth.modbus.snrtools">
+    package="com.bluetooth.modbus.snrtools2">
 
     <!-- 权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,13 +18,13 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
-        android:name="com.bluetooth.modbus.snrtools.common.SNRApplication"
+        android:name="com.bluetooth.modbus.snrtools2.common.SNRApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.bluetooth.modbus.snrtools.Welcome"
+            android:name="com.bluetooth.modbus.snrtools2.Welcome"
             android:screenOrientation="portrait"
             android:label="@string/app_name" >
             <intent-filter>
@@ -33,27 +33,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.SelectDeviceActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.SelectDeviceActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.SNRMainActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.SNRMainActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.CheckPasswordActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.CheckPasswordActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.ParamSettingActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.ParamSettingActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.SelectActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.SelectActivity"
             android:theme="@style/DialogActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.InputParamActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.InputParamActivity"
             android:theme="@style/DialogActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.bluetooth.modbus.snrtools.MainActivity"
+        <activity android:name="com.bluetooth.modbus.snrtools2.MainActivity"
             android:screenOrientation="portrait">
         </activity>
     </application>
