@@ -33,12 +33,12 @@ public class ConnectThread extends Thread {
 			AppStaticVar.mSocket = mDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
 			//连接
 			Message msg2 = new Message(); 
-			msg2.obj = Constans.mApplicationContext.getResources().getString(R.string.string_progressmsg3)+AppStaticVar.mCurrentName;
+			msg2.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_progressmsg3)+AppStaticVar.mCurrentName;
 			msg2.what = Constans.CONNECTING_DEVICE;
 			mHanlder.sendMessage(msg2);
 			AppStaticVar.mSocket .connect();
 			Message msg = new Message();
-			msg.obj = Constans.mApplicationContext.getResources().getString(R.string.string_tips_msg16);
+			msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg16);
 			msg.what = Constans.CONNECT_DEVICE_SUCCESS;
 			mHanlder.sendMessage(msg);
 		} 
@@ -47,7 +47,7 @@ public class ConnectThread extends Thread {
 			Log.e("connect", "", e);
 			AppStaticVar.mSocket = null;
 			Message msg = new Message();
-			msg.obj = Constans.mApplicationContext.getResources().getString(R.string.string_tips_msg14);
+			msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg14);
 			msg.what = Constans.CONNECT_DEVICE_FAILED;
 			mHanlder.sendMessage(msg);
 		} 

@@ -4,9 +4,14 @@ import java.util.HashMap;
 
 import android.os.Handler;
 
+import com.bluetooth.modbus.snrtools2.R;
+import com.bluetooth.modbus.snrtools2.bean.Command;
 import com.bluetooth.modbus.snrtools2.bean.CommandRead;
 import com.bluetooth.modbus.snrtools2.bean.CommandWrite;
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
+import com.bluetooth.modbus.snrtools2.db.Param;
+import com.bluetooth.modbus.snrtools2.listener.CmdListener;
+import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 
 public class ModbusUtils {
 	private static final int TIME_OUT = 10000;
@@ -14,15 +19,20 @@ public class ModbusUtils {
 	public static int MSG_PARAM_COUNT = 0;
 
 	public static void readStatus(String className,Handler handler) {
-		CommandRead read = new CommandRead();
-		read.setDeviceId("01");
-		read.setCommandNo("03");
-		read.setStartAddressH("10");
-		read.setStartAddressL("10");
-		read.setCountH("00");
-		read.setCountL("1A");
-		MSG_STATUS_COUNT = Integer.parseInt("001A", 16)*4+10;
-		AppUtil.modbusWrite( className,handler, read,TIME_OUT);
+		Command read = new Command();
+		read.cmd = "41";
+		read.no = "81";
+//		NumberBytes.calcXor(read);
+		AppUtil.modbusWriteNew( className,handler, read,TIME_OUT);
+//		CommandRead read = new CommandRead();
+//		read.setDeviceId("01");
+//		read.setCommandNo("03");
+//		read.setStartAddressH("10");
+//		read.setStartAddressL("10");
+//		read.setCountH("00");
+//		read.setCountL("1A");
+//		MSG_STATUS_COUNT = Integer.parseInt("001A", 16)*4+10;
+//		AppUtil.modbusWrite( className,handler, read,TIME_OUT);
 	}
 
 	public static void readParameter(String className,Handler handler) {

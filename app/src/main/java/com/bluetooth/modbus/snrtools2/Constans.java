@@ -5,8 +5,6 @@ import android.os.Environment;
 
 public class Constans {
 	
-	public static Context mApplicationContext;
-	
 	/** 指定型号名称起始字段*/
 	public final static String DEVICE_NAME_START = "Sinier";
 
@@ -35,18 +33,20 @@ public class Constans {
 	public final static int TIME_OUT = 0X1000A;
 	
 	public static class PasswordLevel{
-		/** 等级1，基本参数密码 可设置1-17参数，出厂密码521*/
-		public static long LEVEL_1 = 521;
-		/** 等级2，高级参数密码 可设置1-32参数，出厂密码3210*/
-		public static long LEVEL_2 = 3210;
-		/** 等级3，传感器参数密码 可设置1-55参数，出厂密码6108*/
-		public static long LEVEL_3 = 6108;
-		/** 等级4，转换器密码 可设置1-60参数，出厂密码97206*/
-		public static long LEVEL_4 = 97206;
-		/** 等级5，超级密码 可设置1-60参数，固定值270427*/
-		public static long LEVEL_5 = 270427;
-		/** 等级6，总量清零密码,出厂密码5210*/
-		public static long LEVEL_6 = 5210;
+		/** 等级1 ，无密码*/
+		public static String LEVEL_0 = "";
+		/** 等级1，基本参数密码 ，出厂密码100000*/
+		public static String LEVEL_1 = "100000";
+		/** 等级2，高级参数密码 ，出厂密码200000*/
+		public static String LEVEL_2 = "200000";
+		/** 等级3，传感器参数密码 ，出厂密码300000*/
+		public static String LEVEL_3 = "300000";
+		/** 等级4，转换器密码 ，出厂密码400000*/
+		public static String LEVEL_4 = "400000";
+//		/** 等级5，超级密码 ，固定值270427*/
+//		public static long LEVEL_5 = 270427;
+//		/** 等级6，总量清零密码,出厂密码5210*/
+//		public static long LEVEL_6 = 5210;
 	}
 	
 	public static class Directory{

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.bluetooth.modbus.snrtools2.adapter.SelectAdapter;
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
 import com.bluetooth.modbus.snrtools2.bean.Selector;
+import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
 
 public class SelectActivity extends BaseWriteParamActivity {
@@ -49,9 +50,11 @@ public class SelectActivity extends BaseWriteParamActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				mPosition = position;
-				Parameter p = (Parameter) getIntent().getSerializableExtra("param");
+				Param p = (Param) getIntent().getSerializableExtra("param");
 				if(p != null){
-					p.valueIn = mAdapter.getItem(position).value;
+//					p.valueIn = mAdapter.getItem(position).value;
+					p.setValue(mAdapter.getItem(position).value);
+					p.setValueDisplay(mAdapter.getItem(position).name);
 					writeParameter(p);
 				}
 			}

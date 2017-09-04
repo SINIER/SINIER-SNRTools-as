@@ -130,7 +130,7 @@ public class CRC16
 		return ret;
 	}
 
-	private static byte[] HexString2Buf(String src)
+	public static byte[] HexString2Buf(String src)
 	{
 		int len = src.length();
 		byte[] ret = new byte[len / 2 + 2];
@@ -180,7 +180,6 @@ public class CRC16
 	/****
 	 * 得到CRC验证
 	 * 
-	 * @param tt
 	 * @return
 	 */
 
@@ -201,7 +200,6 @@ public class CRC16
 	/**
 	 * 得到要发送的数据
 	 * 
-	 * @param args
 	 */
 	public static String getSendData(String[] tt)
 	{

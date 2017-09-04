@@ -5,186 +5,106 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
+import com.bluetooth.modbus.snrtools2.db.Param;
+import com.bluetooth.modbus.snrtools2.listener.CmdListener;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
+import com.bluetooth.modbus.snrtools2.uitls.CmdUtils;
 import com.bluetooth.modbus.snrtools2.uitls.ModbusUtils;
+import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
 
 public abstract class BaseWriteParamActivity extends BaseActivity {
 
-	private Handler mHandler, mHandler1;
-	private Thread mThread;
+//	private Thread mThread;
 	public int RECONNECT_TIME = 3, RECONNECT_TIME1 = 3;
-	private Parameter mParameter;
+	private Param mParameter;
+	private boolean hasSend;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		initHandler();
 	}
 
 	public abstract void onSuccess();
 
-	public void writeParameter(Parameter param) {
+	public void writeParameter(Param param) {
 		this.mParameter = param;
 		if (this.mParameter != null) {
+			showProgressDialog("");
 			startWriteParam();
 		}
 	}
 
 	private void startWriteParam() {
-		mThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
+		if(hasSend){
+			return;
+		}
+		hasSend = true;
+//		mThread = new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
 				if (RECONNECT_TIME > 0) {
-					ModbusUtils.writeParameter(mContext.getClass()
-							.getSimpleName(), mHandler, mParameter);
+
+					//0x01 0x46 参数编号（2bytes）0x00 len 参数数据（2-4bytes）CRCH CRCL
+					String noHexStr = NumberBytes.padLeft(mParameter.getHexNo(), 4, '0');
+					String len = "0x"+NumberBytes.padLeft(Integer.toHexString(mParameter.getValue().length()/2), 2, '0');
+					String cmd = "0x01 0x46 " + noHexStr + "0x00 "+len+mParameter.getValue();
+					CmdUtils.sendCmd(cmd, new CmdListener() {
+						@Override
+						public void start() {
+
+						}
+
+						@Override
+						public void result(String result) {
+							hasSend = false;
+							hideProgressDialog();
+							System.out.println("写入参数收到的数据====="
+									+ result);
+							if (result.length() != 16) {
+								showToast(getResources().getString(R.string.string_error_msg11));
+								return;
+							}
+							onSuccess();
+						}
+
+						@Override
+						public void failure(String msg) {
+							hasSend = false;
+							startWriteParam();
+						}
+
+						@Override
+						public void timeOut(String msg) {
+							hasSend = false;
+//							if (mThread != null && !mThread.isInterrupted()) {
+//								mThread.interrupt();
+//							}
+							startWriteParam();
+						}
+
+						@Override
+						public void connectFailure(String msg) {
+							hasSend = false;
+							hideProgressDialog();
+							showConnectDevice();
+						}
+
+						@Override
+						public void finish() {
+
+						}
+					});
+
+
+
+//					ModbusUtils.writeParameter(mContext.getClass()
+//							.getSimpleName(), mHandler, mParameter);
 					System.out.println("===RECONNECT_TIME===" + RECONNECT_TIME);
 					RECONNECT_TIME--;
 				}
-			}
-		});
-		mThread.start();
-	}
-
-	private void startWrite2Device() {
-		mThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				ModbusUtils.write2Device(mContext.getClass().getSimpleName(),
-						mHandler1);
-			}
-		});
-		mThread.start();
-	}
-
-	private void inputZXZL() {
-		mThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				ModbusUtils.inputZXZL(mContext.getClass().getSimpleName(),
-						mHandler1);
-			}
-		});
-		mThread.start();
-	}
-
-	private void inputFXZL() {
-		mThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				ModbusUtils.inputFXZL(mContext.getClass().getSimpleName(),
-						mHandler1);
-			}
-		});
-		mThread.start();
-	}
-
-	private void initHandler() {
-		mHandler1 = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				switch (msg.what) {
-					case Constans.CONTACT_START :
-						System.out.println("=====写入参数开始读取数据");
-						break;
-					case Constans.NO_DEVICE_CONNECTED :
-						System.out.println("=====写入参数没有设备连接");
-						showToast(getResources().getString(R.string.string_error_msg9));
-						break;
-					case Constans.DEVICE_RETURN_MSG :
-						hideProgressDialog();
-						System.out.println("写入参数收到的数据====="
-								+ msg.obj.toString());
-						if (msg.obj.toString().length() != 16) {
-							return;
-						}
-						onSuccess();
-						break;
-					case Constans.CONNECT_IS_CLOSED :
-						System.out.println("=====写入参数连接断开");
-						showConnectDevice();
-						showToast(getResources().getString(R.string.string_error_msg10));
-						break;
-					case Constans.ERROR_START :
-						System.out.println("=====写入参数接收错误");
-						startWriteParam();
-						break;
-					case Constans.CONNECT_IS_JIM :
-						showToast(msg.toString());
-						hideProgressDialog();
-						break;
-					case Constans.TIME_OUT :
-						System.out.println("=====写入参数连接超时");
-						if (RECONNECT_TIME1 > 0) {
-							if (mThread != null && !mThread.isInterrupted()) {
-								mThread.interrupt();
-							}
-							startWrite2Device();
-							RECONNECT_TIME1--;
-						} else {
-							hideProgressDialog();
-							showToast(getResources().getString(R.string.string_error_msg11));
-						}
-						break;
-				}
-			}
-		};
-
-		mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				switch (msg.what) {
-					case Constans.CONTACT_START :
-						showProgressDialog(getResources().getString(R.string.string_progressmsg1));
-						System.out.println("=====参数开始读取数据");
-						break;
-					case Constans.NO_DEVICE_CONNECTED :
-						System.out.println("=====参数没有设备连接");
-						showToast(getResources().getString(R.string.string_error_msg9));
-						break;
-					case Constans.DEVICE_RETURN_MSG :
-						System.out.println("参数收到的数据=====" + msg.obj.toString());
-						if (msg.obj.toString().length() != 16) {
-							return;
-						}
-						if (getIntent().getIntExtra("position", -1) == AppStaticVar.ZXZLPosition) {
-							inputZXZL();
-						} else if (getIntent().getIntExtra("position", -1) == AppStaticVar.FXZLPosition) {
-							inputFXZL();
-						} else {
-							startWrite2Device();
-						}
-						break;
-					case Constans.CONNECT_IS_CLOSED :
-						System.out.println("=====参数连接断开");
-						showConnectDevice();
-						showToast(getResources().getString(R.string.string_error_msg10));
-						break;
-					case Constans.ERROR_START :
-						System.out.println("=====参数接收错误");
-						startWriteParam();
-						break;
-					case Constans.CONNECT_IS_JIM :
-						showToast(msg.toString());
-						break;
-					case Constans.TIME_OUT :
-
-						if (RECONNECT_TIME1 > 0) {
-							if (mThread != null && !mThread.isInterrupted()) {
-								mThread.interrupt();
-							}
-							startWriteParam();
-							RECONNECT_TIME1--;
-						} else {
-							hideProgressDialog();
-							showToast(getResources().getString(R.string.string_error_msg11));
-						}
-						break;
-				}
-			}
-		};
+//			}
+//		});
+//		mThread.start();
 	}
 }

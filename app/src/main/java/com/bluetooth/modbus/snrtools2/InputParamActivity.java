@@ -3,29 +3,36 @@ package com.bluetooth.modbus.snrtools2;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.DigitsKeyListener;
+import android.text.method.NumberKeyListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
+import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
+import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
+import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
 
 public class InputParamActivity extends BaseWriteParamActivity
 {
 
 	private TextView mTvTitle;
 	private EditText mEtParam;
-	private Parameter p;
+	private Param p;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.input_param_activity);
-		p = (Parameter) getIntent().getSerializableExtra("param");
+		p = (Param) getIntent().getSerializableExtra("param");
 		initUI();
 	}
 
@@ -35,15 +42,38 @@ public class InputParamActivity extends BaseWriteParamActivity
 		mEtParam = (EditText) findViewById(R.id.editText1);
 		mTvTitle.setText(getIntent().getStringExtra("title"));
 		mEtParam.setHint(getIntent().getStringExtra("value") + "(" + getResources().getString(R.string.string_hint1)
-				+ p.minValue + "~" + p.maxValue + ")");
-		// if (p.type == 1) {
-		// mEtParam.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-		// } else if (p.type == 2) {
-		// mEtParam.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
-		// mEtParam.setKeyListener(new DigitsKeyListener(false, true));
-		// } else if (p.type == 3) {
-		// mEtParam.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-		// }
+				+ p.getMin()+p.getUnit() + "~" + p.getMax()+p.getUnit() + ")");
+		 if ("1".equals(p.getType()+"")||"2".equals(p.getType()+"")||"5".equals(p.getType()+"")||"6".equals(p.getType()+"")) {
+			 mEtParam.setKeyListener(new NumberKeyListener() {
+				 @Override
+				 protected char[] getAcceptedChars() {
+					 return new char[] { '1', '2', '3', '4', '5', '6', '7', '8','9', '0','-' };
+				 }
+				 @Override
+				 public int getInputType() {
+					 // TODO Auto-generated method stub
+					 return InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_CLASS_NUMBER;
+				 }
+			 });
+		 }else if("8".equals(p.getType()+"")){
+			 mEtParam.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+			 mEtParam.setKeyListener(new NumberKeyListener() {
+				 @Override
+				 protected char[] getAcceptedChars() {
+					 return new char[] { '1', '2', '3', '4', '5', '6', '7', '8','9', '0','.' };
+				 }
+				 @Override
+				 public int getInputType() {
+					 return InputType.TYPE_CLASS_TEXT;
+				 }
+			 });
+		 }
+//		 else if (p.type == 2) {
+//		 mEtParam.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
+//		 mEtParam.setKeyListener(new DigitsKeyListener(false, true));
+//		 } else if (p.type == 3) {
+//		 mEtParam.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+//		 }
 	}
 
 	public void onClick(View v)
@@ -58,23 +88,34 @@ public class InputParamActivity extends BaseWriteParamActivity
 				}
 				if (p != null)
 				{
-					// TODO 根据输入的数据类型，转换成对应的十六进制字符串
-					double valueIn = 0;
-					valueIn = Double.parseDouble(mEtParam.getText().toString().trim());
-					if (valueIn > p.maxValue)
-					{
-						showToast(getResources().getString(R.string.string_tips_msg9) + p.maxValue + "!");
-						return;
-					}
-					if (valueIn < p.minValue)
-					{
-						showToast(getResources().getString(R.string.string_tips_msg10) + p.minValue + "!");
-						return;
-					}
-					p.valueIn = Integer.toHexString((int) (valueIn * Math.pow(10, p.point)));
-					if (p.type == 4 && p.valueIn.toString().length() == 8)
-					{
-						p.valueIn = p.valueIn.toString().substring(4, 8);
+					if("8".equals(p.getType())){
+						String str = mEtParam.getText().toString().trim();
+						String[] ips = str.split("\\.");
+						if(ips.length!=4){
+							showToast(getResources().getString(R.string.ip_error));
+							return;
+						}
+						for(int i=0;i<ips.length;i++){
+							if(AppUtil.parseToInt(ips[i],-1)<0||AppUtil.parseToInt(ips[i],-1)>255){
+								showToast(getResources().getString(R.string.ip_error));
+								return;
+							}
+						}
+						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), str));
+						p.setValueDisplay(str);
+					}else {
+						double valueIn = 0;
+						valueIn = Double.parseDouble(mEtParam.getText().toString().trim());
+						if (valueIn > AppUtil.parseToDouble(p.getMax(), 0)) {
+							showToast(getResources().getString(R.string.string_tips_msg9) + AppUtil.parseToDouble(p.getMax(), 0) + "!");
+							return;
+						}
+						if (valueIn < AppUtil.parseToDouble(p.getMin(), 0)) {
+							showToast(getResources().getString(R.string.string_tips_msg10) + AppUtil.parseToDouble(p.getMin(), 0) + "!");
+							return;
+						}
+						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), valueIn + ""));
+						p.setValueDisplay(valueIn + "");
 					}
 					writeParameter(p);
 				}
@@ -113,7 +154,8 @@ public class InputParamActivity extends BaseWriteParamActivity
 	{
 		Intent intent = new Intent();
 		intent.putExtra("position", getIntent().getIntExtra("position", -1));
-		intent.putExtra("value", mEtParam.getText().toString());
+		intent.putExtra("value", p.getValueDisplay());
+		intent.putExtra("valueIn", p.getValue());
 		setResult(RESULT_OK, intent);
 		ActivityManager.getInstances().finishActivity(InputParamActivity.this);
 	}

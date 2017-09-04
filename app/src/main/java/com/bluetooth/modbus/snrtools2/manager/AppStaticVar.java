@@ -4,12 +4,17 @@ import java.util.List;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 
 import com.bluetooth.modbus.snrtools2.MyObservable;
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
+import com.bluetooth.modbus.snrtools2.bean.ProductInfo;
 
 public class AppStaticVar {
-	public final static Byte[] locks = new Byte[0]; 
+	public final static Byte[] locks = new Byte[0];
+	public static Context mApplication;
+	/** 每次连接获取的产品配置信息*/
+	public static ProductInfo mProductInfo;
 	/** 取得默认的蓝牙适配器 */
 	public static BluetoothAdapter mBtAdapter;
 	/** 当前连接的蓝牙地址*/
@@ -20,16 +25,6 @@ public class AppStaticVar {
 	public static BluetoothSocket mSocket;
 	/** 密码等级*/
 	public static int PASSWORD_LEVEAL = -1;
-	/** 密码等级1查看参数个数*/
-	public static int PASSWORD_LEVEAL1_COUNT = 0;
-	/** 密码等级2查看参数个数*/
-	public static int PASSWORD_LEVEAL2_COUNT = 0;
-	/** 密码等级3查看参数个数*/
-	public static int PASSWORD_LEVEAL3_COUNT = 0;
-	/** 密码等级4查看参数个数*/
-	public static int PASSWORD_LEVEAL4_COUNT= 0;
-	/** 密码等级5查看参数个数*/
-	public static int PASSWORD_LEVEAL5_COUNT = 0;
 	/** 参数列表*/
 	public static List<Parameter> mParamList;
 	/** 正向总量参数位置*/
@@ -42,4 +37,10 @@ public class AppStaticVar {
 	public static MyObservable mObservable;
 	public static boolean isSNRMainPause = false;
 	public static boolean isCheckPwdPause = false;
+	/** 是否是英文模式*/
+	public static boolean isEnglish = false;
+	/** 当前同步的编号*/
+	public static int currentSyncIndex;
+	/** 当前变量的编号*/
+	public static int currentVarIndex;
 }

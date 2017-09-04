@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SNRTools</string>
+    <string name="app_name">SNRTools2</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="string_settings">Setup</string>
@@ -152,5 +152,10 @@
     <string name="string_param7">Always ON</string>
     <string name="string_param8">Hz</string>
     <string name="string_param9">Measure Ouput</string>
+    <string name="get_setting_error">Fetch configuration failure</string>
+    <string name="sync_config">Synchronize the update configuration</string>
+    <string name="sync_params">Synchronize the update parameters</string>
+    <string name="ip_error">Please enter the correct IP address</string>
+    <string name="label_cmd">Operation command</string>
 
 </resources>

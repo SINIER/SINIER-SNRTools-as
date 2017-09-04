@@ -192,7 +192,9 @@ public abstract class BaseActivity extends Activity {
 		} else {
 			mCustomDialog.setTitle(getResources().getString(R.string.string_loading));
 		}
-		mCustomDialog.show(isCancel);
+		if(!mCustomDialog.isShowing()) {
+			mCustomDialog.show(isCancel);
+		}
 	}
 
 	public abstract void reconnectSuccss();

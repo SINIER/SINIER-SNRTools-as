@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <include
         android:id="@+id/titlebar"
+        layout="@layout/title_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/title_bar" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/setparam"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/titlebar"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <ListView
             android:id="@+id/listView1"
@@ -23,8 +23,7 @@
             android:cacheColorHint="#00000000"
             android:divider="@null"
             android:dividerHeight="0dp"
-            android:fadingEdge="none" >
-        </ListView>
+            android:fadingEdge="none"/>
     </LinearLayout>
 
     <LinearLayout
@@ -35,7 +34,7 @@
         android:background="#FFFFFF"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/editText1"
@@ -49,8 +48,7 @@
             android:inputType="numberPassword"
             android:textColor="#1a1a1a"
             android:textColorHint="#d9d9d9"
-            android:textSize="22sp" >
-        </EditText>
+            android:textSize="22sp"></EditText>
 
         <Button
             android:id="@+id/button2"
@@ -77,8 +75,8 @@
             android:inputType="numberPassword"
             android:textColor="#1a1a1a"
             android:textColorHint="#d9d9d9"
-            android:textSize="22sp" >
-        </EditText>
+            android:textSize="22sp"
+            android:visibility="gone"></EditText>
 
         <Button
             android:id="@+id/button3"
@@ -91,7 +89,8 @@
             android:onClick="onClick"
             android:text="@string/string_zlql"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
     </LinearLayout>
 
 </RelativeLayout>

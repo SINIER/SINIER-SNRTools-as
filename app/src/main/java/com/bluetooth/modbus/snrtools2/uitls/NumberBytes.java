@@ -1,6 +1,13 @@
 package com.bluetooth.modbus.snrtools2.uitls;
 
+import android.text.TextUtils;
+
+import com.bluetooth.modbus.snrtools2.bean.Command;
+
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 /**
  * 对数字和字节进行转换。<br>
@@ -52,6 +59,21 @@ public class NumberBytes {
 		char c = (char) ((b[0] << 8) & 0xFF00L);
 		c |= (char) (b[1] & 0xFFL);
 		return c;
+	}
+
+	public static String byte2Char(byte[] b) {
+		/**
+		 *  通过ByteToCharConverter类转换不可行，sun.io.*包属于内部API，已经不可用
+		 *  ByteToCharConverter converter = ByteToCharConverter.getConverter("gb2312");
+		 *  char c[] = converter.convertAll(b);
+		 */
+
+		Charset charSet = Charset.forName("GB2312");
+		ByteBuffer byteBuffer = ByteBuffer.allocate(b.length);
+		byteBuffer.put(b);
+		byteBuffer.flip();
+		CharBuffer charBuffer = charSet.decode(byteBuffer);
+		return charBuffer.toString();
 	}
 
 	/**
@@ -225,7 +247,7 @@ public class NumberBytes {
 	
 	/**
 	 * 保证小数位数的字符串
-	 * @param f
+	 * @param str
 	 * @param count 保留几位
 	 * @return
 	 */
@@ -246,4 +268,5 @@ public class NumberBytes {
 		}
 		return s;
 	}
+
 }

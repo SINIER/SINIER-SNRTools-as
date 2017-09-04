@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">仪表助手</string>
+    <string name="app_name">仪表助手2</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="string_settings">设置</string>
@@ -152,5 +152,10 @@
     <string name="string_param7">常亮</string>
     <string name="string_param8">Hz</string>
     <string name="string_param9">测量值</string>
+    <string name="get_setting_error">获取配置失败</string>
+    <string name="sync_config">同步更新配置中</string>
+    <string name="sync_params">同步更新参数中</string>
+    <string name="ip_error">请输入正确的ip地址</string>
+    <string name="label_cmd">操作命令</string>
 
 </resources>
