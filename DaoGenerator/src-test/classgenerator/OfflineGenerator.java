@@ -13,19 +13,35 @@ public class OfflineGenerator {
     private static Entity paramGroup;
     private static Entity param;
     private static Entity var;
+    private static Entity main;
+    private static Entity value;
 
     @Test
     public void testMinimalSchema() throws Exception
     {
-		Schema schema = new Schema(1, "com.bluetooth.modbus.snrtools2.db");
+		Schema schema = new Schema(2, "com.bluetooth.modbus.snrtools2.db");
 
 		addString(schema);
 		addCmd(schema);
 		addParamGroup(schema);
 		addParam(schema);
 		addVar(schema);
+		addMain(schema);
+		addValue(schema);
 		new DaoGenerator().generateAll(schema, "C:\\work\\github\\SINIER-SNRTools-as\\app\\src\\main\\java");
 	}
+
+    /** 键值对，替代sharepreference */
+    private static void addValue(Schema schema)
+    {
+        value = schema.addEntity("Value");
+        value.setDbName("Value");
+        value.setJavaDoc("键值对，替代sharepreference");
+        value.addStringProperty("key").dbName("key").primaryKey().javaDocGetterAndSetter("主键");
+        value.addStringProperty("value").dbName("value").javaDocGetterAndSetter("值");
+        value.implementsSerializable();//实现序列化接口
+        value.setHasKeepSections(true);//生成的类可以添加自主代码
+    }
 
     /** 离线字符串 */
     private static void addString(Schema schema)
@@ -74,6 +90,27 @@ public class OfflineGenerator {
         var.addStringProperty("unit").dbName("unit");
         var.implementsSerializable();//实现序列化接口
         var.setHasKeepSections(true);//生成的类可以添加自主代码
+    }
+
+    /** 主界面配置 */
+    private static void addMain(Schema schema)
+    {
+        main = schema.addEntity("Main");
+        main.setDbName("Main");
+        main.setJavaDoc("主界面配置");
+        main.addIdProperty().autoincrement().primaryKey();
+        main.addStringProperty("type").dbName("type").javaDocGetterAndSetter("显示内容类别 0-变量，1-参数，2-图标，3-字符串，4-波形");
+        main.addStringProperty("fontSize").dbName("fontSize").javaDocGetterAndSetter("字体大小 2-大字体，1-小字体，0-普通字体");
+        main.addStringProperty("gravity").dbName("gravity").javaDocGetterAndSetter("对齐（2-中间，1-右对齐，0-左对齐）");
+        main.addStringProperty("count").dbName("count").javaDocGetterAndSetter("小数点位数（0-7位）");
+        main.addStringProperty("x").dbName("x").javaDocGetterAndSetter("x坐标 显示行坐标 0-7行（以8像素为一个行单位）");
+        main.addStringProperty("y").dbName("y").javaDocGetterAndSetter("y坐标 显示列坐标 0-127列");
+        main.addStringProperty("width").dbName("width").javaDocGetterAndSetter("显示区域宽度 1-128");
+        main.addStringProperty("height").dbName("height").javaDocGetterAndSetter("显示区域高度 预留未使用 ");
+        main.addStringProperty("hexNo").dbName("hexNo").javaDocGetterAndSetter("数据索引号,十六进制编号（例：0000）");
+        main.addStringProperty("value").dbName("value").javaDocGetterAndSetter("数据值");
+        main.implementsSerializable();//实现序列化接口
+        main.setHasKeepSections(true);//生成的类可以添加自主代码
     }
 
     /** 参数组 */

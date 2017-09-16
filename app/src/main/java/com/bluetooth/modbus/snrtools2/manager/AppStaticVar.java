@@ -43,4 +43,6 @@ public class AppStaticVar {
 	public static int currentSyncIndex;
 	/** 当前变量的编号*/
 	public static int currentVarIndex;
+	/** 当前主界面项的编号*/
+	public static int currentMainIndex;
 }

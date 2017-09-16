@@ -22,6 +22,8 @@ public class DBManager {
     private ParamGroupDao paramGroupDao;
     private ParamDao paramDao;
     private VarDao varDao;
+    private MainDao mainDao;
+    private ValueDao valueDao;
     private Context mContext;
     private DaoMaster daoMaster;
     private DaoSession daoSession;
@@ -50,6 +52,8 @@ public class DBManager {
         paramGroupDao = daoSession.getParamGroupDao();
         paramDao = daoSession.getParamDao();
         varDao = daoSession.getVarDao();
+        mainDao = daoSession.getMainDao();
+        valueDao = daoSession.getValueDao();
     }
 
     public List<OfflineString> getAllOfflineString(){
@@ -83,6 +87,38 @@ public class DBManager {
         }
     }
 
+    public void saveValue(Value value){
+        synchronized (this){
+            valueDao.insertOrReplace(value);
+        }
+    }
+
+    public Value getValue(String key){
+        synchronized (this) {
+            Value var = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(key)).unique();
+            return var;
+        }
+    }
+
+    public void clearMain(){
+        synchronized (this){
+            mainDao.deleteAll();
+        }
+    }
+
+    public void saveMain(Main main){
+        synchronized (this){
+            mainDao.insertOrReplace(main);
+        }
+    }
+
+    public List<Main> getMainList(){
+        synchronized (this) {
+            List<Main> list = mainDao.loadAll();
+            return list==null?new ArrayList<Main>():list;
+        }
+    }
+
     public List<ParamGroup> getParamGroups(String level){
         synchronized (this){
             List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.Level.le(level)).build().list();
@@ -110,9 +146,21 @@ public class DBManager {
         }
     }
 
+    public Param getParam(String paramHexNo){
+        synchronized (this){
+            return paramDao.queryBuilder().where(ParamDao.Properties.HexNo.eq(paramHexNo)).unique();
+        }
+    }
+
     public void saveParam(Param param){
         synchronized (this){
             paramDao.insertOrReplace(param);
+        }
+    }
+
+    public List<OfflineString> getAllStrs(){
+        synchronized (this){
+            return offlineStringDao.loadAll();
         }
     }
 

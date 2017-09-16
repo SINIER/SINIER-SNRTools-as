@@ -29,6 +29,7 @@ import com.bluetooth.modbus.snrtools2.bean.CommandWrite;
 import com.bluetooth.modbus.snrtools2.common.CRC16;
 import com.bluetooth.modbus.snrtools2.db.DBManager;
 import com.bluetooth.modbus.snrtools2.db.Param;
+import com.bluetooth.modbus.snrtools2.db.Value;
 import com.bluetooth.modbus.snrtools2.db.Var;
 import com.bluetooth.modbus.snrtools2.listener.CmdListener;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
@@ -717,5 +718,14 @@ public class AppUtil {
 			value = ip1+ip2+ip3+ip4;
 		}
 		return value;
+	}
+
+	public static String getValue(String key,String defalutStr){
+		Value value = DBManager.getInstance().getValue(key);
+		return value == null?defalutStr:value.getValue();
+	}
+
+	public static void saveValue(String key,String value){
+		DBManager.getInstance().saveValue(new Value(key,value));
 	}
 }

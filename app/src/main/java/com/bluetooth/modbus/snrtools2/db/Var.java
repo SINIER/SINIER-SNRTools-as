@@ -83,7 +83,6 @@ public class Var implements java.io.Serializable {
     public String toString() {
         return "===========hexNo==="+hexNo+",type==="+type+",count==="+count+",unit==="+unit;
     }
-
     // KEEP METHODS END
 
 }

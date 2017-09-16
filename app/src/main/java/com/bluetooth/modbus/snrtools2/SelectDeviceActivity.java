@@ -47,9 +47,11 @@ import com.bluetooth.modbus.snrtools2.bean.SiriListItem;
 import com.bluetooth.modbus.snrtools2.common.CRC16;
 import com.bluetooth.modbus.snrtools2.db.Cmd;
 import com.bluetooth.modbus.snrtools2.db.DBManager;
+import com.bluetooth.modbus.snrtools2.db.Main;
 import com.bluetooth.modbus.snrtools2.db.OfflineString;
 import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.db.ParamGroup;
+import com.bluetooth.modbus.snrtools2.db.Value;
 import com.bluetooth.modbus.snrtools2.db.Var;
 import com.bluetooth.modbus.snrtools2.listener.CmdListener;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
@@ -107,11 +109,13 @@ public class SelectDeviceActivity extends BaseActivity
 				if(AppStaticVar.mProductInfo != null) {
 					currentSyncCount = 0;
 					totalSyncCount = 0;
-					String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
+//					String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
+					String oldCRC = AppUtil.getValue("key_crc","");
 					if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
 						totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
 					}
 					totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
+					totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
 					syncVar();
 				}else {
 					syncFailure(getString(R.string.get_setting_error));
@@ -144,7 +148,8 @@ public class SelectDeviceActivity extends BaseActivity
 		hideProgressDialog();
 		AppStaticVar.mProductInfo.pdModel = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 		AppStaticVar.mProductInfo.pdVersion = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdVersion);
-		AbSharedUtil.putString(mContext,"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
+//		AbSharedUtil.putString(mContext,"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
+		AppUtil.saveValue("key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		// Intent intent = new Intent(mContext, SNRMainActivity.class);
 		startActivity(intent);
@@ -204,13 +209,90 @@ public class SelectDeviceActivity extends BaseActivity
 			});
 		}else {
 			AppStaticVar.currentSyncIndex = 0;
-			String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
+			String oldCRC = AppUtil.getValue("key_crc","");
 			if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
 				AppStaticVar.currentSyncIndex = 0;
 				syncStr();
 			}else {
-				syncSuccess();
+				AppStaticVar.currentSyncIndex = 0;
+				syncMain();
 			}
+		}
+	}
+
+	private void syncMain(){
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdDispMainCount){
+			if(AppStaticVar.currentSyncIndex==0){
+				DBManager.getInstance().clearMain();
+			}
+			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
+			CmdUtils.sendCmd("0x01 0x62 "+noHexStr+"0x00 0x00", new CmdListener() {
+				@Override
+				public void start() {
+					currentSyncCount++;
+					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+				}
+
+				@Override
+				public void result(String result) {
+					String type = Long.parseLong(result.substring(12,14),16)+"";
+					String temp = NumberBytes.padLeft(Long.toBinaryString(Long.parseLong(result.substring(14,16),16)),8,'0');
+					String fontSize = Integer.parseInt(temp.substring(0,2),2)+"";
+					String gravity = Integer.parseInt(temp.substring(2,4),2)+"";
+					String count = Integer.parseInt(temp.substring(4,8),2)+"";
+					String x = Long.parseLong(result.substring(16,18),16)+"";
+					String y = Long.parseLong(result.substring(18,20),16)+"";
+					String width = Long.parseLong(result.substring(20,22),16)+"";
+					String height = Long.parseLong(result.substring(22,24),16)+"";
+					String noHexStr = result.substring(26,28)+result.substring(24,26);
+					String value = "";
+					if("0".equals(type)){
+						value = getString(R.string.string_tips_msg2);
+					}else if("1".equals(type)){
+						value = getString(R.string.string_tips_msg2);
+					}else if("2".equals(type)){
+						value = noHexStr;
+					}else if("3".equals(type)){
+						value = DBManager.getInstance().getStr(noHexStr);
+					}
+					Main main = new Main();
+					main.setType(type);
+					main.setFontSize(fontSize);
+					main.setGravity(gravity);
+					main.setCount(count);
+					main.setX(x);
+					main.setY(y);
+					main.setWidth(width);
+					main.setHeight(height);
+					main.setHexNo(noHexStr);
+					main.setValue(value);
+					DBManager.getInstance().saveMain(main);
+					AppStaticVar.currentSyncIndex++;
+					syncMain();
+				}
+
+				@Override
+				public void connectFailure(String msg) {
+					syncFailure(msg);
+				}
+
+				@Override
+				public void timeOut(String msg) {
+					syncFailure(msg);
+				}
+
+				@Override
+				public void failure(String msg) {
+					syncFailure(msg);
+				}
+
+				@Override
+				public void finish() {
+
+				}
+			});
+		}else {
+			syncSuccess();
 		}
 	}
 
@@ -426,7 +508,8 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 			});
 		}else {
-			syncSuccess();
+			AppStaticVar.currentSyncIndex = 0;
+			syncMain();
 		}
 	}
 
