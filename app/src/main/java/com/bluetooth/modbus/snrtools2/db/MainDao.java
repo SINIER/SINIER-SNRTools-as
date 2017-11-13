@@ -33,6 +33,7 @@ public class MainDao extends AbstractDao<Main, Long> {
         public final static Property Height = new Property(8, String.class, "height", false, "height");
         public final static Property HexNo = new Property(9, String.class, "hexNo", false, "hexNo");
         public final static Property Value = new Property(10, String.class, "value", false, "value");
+        public final static Property BtAddress = new Property(11, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -58,7 +59,8 @@ public class MainDao extends AbstractDao<Main, Long> {
                 "\"width\" TEXT," + // 7: width
                 "\"height\" TEXT," + // 8: height
                 "\"hexNo\" TEXT," + // 9: hexNo
-                "\"value\" TEXT);"); // 10: value
+                "\"value\" TEXT," + // 10: value
+                "\"btAddress\" TEXT);"); // 11: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -125,6 +127,11 @@ public class MainDao extends AbstractDao<Main, Long> {
         if (value != null) {
             stmt.bindString(11, value);
         }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(12, btAddress);
+        }
     }
 
     @Override
@@ -185,6 +192,11 @@ public class MainDao extends AbstractDao<Main, Long> {
         if (value != null) {
             stmt.bindString(11, value);
         }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(12, btAddress);
+        }
     }
 
     @Override
@@ -205,7 +217,8 @@ public class MainDao extends AbstractDao<Main, Long> {
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // width
             cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // height
             cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // hexNo
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // value
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // value
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // btAddress
         );
         return entity;
     }
@@ -223,6 +236,7 @@ public class MainDao extends AbstractDao<Main, Long> {
         entity.setHeight(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
         entity.setHexNo(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
         entity.setValue(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setBtAddress(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     @Override

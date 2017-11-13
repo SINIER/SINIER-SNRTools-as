@@ -3,6 +3,7 @@ package com.bluetooth.modbus.snrtools2.bean;
 import android.text.TextUtils;
 
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -67,7 +68,8 @@ public class ProductInfo implements Serializable {
                 long l2000 = sdf.parse("2000-01-01 00:00:00").getTime();
                 productInfo.pdBuildTime = sdf.format(new Date(time*1000+l2000));
             }catch (Exception e){
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
+                return null;
             }
             /** 产品型号字符串*/
             productInfo.pdModel = strings[11]+strings[10];

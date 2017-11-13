@@ -24,6 +24,7 @@
             <com.bluetooth.modbus.snrtools2.view.MainView
                 android:id="@+id/mainview"
                 android:layout_width="match_parent"
+                android:background="#00FFA9"
                 android:layout_height="200dp" />
 
             <LinearLayout

@@ -13,12 +13,17 @@ import org.greenrobot.greendao.annotation.*;
 @Entity(nameInDb = "Value")
 public class Value implements java.io.Serializable {
 
-    @Id
+    @Id(autoincrement = true)
+    private Long id;
+
     @Property(nameInDb = "key")
     private String key;
 
     @Property(nameInDb = "value")
     private String value;
+
+    @Property(nameInDb = "btAddress")
+    private String btAddress;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -27,14 +32,24 @@ public class Value implements java.io.Serializable {
     public Value() {
     }
 
-    public Value(String key) {
-        this.key = key;
+    public Value(Long id) {
+        this.id = id;
     }
 
     @Generated
-    public Value(String key, String value) {
+    public Value(Long id, String key, String value, String btAddress) {
+        this.id = id;
         this.key = key;
         this.value = value;
+        this.btAddress = btAddress;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
@@ -63,6 +78,20 @@ public class Value implements java.io.Serializable {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public String getBtAddress() {
+        return btAddress;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public void setBtAddress(String btAddress) {
+        this.btAddress = btAddress;
     }
 
     // KEEP METHODS - put your custom methods here

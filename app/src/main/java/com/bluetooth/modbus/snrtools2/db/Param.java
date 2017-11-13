@@ -8,12 +8,14 @@ import org.greenrobot.greendao.annotation.*;
 // KEEP INCLUDES END
 
 /**
- * Entity mapped to table "Param".
+ * 参数组
  */
 @Entity(nameInDb = "Param")
 public class Param implements java.io.Serializable {
 
-    @Id
+    @Id(autoincrement = true)
+    private Long id;
+
     @Property(nameInDb = "hexNo")
     private String hexNo;
 
@@ -47,6 +49,9 @@ public class Param implements java.io.Serializable {
     @Property(nameInDb = "min")
     private String min;
 
+    @Property(nameInDb = "btAddress")
+    private String btAddress;
+
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
@@ -54,12 +59,13 @@ public class Param implements java.io.Serializable {
     public Param() {
     }
 
-    public Param(String hexNo) {
-        this.hexNo = hexNo;
+    public Param(Long id) {
+        this.id = id;
     }
 
     @Generated
-    public Param(String hexNo, String paramGroupHexNo, String type, String name, String value, String valueDisplay, String linkVariable, String count, String unit, String max, String min) {
+    public Param(Long id, String hexNo, String paramGroupHexNo, String type, String name, String value, String valueDisplay, String linkVariable, String count, String unit, String max, String min, String btAddress) {
+        this.id = id;
         this.hexNo = hexNo;
         this.paramGroupHexNo = paramGroupHexNo;
         this.type = type;
@@ -71,94 +77,183 @@ public class Param implements java.io.Serializable {
         this.unit = unit;
         this.max = max;
         this.min = min;
+        this.btAddress = btAddress;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 十六进制编号（例：0000）
+     */
     public String getHexNo() {
         return hexNo;
     }
 
+    /**
+     * 十六进制编号（例：0000）
+     */
     public void setHexNo(String hexNo) {
         this.hexNo = hexNo;
     }
 
+    /**
+     * 参数组编号
+     */
     public String getParamGroupHexNo() {
         return paramGroupHexNo;
     }
 
+    /**
+     * 参数组编号
+     */
     public void setParamGroupHexNo(String paramGroupHexNo) {
         this.paramGroupHexNo = paramGroupHexNo;
     }
 
+    /**
+     * 数据类型
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * 数据类型
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * 名称
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * 名称
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * 值
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * 值
+     */
     public void setValue(String value) {
         this.value = value;
     }
 
+    /**
+     * 显示给客户看的值
+     */
     public String getValueDisplay() {
         return valueDisplay;
     }
 
+    /**
+     * 显示给客户看的值
+     */
     public void setValueDisplay(String valueDisplay) {
         this.valueDisplay = valueDisplay;
     }
 
+    /**
+     * 关联变量
+     */
     public String getLinkVariable() {
         return linkVariable;
     }
 
+    /**
+     * 关联变量
+     */
     public void setLinkVariable(String linkVariable) {
         this.linkVariable = linkVariable;
     }
 
+    /**
+     * 选项数量/小数位数
+     */
     public String getCount() {
         return count;
     }
 
+    /**
+     * 选项数量/小数位数
+     */
     public void setCount(String count) {
         this.count = count;
     }
 
+    /**
+     * 选项字符串索引/单位
+     */
     public String getUnit() {
         return unit;
     }
 
+    /**
+     * 选项字符串索引/单位
+     */
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
+    /**
+     * 最大值
+     */
     public String getMax() {
         return max;
     }
 
+    /**
+     * 最大值
+     */
     public void setMax(String max) {
         this.max = max;
     }
 
+    /**
+     * 最小值
+     */
     public String getMin() {
         return min;
     }
 
+    /**
+     * 最小值
+     */
     public void setMin(String min) {
         this.min = min;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public String getBtAddress() {
+        return btAddress;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public void setBtAddress(String btAddress) {
+        this.btAddress = btAddress;
     }
 
     // KEEP METHODS - put your custom methods here

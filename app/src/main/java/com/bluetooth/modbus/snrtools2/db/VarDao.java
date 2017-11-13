@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "Var".
 */
-public class VarDao extends AbstractDao<Var, String> {
+public class VarDao extends AbstractDao<Var, Long> {
 
     public static final String TABLENAME = "Var";
 
@@ -22,10 +22,12 @@ public class VarDao extends AbstractDao<Var, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property HexNo = new Property(0, String.class, "hexNo", true, "hexNo");
-        public final static Property Type = new Property(1, String.class, "type", false, "type");
-        public final static Property Count = new Property(2, String.class, "count", false, "count");
-        public final static Property Unit = new Property(3, String.class, "unit", false, "unit");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property HexNo = new Property(1, String.class, "hexNo", false, "hexNo");
+        public final static Property Type = new Property(2, String.class, "type", false, "type");
+        public final static Property Count = new Property(3, String.class, "count", false, "count");
+        public final static Property Unit = new Property(4, String.class, "unit", false, "unit");
+        public final static Property BtAddress = new Property(5, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -41,10 +43,12 @@ public class VarDao extends AbstractDao<Var, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"Var\" (" + //
-                "\"hexNo\" TEXT PRIMARY KEY NOT NULL ," + // 0: hexNo
-                "\"type\" TEXT," + // 1: type
-                "\"count\" TEXT," + // 2: count
-                "\"unit\" TEXT);"); // 3: unit
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"hexNo\" TEXT," + // 1: hexNo
+                "\"type\" TEXT," + // 2: type
+                "\"count\" TEXT," + // 3: count
+                "\"unit\" TEXT," + // 4: unit
+                "\"btAddress\" TEXT);"); // 5: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -57,24 +61,34 @@ public class VarDao extends AbstractDao<Var, String> {
     protected final void bindValues(DatabaseStatement stmt, Var entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String type = entity.getType();
         if (type != null) {
-            stmt.bindString(2, type);
+            stmt.bindString(3, type);
         }
  
         String count = entity.getCount();
         if (count != null) {
-            stmt.bindString(3, count);
+            stmt.bindString(4, count);
         }
  
         String unit = entity.getUnit();
         if (unit != null) {
-            stmt.bindString(4, unit);
+            stmt.bindString(5, unit);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(6, btAddress);
         }
     }
 
@@ -82,60 +96,75 @@ public class VarDao extends AbstractDao<Var, String> {
     protected final void bindValues(SQLiteStatement stmt, Var entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String type = entity.getType();
         if (type != null) {
-            stmt.bindString(2, type);
+            stmt.bindString(3, type);
         }
  
         String count = entity.getCount();
         if (count != null) {
-            stmt.bindString(3, count);
+            stmt.bindString(4, count);
         }
  
         String unit = entity.getUnit();
         if (unit != null) {
-            stmt.bindString(4, unit);
+            stmt.bindString(5, unit);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(6, btAddress);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Var readEntity(Cursor cursor, int offset) {
         Var entity = new Var( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // hexNo
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // type
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // count
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // unit
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // hexNo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // type
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // count
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // unit
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // btAddress
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Var entity, int offset) {
-        entity.setHexNo(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setType(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setCount(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setUnit(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setCount(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setUnit(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setBtAddress(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(Var entity, long rowId) {
-        return entity.getHexNo();
+    protected final Long updateKeyAfterInsert(Var entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(Var entity) {
+    public Long getKey(Var entity) {
         if(entity != null) {
-            return entity.getHexNo();
+            return entity.getId();
         } else {
             return null;
         }
@@ -143,7 +172,7 @@ public class VarDao extends AbstractDao<Var, String> {
 
     @Override
     public boolean hasKey(Var entity) {
-        return entity.getHexNo() != null;
+        return entity.getId() != null;
     }
 
     @Override

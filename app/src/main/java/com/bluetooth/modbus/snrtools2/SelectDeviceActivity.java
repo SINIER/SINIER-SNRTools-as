@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -21,7 +22,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
+import android.text.InputType;
+import android.text.method.NumberKeyListener;
 import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -29,8 +33,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -58,6 +64,7 @@ import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
 import com.bluetooth.modbus.snrtools2.uitls.CmdUtils;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
+import com.bluetooth.modbus.snrtools2.view.IPEdittext;
 import com.bluetooth.modbus.snrtools2.view.MyAlertDialog.MyAlertDialogListener;
 
 public class SelectDeviceActivity extends BaseActivity
@@ -83,6 +90,7 @@ public class SelectDeviceActivity extends BaseActivity
 		NO_DEVICE_CAN_CONNECT = getResources().getString(R.string.string_tips_msg3);
 		setContentView(R.layout.activity_main);
 		mAbHttpUtil = AbHttpUtil.getInstance(this);
+		AppStaticVar.isBluetoothOpen = AppUtil.checkBluetooth(this,false);
 		setTitleContent(getResources().getString(R.string.string_tips_msg4));
 		hideRightView(R.id.view2);
 		setRightButtonContent(getResources().getString(R.string.string_search), R.id.btnRight1);
@@ -97,51 +105,56 @@ public class SelectDeviceActivity extends BaseActivity
 	@Override
 	public void reconnectSuccss()
 	{
-		CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00", new CmdListener() {
+		new Handler().postDelayed(new Runnable() {
 			@Override
-			public void start() {
-				showProgressDialog(getString(R.string.sync_config),false);
-			}
-
-			@Override
-			public void result(final String result) {
-				AppStaticVar.mProductInfo = ProductInfo.buildModel(result);
-				if(AppStaticVar.mProductInfo != null) {
-					currentSyncCount = 0;
-					totalSyncCount = 0;
-//					String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
-					String oldCRC = AppUtil.getValue("key_crc","");
-					if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
-						totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
+			public void run() {
+				CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00", new CmdListener() {
+					@Override
+					public void start() {
+						showProgressDialog(getString(R.string.sync_config),false);
 					}
-					totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
-					totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
-					syncVar();
-				}else {
-					syncFailure(getString(R.string.get_setting_error));
-				}
-			}
 
-			@Override
-			public void connectFailure(String msg) {
-				syncFailure(msg);
-			}
+					@Override
+					public void result(final String result) {
+						AppStaticVar.mProductInfo = ProductInfo.buildModel(result);
+						if(AppStaticVar.mProductInfo != null) {
+							currentSyncCount = 0;
+							totalSyncCount = 0;
+//					String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
+							String oldCRC = AppUtil.getValue(AppStaticVar.mCurrentAddress+"key_crc","");
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
+								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
+							}
+							totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
+							totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
+							syncVar();
+						}else {
+							syncFailure(getString(R.string.get_setting_error));
+						}
+					}
 
-			@Override
-			public void timeOut(String msg) {
-				syncFailure(msg);
-			}
+					@Override
+					public void connectFailure(String msg) {
+						syncFailure(msg);
+					}
 
-			@Override
-			public void failure(String msg) {
-				syncFailure(msg);
-			}
+					@Override
+					public void timeOut(String msg) {
+						syncFailure(msg);
+					}
 
-			@Override
-			public void finish() {
+					@Override
+					public void failure(String msg) {
+						syncFailure(msg);
+					}
 
+					@Override
+					public void finish() {
+
+					}
+				});
 			}
-		});
+		},500);
 	}
 
 	private void syncSuccess(){
@@ -149,7 +162,7 @@ public class SelectDeviceActivity extends BaseActivity
 		AppStaticVar.mProductInfo.pdModel = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 		AppStaticVar.mProductInfo.pdVersion = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdVersion);
 //		AbSharedUtil.putString(mContext,"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
-		AppUtil.saveValue("key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
+		AppUtil.saveValue(AppStaticVar.mCurrentAddress+"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		// Intent intent = new Intent(mContext, SNRMainActivity.class);
 		startActivity(intent);
@@ -162,11 +175,15 @@ public class SelectDeviceActivity extends BaseActivity
 
 	private void syncVar(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdVarCount){
+			if(AppStaticVar.currentSyncIndex == 0){
+				DBManager.getInstance().clearVar();
+			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00", new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -209,7 +226,7 @@ public class SelectDeviceActivity extends BaseActivity
 			});
 		}else {
 			AppStaticVar.currentSyncIndex = 0;
-			String oldCRC = AppUtil.getValue("key_crc","");
+			String oldCRC = AppUtil.getValue(AppStaticVar.mCurrentAddress+"key_crc","");
 			if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
 				AppStaticVar.currentSyncIndex = 0;
 				syncStr();
@@ -230,6 +247,7 @@ public class SelectDeviceActivity extends BaseActivity
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -292,17 +310,35 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 			});
 		}else {
+//			for(int i=1;i<13;i++){
+//				Main main = new Main();
+//				main.setType("2");
+//				main.setFontSize("1");
+//				main.setGravity("1");
+//				main.setCount("1");
+//				main.setX(new Random().nextInt(8)+"");
+//				main.setY(i*10+"");
+//				main.setWidth(10+"");
+//				main.setHeight(10+"");
+//				main.setHexNo(i+"");
+//				main.setValue("");
+//				DBManager.getInstance().saveMain(main);
+//			}
 			syncSuccess();
 		}
 	}
 
 	private void syncStr(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdStringCount){
+			if(AppStaticVar.currentSyncIndex == 0){
+				DBManager.getInstance().clearStr();
+			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00", new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -350,11 +386,15 @@ public class SelectDeviceActivity extends BaseActivity
 
 	private void syncCmd(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdCmdCount){
+			if(AppStaticVar.currentSyncIndex == 0){
+				DBManager.getInstance().clearCmd();
+			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00", new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -402,11 +442,15 @@ public class SelectDeviceActivity extends BaseActivity
 
 	private void syncParamGroup(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParGroupCount){
+			if(AppStaticVar.currentSyncIndex == 0){
+				DBManager.getInstance().clearParamGroup();
+			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00", new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -452,11 +496,15 @@ public class SelectDeviceActivity extends BaseActivity
 
 	private void syncParam(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParCount){
+			if(AppStaticVar.currentSyncIndex == 0){
+				DBManager.getInstance().clearParam();
+			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00", new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
+//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
 					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
@@ -468,10 +516,10 @@ public class SelectDeviceActivity extends BaseActivity
 					String type = Long.parseLong(result.substring(14,16),16)+"";
 					String name = DBManager.getInstance().getStr(result.substring(18,20)+result.substring(16,18));
 					String linkVariable = result.substring(20,22);
-					String count = Long.parseLong(result.substring(22,24))+"";
+					String count = Long.parseLong(result.substring(22,24),16)+"";
 					String unit = result.substring(26,28)+result.substring(24,26);
-					String max = AppUtil.getValueByType("7",unit,count,result.substring(28,36),false);
-					String min = AppUtil.getValueByType("7",unit,count,result.substring(36,44),false);
+					String max = AppUtil.getValueByType("7",unit,count,result.substring(28,36),false,false,0);
+					String min = AppUtil.getValueByType("7",unit,count,result.substring(36,44),false,false,0);
 					Param param = new Param();
 					param.setHexNo(noHexStr);
 					param.setParamGroupHexNo(paramGroupHexNo);

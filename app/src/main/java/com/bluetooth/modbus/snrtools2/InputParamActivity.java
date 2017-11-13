@@ -19,12 +19,14 @@ import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
 import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
+import com.bluetooth.modbus.snrtools2.view.IPEdittext;
 
 public class InputParamActivity extends BaseWriteParamActivity
 {
 
 	private TextView mTvTitle;
 	private EditText mEtParam;
+	private IPEdittext mEtIp;
 	private Param p;
 
 	@Override
@@ -40,9 +42,12 @@ public class InputParamActivity extends BaseWriteParamActivity
 	{
 		mTvTitle = (TextView) findViewById(R.id.tvTitle);
 		mEtParam = (EditText) findViewById(R.id.editText1);
+		mEtIp = (IPEdittext) findViewById(R.id.ip);
 		mTvTitle.setText(getIntent().getStringExtra("title"));
 		mEtParam.setHint(getIntent().getStringExtra("value") + "(" + getResources().getString(R.string.string_hint1)
 				+ p.getMin()+p.getUnit() + "~" + p.getMax()+p.getUnit() + ")");
+		mEtIp.setVisibility(View.GONE);
+		mEtParam.setVisibility(View.VISIBLE);
 		 if ("1".equals(p.getType()+"")||"2".equals(p.getType()+"")||"5".equals(p.getType()+"")||"6".equals(p.getType()+"")) {
 			 mEtParam.setKeyListener(new NumberKeyListener() {
 				 @Override
@@ -56,7 +61,7 @@ public class InputParamActivity extends BaseWriteParamActivity
 				 }
 			 });
 		 }else if("8".equals(p.getType()+"")){
-			 mEtParam.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+			 mEtParam.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
 			 mEtParam.setKeyListener(new NumberKeyListener() {
 				 @Override
 				 protected char[] getAcceptedChars() {
@@ -64,9 +69,11 @@ public class InputParamActivity extends BaseWriteParamActivity
 				 }
 				 @Override
 				 public int getInputType() {
-					 return InputType.TYPE_CLASS_TEXT;
+					 return InputType.TYPE_CLASS_NUMBER;
 				 }
 			 });
+			 mEtIp.setVisibility(View.VISIBLE);
+			 mEtParam.setVisibility(View.GONE);
 		 }
 //		 else if (p.type == 2) {
 //		 mEtParam.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
@@ -81,15 +88,10 @@ public class InputParamActivity extends BaseWriteParamActivity
 		switch (v.getId())
 		{
 			case R.id.button2:
-				if (TextUtils.isEmpty(mEtParam.getText().toString().trim()))
-				{
-					showToast(getResources().getString(R.string.string_tips_msg8));
-					return;
-				}
 				if (p != null)
 				{
 					if("8".equals(p.getType())){
-						String str = mEtParam.getText().toString().trim();
+						String str = mEtIp.getText();
 						String[] ips = str.split("\\.");
 						if(ips.length!=4){
 							showToast(getResources().getString(R.string.ip_error));
@@ -104,6 +106,11 @@ public class InputParamActivity extends BaseWriteParamActivity
 						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), str));
 						p.setValueDisplay(str);
 					}else {
+						if (TextUtils.isEmpty(mEtParam.getText().toString().trim()))
+						{
+							showToast(getResources().getString(R.string.string_tips_msg8));
+							return;
+						}
 						double valueIn = 0;
 						valueIn = Double.parseDouble(mEtParam.getText().toString().trim());
 						if (valueIn > AppUtil.parseToDouble(p.getMax(), 0)) {

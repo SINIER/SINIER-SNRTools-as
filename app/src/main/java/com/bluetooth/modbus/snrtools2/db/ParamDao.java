@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "Param".
 */
-public class ParamDao extends AbstractDao<Param, String> {
+public class ParamDao extends AbstractDao<Param, Long> {
 
     public static final String TABLENAME = "Param";
 
@@ -22,17 +22,19 @@ public class ParamDao extends AbstractDao<Param, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property HexNo = new Property(0, String.class, "hexNo", true, "hexNo");
-        public final static Property ParamGroupHexNo = new Property(1, String.class, "paramGroupHexNo", false, "paramGroupHexNo");
-        public final static Property Type = new Property(2, String.class, "type", false, "type");
-        public final static Property Name = new Property(3, String.class, "name", false, "name");
-        public final static Property Value = new Property(4, String.class, "value", false, "value");
-        public final static Property ValueDisplay = new Property(5, String.class, "valueDisplay", false, "valueDisplay");
-        public final static Property LinkVariable = new Property(6, String.class, "linkVariable", false, "linkVariable");
-        public final static Property Count = new Property(7, String.class, "count", false, "count");
-        public final static Property Unit = new Property(8, String.class, "unit", false, "unit");
-        public final static Property Max = new Property(9, String.class, "max", false, "max");
-        public final static Property Min = new Property(10, String.class, "min", false, "min");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property HexNo = new Property(1, String.class, "hexNo", false, "hexNo");
+        public final static Property ParamGroupHexNo = new Property(2, String.class, "paramGroupHexNo", false, "paramGroupHexNo");
+        public final static Property Type = new Property(3, String.class, "type", false, "type");
+        public final static Property Name = new Property(4, String.class, "name", false, "name");
+        public final static Property Value = new Property(5, String.class, "value", false, "value");
+        public final static Property ValueDisplay = new Property(6, String.class, "valueDisplay", false, "valueDisplay");
+        public final static Property LinkVariable = new Property(7, String.class, "linkVariable", false, "linkVariable");
+        public final static Property Count = new Property(8, String.class, "count", false, "count");
+        public final static Property Unit = new Property(9, String.class, "unit", false, "unit");
+        public final static Property Max = new Property(10, String.class, "max", false, "max");
+        public final static Property Min = new Property(11, String.class, "min", false, "min");
+        public final static Property BtAddress = new Property(12, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -48,17 +50,19 @@ public class ParamDao extends AbstractDao<Param, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"Param\" (" + //
-                "\"hexNo\" TEXT PRIMARY KEY NOT NULL ," + // 0: hexNo
-                "\"paramGroupHexNo\" TEXT," + // 1: paramGroupHexNo
-                "\"type\" TEXT," + // 2: type
-                "\"name\" TEXT," + // 3: name
-                "\"value\" TEXT," + // 4: value
-                "\"valueDisplay\" TEXT," + // 5: valueDisplay
-                "\"linkVariable\" TEXT," + // 6: linkVariable
-                "\"count\" TEXT," + // 7: count
-                "\"unit\" TEXT," + // 8: unit
-                "\"max\" TEXT," + // 9: max
-                "\"min\" TEXT);"); // 10: min
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"hexNo\" TEXT," + // 1: hexNo
+                "\"paramGroupHexNo\" TEXT," + // 2: paramGroupHexNo
+                "\"type\" TEXT," + // 3: type
+                "\"name\" TEXT," + // 4: name
+                "\"value\" TEXT," + // 5: value
+                "\"valueDisplay\" TEXT," + // 6: valueDisplay
+                "\"linkVariable\" TEXT," + // 7: linkVariable
+                "\"count\" TEXT," + // 8: count
+                "\"unit\" TEXT," + // 9: unit
+                "\"max\" TEXT," + // 10: max
+                "\"min\" TEXT," + // 11: min
+                "\"btAddress\" TEXT);"); // 12: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -71,59 +75,69 @@ public class ParamDao extends AbstractDao<Param, String> {
     protected final void bindValues(DatabaseStatement stmt, Param entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String paramGroupHexNo = entity.getParamGroupHexNo();
         if (paramGroupHexNo != null) {
-            stmt.bindString(2, paramGroupHexNo);
+            stmt.bindString(3, paramGroupHexNo);
         }
  
         String type = entity.getType();
         if (type != null) {
-            stmt.bindString(3, type);
+            stmt.bindString(4, type);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(4, name);
+            stmt.bindString(5, name);
         }
  
         String value = entity.getValue();
         if (value != null) {
-            stmt.bindString(5, value);
+            stmt.bindString(6, value);
         }
  
         String valueDisplay = entity.getValueDisplay();
         if (valueDisplay != null) {
-            stmt.bindString(6, valueDisplay);
+            stmt.bindString(7, valueDisplay);
         }
  
         String linkVariable = entity.getLinkVariable();
         if (linkVariable != null) {
-            stmt.bindString(7, linkVariable);
+            stmt.bindString(8, linkVariable);
         }
  
         String count = entity.getCount();
         if (count != null) {
-            stmt.bindString(8, count);
+            stmt.bindString(9, count);
         }
  
         String unit = entity.getUnit();
         if (unit != null) {
-            stmt.bindString(9, unit);
+            stmt.bindString(10, unit);
         }
  
         String max = entity.getMax();
         if (max != null) {
-            stmt.bindString(10, max);
+            stmt.bindString(11, max);
         }
  
         String min = entity.getMin();
         if (min != null) {
-            stmt.bindString(11, min);
+            stmt.bindString(12, min);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(13, btAddress);
         }
     }
 
@@ -131,109 +145,124 @@ public class ParamDao extends AbstractDao<Param, String> {
     protected final void bindValues(SQLiteStatement stmt, Param entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String paramGroupHexNo = entity.getParamGroupHexNo();
         if (paramGroupHexNo != null) {
-            stmt.bindString(2, paramGroupHexNo);
+            stmt.bindString(3, paramGroupHexNo);
         }
  
         String type = entity.getType();
         if (type != null) {
-            stmt.bindString(3, type);
+            stmt.bindString(4, type);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(4, name);
+            stmt.bindString(5, name);
         }
  
         String value = entity.getValue();
         if (value != null) {
-            stmt.bindString(5, value);
+            stmt.bindString(6, value);
         }
  
         String valueDisplay = entity.getValueDisplay();
         if (valueDisplay != null) {
-            stmt.bindString(6, valueDisplay);
+            stmt.bindString(7, valueDisplay);
         }
  
         String linkVariable = entity.getLinkVariable();
         if (linkVariable != null) {
-            stmt.bindString(7, linkVariable);
+            stmt.bindString(8, linkVariable);
         }
  
         String count = entity.getCount();
         if (count != null) {
-            stmt.bindString(8, count);
+            stmt.bindString(9, count);
         }
  
         String unit = entity.getUnit();
         if (unit != null) {
-            stmt.bindString(9, unit);
+            stmt.bindString(10, unit);
         }
  
         String max = entity.getMax();
         if (max != null) {
-            stmt.bindString(10, max);
+            stmt.bindString(11, max);
         }
  
         String min = entity.getMin();
         if (min != null) {
-            stmt.bindString(11, min);
+            stmt.bindString(12, min);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(13, btAddress);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Param readEntity(Cursor cursor, int offset) {
         Param entity = new Param( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // hexNo
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // paramGroupHexNo
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // type
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // name
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // value
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // valueDisplay
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // linkVariable
-            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // count
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // unit
-            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // max
-            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10) // min
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // hexNo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // paramGroupHexNo
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // type
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // name
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // value
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // valueDisplay
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // linkVariable
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8), // count
+            cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9), // unit
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // max
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11), // min
+            cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12) // btAddress
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Param entity, int offset) {
-        entity.setHexNo(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setParamGroupHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setType(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setName(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
-        entity.setValue(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setValueDisplay(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setLinkVariable(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setCount(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setUnit(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
-        entity.setMax(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
-        entity.setMin(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setParamGroupHexNo(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setType(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setName(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setValue(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
+        entity.setValueDisplay(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setLinkVariable(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setCount(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setUnit(cursor.isNull(offset + 9) ? null : cursor.getString(offset + 9));
+        entity.setMax(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setMin(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
+        entity.setBtAddress(cursor.isNull(offset + 12) ? null : cursor.getString(offset + 12));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(Param entity, long rowId) {
-        return entity.getHexNo();
+    protected final Long updateKeyAfterInsert(Param entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(Param entity) {
+    public Long getKey(Param entity) {
         if(entity != null) {
-            return entity.getHexNo();
+            return entity.getId();
         } else {
             return null;
         }
@@ -241,7 +270,7 @@ public class ParamDao extends AbstractDao<Param, String> {
 
     @Override
     public boolean hasKey(Param entity) {
-        return entity.getHexNo() != null;
+        return entity.getId() != null;
     }
 
     @Override

@@ -11,6 +11,9 @@ import android.util.Log;
 import com.bluetooth.modbus.snrtools2.Constans;
 import com.bluetooth.modbus.snrtools2.R;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.BuglyLog;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class ConnectThread extends Thread { 		
 	private BluetoothDevice mDevice;
@@ -28,15 +31,23 @@ public class ConnectThread extends Thread {
 				return ;
 			}
 			if(mDevice == null){
+				Message msg = new Message();
+				msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg14);
+				msg.what = Constans.CONNECT_DEVICE_FAILED;
+				mHanlder.sendMessage(msg);
 				return;
 			}
-			AppStaticVar.mSocket = mDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+			if(AppStaticVar.mSocket == null || !((AppStaticVar.mLastSuccessAddress+"").equals(AppStaticVar.mCurrentAddress+""))) {
+				AppStaticVar.mSocket = mDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+			}
 			//连接
 			Message msg2 = new Message(); 
 			msg2.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_progressmsg3)+AppStaticVar.mCurrentName;
 			msg2.what = Constans.CONNECTING_DEVICE;
 			mHanlder.sendMessage(msg2);
-			AppStaticVar.mSocket .connect();
+			if(!AppStaticVar.mSocket.isConnected()) {
+				AppStaticVar.mSocket.connect();
+			}
 			Message msg = new Message();
 			msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg16);
 			msg.what = Constans.CONNECT_DEVICE_SUCCESS;
@@ -45,6 +56,7 @@ public class ConnectThread extends Thread {
 		catch (IOException e) 
 		{
 			Log.e("connect", "", e);
+			CrashReport.postCatchedException(e);
 			AppStaticVar.mSocket = null;
 			Message msg = new Message();
 			msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg14);

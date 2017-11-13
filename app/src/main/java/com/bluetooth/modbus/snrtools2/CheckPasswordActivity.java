@@ -91,8 +91,6 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 		mViewSetParam.setVisibility(View.GONE);
 		initUI();
 		setListeners();
-		AppStaticVar.mObservable.addObserver(this);
-//		showProgressDialog(getResources().getString(R.string.string_tips_msg11));
 	}
 
 	@Override
@@ -144,7 +142,8 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 						CmdUtils.sendCmd(cmd, new CmdListener() {
 							@Override
 							public void start() {
-								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount + "/" + mDataList.size() + ")", false);
+								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount*100/mDataList.size() + "/100%)", false);
+//								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount + "/" + mDataList.size() + ")", false);
 							}
 
 							@Override
@@ -471,17 +470,29 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 	}
 
 	private void checkPsw(String psw) {
-		if (Constans.PasswordLevel.LEVEL_1.equals(psw)) {
+		long p = AppUtil.parseToLong(psw,-1314);
+		if (AppStaticVar.mProductInfo.pdPasswordUser==p) {
 			AppStaticVar.PASSWORD_LEVEAL = 1;
-		} else if (Constans.PasswordLevel.LEVEL_2.equals(psw)) {
+		} else if (AppStaticVar.mProductInfo.pdPasswordAdvance==p) {
 			AppStaticVar.PASSWORD_LEVEAL = 2;
-		} else if (Constans.PasswordLevel.LEVEL_3.equals(psw)) {
+		} else if (AppStaticVar.mProductInfo.pdPasswordSensor==p) {
 			AppStaticVar.PASSWORD_LEVEAL = 3;
-		} else if (Constans.PasswordLevel.LEVEL_4.equals(psw)) {
+		} else if (AppStaticVar.mProductInfo.pdPasswordFactory==p) {
 			AppStaticVar.PASSWORD_LEVEAL = 4;
 		} else {
 			AppStaticVar.PASSWORD_LEVEAL = 0;
 		}
+//		if (Constans.PasswordLevel.LEVEL_1.equals(psw)) {
+//			AppStaticVar.PASSWORD_LEVEAL = 1;
+//		} else if (Constans.PasswordLevel.LEVEL_2.equals(psw)) {
+//			AppStaticVar.PASSWORD_LEVEAL = 2;
+//		} else if (Constans.PasswordLevel.LEVEL_3.equals(psw)) {
+//			AppStaticVar.PASSWORD_LEVEAL = 3;
+//		} else if (Constans.PasswordLevel.LEVEL_4.equals(psw)) {
+//			AppStaticVar.PASSWORD_LEVEAL = 4;
+//		} else {
+//			AppStaticVar.PASSWORD_LEVEAL = 0;
+//		}
 	}
 
 	@Override
@@ -668,7 +679,6 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 
 	@Override
 	protected void onDestroy() {
-		AppStaticVar.mObservable.deleteObserver(this);
 		AppStaticVar.PASSWORD_LEVEAL = -1;
 		super.onDestroy();
 	}

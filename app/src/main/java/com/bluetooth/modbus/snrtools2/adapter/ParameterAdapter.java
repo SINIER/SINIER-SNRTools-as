@@ -55,7 +55,7 @@ public class ParameterAdapter extends BaseAdapter {
         }
         if (mList.get(position) instanceof Param) {
             Param param = (Param) mList.get(position);
-            holder.tvName.setText(param.getName()+"=="+param.getType());
+            holder.tvName.setText(param.getName());
             holder.tvValue.setText(param.getValueDisplay());
             holder.tvGroupName.setVisibility(View.GONE);
             holder.ll.setVisibility(View.VISIBLE);

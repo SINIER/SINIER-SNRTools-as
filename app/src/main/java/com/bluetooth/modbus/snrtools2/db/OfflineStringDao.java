@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "OfflineString".
 */
-public class OfflineStringDao extends AbstractDao<OfflineString, String> {
+public class OfflineStringDao extends AbstractDao<OfflineString, Long> {
 
     public static final String TABLENAME = "OfflineString";
 
@@ -22,9 +22,11 @@ public class OfflineStringDao extends AbstractDao<OfflineString, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property HexNo = new Property(0, String.class, "hexNo", true, "hexNo");
-        public final static Property StringZh = new Property(1, String.class, "stringZh", false, "stringZh");
-        public final static Property StringEn = new Property(2, String.class, "stringEn", false, "stringEn");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property HexNo = new Property(1, String.class, "hexNo", false, "hexNo");
+        public final static Property StringZh = new Property(2, String.class, "stringZh", false, "stringZh");
+        public final static Property StringEn = new Property(3, String.class, "stringEn", false, "stringEn");
+        public final static Property BtAddress = new Property(4, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -40,9 +42,11 @@ public class OfflineStringDao extends AbstractDao<OfflineString, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"OfflineString\" (" + //
-                "\"hexNo\" TEXT PRIMARY KEY NOT NULL ," + // 0: hexNo
-                "\"stringZh\" TEXT," + // 1: stringZh
-                "\"stringEn\" TEXT);"); // 2: stringEn
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"hexNo\" TEXT," + // 1: hexNo
+                "\"stringZh\" TEXT," + // 2: stringZh
+                "\"stringEn\" TEXT," + // 3: stringEn
+                "\"btAddress\" TEXT);"); // 4: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -55,19 +59,29 @@ public class OfflineStringDao extends AbstractDao<OfflineString, String> {
     protected final void bindValues(DatabaseStatement stmt, OfflineString entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String stringZh = entity.getStringZh();
         if (stringZh != null) {
-            stmt.bindString(2, stringZh);
+            stmt.bindString(3, stringZh);
         }
  
         String stringEn = entity.getStringEn();
         if (stringEn != null) {
-            stmt.bindString(3, stringEn);
+            stmt.bindString(4, stringEn);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(5, btAddress);
         }
     }
 
@@ -75,53 +89,68 @@ public class OfflineStringDao extends AbstractDao<OfflineString, String> {
     protected final void bindValues(SQLiteStatement stmt, OfflineString entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String stringZh = entity.getStringZh();
         if (stringZh != null) {
-            stmt.bindString(2, stringZh);
+            stmt.bindString(3, stringZh);
         }
  
         String stringEn = entity.getStringEn();
         if (stringEn != null) {
-            stmt.bindString(3, stringEn);
+            stmt.bindString(4, stringEn);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(5, btAddress);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public OfflineString readEntity(Cursor cursor, int offset) {
         OfflineString entity = new OfflineString( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // hexNo
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // stringZh
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // stringEn
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // hexNo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // stringZh
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // stringEn
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // btAddress
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, OfflineString entity, int offset) {
-        entity.setHexNo(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setStringZh(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setStringEn(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setStringZh(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setStringEn(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setBtAddress(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(OfflineString entity, long rowId) {
-        return entity.getHexNo();
+    protected final Long updateKeyAfterInsert(OfflineString entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(OfflineString entity) {
+    public Long getKey(OfflineString entity) {
         if(entity != null) {
-            return entity.getHexNo();
+            return entity.getId();
         } else {
             return null;
         }
@@ -129,7 +158,7 @@ public class OfflineStringDao extends AbstractDao<OfflineString, String> {
 
     @Override
     public boolean hasKey(OfflineString entity) {
-        return entity.getHexNo() != null;
+        return entity.getId() != null;
     }
 
     @Override

@@ -8,12 +8,14 @@ import org.greenrobot.greendao.annotation.*;
 // KEEP INCLUDES END
 
 /**
- * Entity mapped to table "Cmd".
+ * 离线命令
  */
 @Entity(nameInDb = "Cmd")
 public class Cmd implements java.io.Serializable {
 
-    @Id
+    @Id(autoincrement = true)
+    private Long id;
+
     @Property(nameInDb = "hexNo")
     private String hexNo;
 
@@ -26,6 +28,9 @@ public class Cmd implements java.io.Serializable {
     @Property(nameInDb = "cmdPwd")
     private String cmdPwd;
 
+    @Property(nameInDb = "btAddress")
+    private String btAddress;
+
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
@@ -33,48 +38,96 @@ public class Cmd implements java.io.Serializable {
     public Cmd() {
     }
 
-    public Cmd(String hexNo) {
-        this.hexNo = hexNo;
+    public Cmd(Long id) {
+        this.id = id;
     }
 
     @Generated
-    public Cmd(String hexNo, String cmdName, String ext, String cmdPwd) {
+    public Cmd(Long id, String hexNo, String cmdName, String ext, String cmdPwd, String btAddress) {
+        this.id = id;
         this.hexNo = hexNo;
         this.cmdName = cmdName;
         this.ext = ext;
         this.cmdPwd = cmdPwd;
+        this.btAddress = btAddress;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 十六进制编号（例：0000）
+     */
     public String getHexNo() {
         return hexNo;
     }
 
+    /**
+     * 十六进制编号（例：0000）
+     */
     public void setHexNo(String hexNo) {
         this.hexNo = hexNo;
     }
 
+    /**
+     * 命令名称
+     */
     public String getCmdName() {
         return cmdName;
     }
 
+    /**
+     * 命令名称
+     */
     public void setCmdName(String cmdName) {
         this.cmdName = cmdName;
     }
 
+    /**
+     * 预留
+     */
     public String getExt() {
         return ext;
     }
 
+    /**
+     * 预留
+     */
     public void setExt(String ext) {
         this.ext = ext;
     }
 
+    /**
+     * 命令密码
+     */
     public String getCmdPwd() {
         return cmdPwd;
     }
 
+    /**
+     * 命令密码
+     */
     public void setCmdPwd(String cmdPwd) {
         this.cmdPwd = cmdPwd;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public String getBtAddress() {
+        return btAddress;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public void setBtAddress(String btAddress) {
+        this.btAddress = btAddress;
     }
 
     // KEEP METHODS - put your custom methods here

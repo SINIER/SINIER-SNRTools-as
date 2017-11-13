@@ -8,12 +8,14 @@ import org.greenrobot.greendao.annotation.*;
 // KEEP INCLUDES END
 
 /**
- * Entity mapped to table "OfflineString".
+ * 离线字符串
  */
 @Entity(nameInDb = "OfflineString")
 public class OfflineString implements java.io.Serializable {
 
-    @Id
+    @Id(autoincrement = true)
+    private Long id;
+
     @Property(nameInDb = "hexNo")
     private String hexNo;
 
@@ -23,6 +25,9 @@ public class OfflineString implements java.io.Serializable {
     @Property(nameInDb = "stringEn")
     private String stringEn;
 
+    @Property(nameInDb = "btAddress")
+    private String btAddress;
+
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
@@ -30,39 +35,81 @@ public class OfflineString implements java.io.Serializable {
     public OfflineString() {
     }
 
-    public OfflineString(String hexNo) {
-        this.hexNo = hexNo;
+    public OfflineString(Long id) {
+        this.id = id;
     }
 
     @Generated
-    public OfflineString(String hexNo, String stringZh, String stringEn) {
+    public OfflineString(Long id, String hexNo, String stringZh, String stringEn, String btAddress) {
+        this.id = id;
         this.hexNo = hexNo;
         this.stringZh = stringZh;
         this.stringEn = stringEn;
+        this.btAddress = btAddress;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 十六进制编号（例：0000）
+     */
     public String getHexNo() {
         return hexNo;
     }
 
+    /**
+     * 十六进制编号（例：0000）
+     */
     public void setHexNo(String hexNo) {
         this.hexNo = hexNo;
     }
 
+    /**
+     * 中文
+     */
     public String getStringZh() {
         return stringZh;
     }
 
+    /**
+     * 中文
+     */
     public void setStringZh(String stringZh) {
         this.stringZh = stringZh;
     }
 
+    /**
+     * 英文
+     */
     public String getStringEn() {
         return stringEn;
     }
 
+    /**
+     * 英文
+     */
     public void setStringEn(String stringEn) {
         this.stringEn = stringEn;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public String getBtAddress() {
+        return btAddress;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public void setBtAddress(String btAddress) {
+        this.btAddress = btAddress;
     }
 
     // KEEP METHODS - put your custom methods here

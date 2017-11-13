@@ -18,7 +18,6 @@ public class SNRApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		AppStaticVar.mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-		AppStaticVar.mObservable = new MyObservable();
 		AppStaticVar.mApplication = getApplicationContext();
 		Locale locale = getResources().getConfiguration().locale;
 		String language = locale.getLanguage();

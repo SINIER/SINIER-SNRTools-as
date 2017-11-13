@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "ParamGroup".
 */
-public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
+public class ParamGroupDao extends AbstractDao<ParamGroup, Long> {
 
     public static final String TABLENAME = "ParamGroup";
 
@@ -22,9 +22,11 @@ public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property HexNo = new Property(0, String.class, "hexNo", true, "hexNo");
-        public final static Property Name = new Property(1, String.class, "name", false, "name");
-        public final static Property Level = new Property(2, String.class, "level", false, "level");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property HexNo = new Property(1, String.class, "hexNo", false, "hexNo");
+        public final static Property Name = new Property(2, String.class, "name", false, "name");
+        public final static Property Level = new Property(3, String.class, "level", false, "level");
+        public final static Property BtAddress = new Property(4, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -40,9 +42,11 @@ public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"ParamGroup\" (" + //
-                "\"hexNo\" TEXT PRIMARY KEY NOT NULL ," + // 0: hexNo
-                "\"name\" TEXT," + // 1: name
-                "\"level\" TEXT);"); // 2: level
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"hexNo\" TEXT," + // 1: hexNo
+                "\"name\" TEXT," + // 2: name
+                "\"level\" TEXT," + // 3: level
+                "\"btAddress\" TEXT);"); // 4: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -55,19 +59,29 @@ public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
     protected final void bindValues(DatabaseStatement stmt, ParamGroup entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(3, name);
         }
  
         String level = entity.getLevel();
         if (level != null) {
-            stmt.bindString(3, level);
+            stmt.bindString(4, level);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(5, btAddress);
         }
     }
 
@@ -75,53 +89,68 @@ public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
     protected final void bindValues(SQLiteStatement stmt, ParamGroup entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String name = entity.getName();
         if (name != null) {
-            stmt.bindString(2, name);
+            stmt.bindString(3, name);
         }
  
         String level = entity.getLevel();
         if (level != null) {
-            stmt.bindString(3, level);
+            stmt.bindString(4, level);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(5, btAddress);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public ParamGroup readEntity(Cursor cursor, int offset) {
         ParamGroup entity = new ParamGroup( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // hexNo
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // level
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // hexNo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // level
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // btAddress
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, ParamGroup entity, int offset) {
-        entity.setHexNo(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setLevel(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setLevel(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setBtAddress(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(ParamGroup entity, long rowId) {
-        return entity.getHexNo();
+    protected final Long updateKeyAfterInsert(ParamGroup entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(ParamGroup entity) {
+    public Long getKey(ParamGroup entity) {
         if(entity != null) {
-            return entity.getHexNo();
+            return entity.getId();
         } else {
             return null;
         }
@@ -129,7 +158,7 @@ public class ParamGroupDao extends AbstractDao<ParamGroup, String> {
 
     @Override
     public boolean hasKey(ParamGroup entity) {
-        return entity.getHexNo() != null;
+        return entity.getId() != null;
     }
 
     @Override

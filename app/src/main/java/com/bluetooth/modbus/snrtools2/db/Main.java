@@ -46,6 +46,9 @@ public class Main implements java.io.Serializable {
     @Property(nameInDb = "value")
     private String value;
 
+    @Property(nameInDb = "btAddress")
+    private String btAddress;
+
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
 
@@ -58,7 +61,7 @@ public class Main implements java.io.Serializable {
     }
 
     @Generated
-    public Main(Long id, String type, String fontSize, String gravity, String count, String x, String y, String width, String height, String hexNo, String value) {
+    public Main(Long id, String type, String fontSize, String gravity, String count, String x, String y, String width, String height, String hexNo, String value, String btAddress) {
         this.id = id;
         this.type = type;
         this.fontSize = fontSize;
@@ -70,6 +73,7 @@ public class Main implements java.io.Serializable {
         this.height = height;
         this.hexNo = hexNo;
         this.value = value;
+        this.btAddress = btAddress;
     }
 
     public Long getId() {
@@ -218,6 +222,20 @@ public class Main implements java.io.Serializable {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public String getBtAddress() {
+        return btAddress;
+    }
+
+    /**
+     * 连接设备地址
+     */
+    public void setBtAddress(String btAddress) {
+        this.btAddress = btAddress;
     }
 
     // KEEP METHODS - put your custom methods here

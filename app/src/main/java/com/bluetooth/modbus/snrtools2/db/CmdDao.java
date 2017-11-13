@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "Cmd".
 */
-public class CmdDao extends AbstractDao<Cmd, String> {
+public class CmdDao extends AbstractDao<Cmd, Long> {
 
     public static final String TABLENAME = "Cmd";
 
@@ -22,10 +22,12 @@ public class CmdDao extends AbstractDao<Cmd, String> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property HexNo = new Property(0, String.class, "hexNo", true, "hexNo");
-        public final static Property CmdName = new Property(1, String.class, "cmdName", false, "cmdName");
-        public final static Property Ext = new Property(2, String.class, "ext", false, "ext");
-        public final static Property CmdPwd = new Property(3, String.class, "cmdPwd", false, "cmdPwd");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property HexNo = new Property(1, String.class, "hexNo", false, "hexNo");
+        public final static Property CmdName = new Property(2, String.class, "cmdName", false, "cmdName");
+        public final static Property Ext = new Property(3, String.class, "ext", false, "ext");
+        public final static Property CmdPwd = new Property(4, String.class, "cmdPwd", false, "cmdPwd");
+        public final static Property BtAddress = new Property(5, String.class, "btAddress", false, "btAddress");
     }
 
 
@@ -41,10 +43,12 @@ public class CmdDao extends AbstractDao<Cmd, String> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"Cmd\" (" + //
-                "\"hexNo\" TEXT PRIMARY KEY NOT NULL ," + // 0: hexNo
-                "\"cmdName\" TEXT," + // 1: cmdName
-                "\"ext\" TEXT," + // 2: ext
-                "\"cmdPwd\" TEXT);"); // 3: cmdPwd
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"hexNo\" TEXT," + // 1: hexNo
+                "\"cmdName\" TEXT," + // 2: cmdName
+                "\"ext\" TEXT," + // 3: ext
+                "\"cmdPwd\" TEXT," + // 4: cmdPwd
+                "\"btAddress\" TEXT);"); // 5: btAddress
     }
 
     /** Drops the underlying database table. */
@@ -57,24 +61,34 @@ public class CmdDao extends AbstractDao<Cmd, String> {
     protected final void bindValues(DatabaseStatement stmt, Cmd entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String cmdName = entity.getCmdName();
         if (cmdName != null) {
-            stmt.bindString(2, cmdName);
+            stmt.bindString(3, cmdName);
         }
  
         String ext = entity.getExt();
         if (ext != null) {
-            stmt.bindString(3, ext);
+            stmt.bindString(4, ext);
         }
  
         String cmdPwd = entity.getCmdPwd();
         if (cmdPwd != null) {
-            stmt.bindString(4, cmdPwd);
+            stmt.bindString(5, cmdPwd);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(6, btAddress);
         }
     }
 
@@ -82,60 +96,75 @@ public class CmdDao extends AbstractDao<Cmd, String> {
     protected final void bindValues(SQLiteStatement stmt, Cmd entity) {
         stmt.clearBindings();
  
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+ 
         String hexNo = entity.getHexNo();
         if (hexNo != null) {
-            stmt.bindString(1, hexNo);
+            stmt.bindString(2, hexNo);
         }
  
         String cmdName = entity.getCmdName();
         if (cmdName != null) {
-            stmt.bindString(2, cmdName);
+            stmt.bindString(3, cmdName);
         }
  
         String ext = entity.getExt();
         if (ext != null) {
-            stmt.bindString(3, ext);
+            stmt.bindString(4, ext);
         }
  
         String cmdPwd = entity.getCmdPwd();
         if (cmdPwd != null) {
-            stmt.bindString(4, cmdPwd);
+            stmt.bindString(5, cmdPwd);
+        }
+ 
+        String btAddress = entity.getBtAddress();
+        if (btAddress != null) {
+            stmt.bindString(6, btAddress);
         }
     }
 
     @Override
-    public String readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public Cmd readEntity(Cursor cursor, int offset) {
         Cmd entity = new Cmd( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // hexNo
-            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // cmdName
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // ext
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // cmdPwd
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // hexNo
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // cmdName
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // ext
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // cmdPwd
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // btAddress
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, Cmd entity, int offset) {
-        entity.setHexNo(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setCmdName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
-        entity.setExt(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setCmdPwd(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setHexNo(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setCmdName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setExt(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setCmdPwd(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setBtAddress(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override
-    protected final String updateKeyAfterInsert(Cmd entity, long rowId) {
-        return entity.getHexNo();
+    protected final Long updateKeyAfterInsert(Cmd entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public String getKey(Cmd entity) {
+    public Long getKey(Cmd entity) {
         if(entity != null) {
-            return entity.getHexNo();
+            return entity.getId();
         } else {
             return null;
         }
@@ -143,7 +172,7 @@ public class CmdDao extends AbstractDao<Cmd, String> {
 
     @Override
     public boolean hasKey(Cmd entity) {
-        return entity.getHexNo() != null;
+        return entity.getId() != null;
     }
 
     @Override

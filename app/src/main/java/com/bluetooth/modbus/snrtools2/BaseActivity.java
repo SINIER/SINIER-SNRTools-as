@@ -340,7 +340,9 @@ public abstract class BaseActivity extends Activity {
 					break;
 				case R.id.btnOk:
 					AppStaticVar.isExit = true;
-					AppUtil.closeBluetooth();
+					if(!AppStaticVar.isBluetoothOpen) {
+						AppUtil.closeBluetooth();
+					}
 					ActivityManager.getInstances().finishAll();
 					System.exit(0);
 					break;
