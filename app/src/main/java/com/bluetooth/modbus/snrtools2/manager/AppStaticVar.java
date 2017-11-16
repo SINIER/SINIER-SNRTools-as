@@ -40,6 +40,4 @@ public class AppStaticVar {
 	public static int currentVarIndex;
 	/** 剩余重试次数*/
 	public static int retryCount;
-	/** 剩余读取次数*/
-	public static int readCount;
 }

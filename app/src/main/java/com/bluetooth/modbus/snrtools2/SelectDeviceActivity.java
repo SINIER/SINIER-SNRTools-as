@@ -108,7 +108,7 @@ public class SelectDeviceActivity extends BaseActivity
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00", new CmdListener() {
+				CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00",104, new CmdListener() {
 					@Override
 					public void start() {
 						showProgressDialog(getString(R.string.sync_config),false);
@@ -179,7 +179,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearVar();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",24, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -243,7 +243,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearMain();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x62 "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x62 "+noHexStr+"0x00 0x00",32, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -334,7 +334,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearStr();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00",80, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -390,7 +390,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearCmd();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00",32, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -446,7 +446,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearParamGroup();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00",24, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -500,7 +500,7 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearParam();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00", new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00",48, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -518,8 +518,8 @@ public class SelectDeviceActivity extends BaseActivity
 					String linkVariable = result.substring(20,22);
 					String count = Long.parseLong(result.substring(22,24),16)+"";
 					String unit = result.substring(26,28)+result.substring(24,26);
-					String max = AppUtil.getValueByType("7",unit,count,result.substring(28,36),false,false,0);
-					String min = AppUtil.getValueByType("7",unit,count,result.substring(36,44),false,false,0);
+					String max = AppUtil.getValueByType("7",unit,count,result.substring(28,36),false);
+					String min = AppUtil.getValueByType("7",unit,count,result.substring(36,44),false);
 					Param param = new Param();
 					param.setHexNo(noHexStr);
 					param.setParamGroupHexNo(paramGroupHexNo);

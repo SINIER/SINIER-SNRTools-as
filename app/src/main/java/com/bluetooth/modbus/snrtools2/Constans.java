@@ -8,8 +8,8 @@ public class Constans {
 	/** 指定型号名称起始字段*/
 	public final static String DEVICE_NAME_START = "Sinier";
 
-	/** 循环读取的参数的数目*/
-	public final static int READ_PARAM_COUNT = 6;
+	/** 重试次数*/
+	public final static int RETRY_COUNT = 3;
 
 	/** 连接设备中*/
 	public final static int CONNECTING_DEVICE = 0X10001;

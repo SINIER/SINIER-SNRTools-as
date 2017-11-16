@@ -49,7 +49,7 @@ public abstract class BaseWriteParamActivity extends BaseActivity {
 					String noHexStr = NumberBytes.padLeft(mParameter.getHexNo(), 4, '0');
 					String len = "0x"+NumberBytes.padLeft(Integer.toHexString(mParameter.getValue().length()/2), 2, '0');
 					String cmd = "0x01 0x46 " + noHexStr + "0x00 "+len+mParameter.getValue();
-					CmdUtils.sendCmd(cmd, new CmdListener() {
+					CmdUtils.sendCmd(cmd,16, new CmdListener() {
 						@Override
 						public void start() {
 

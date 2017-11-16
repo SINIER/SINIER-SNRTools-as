@@ -108,7 +108,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 System.out.println("varHexNo=========="+varHexNo);
                 System.out.println("result=========="+result);
                 System.out.println("var=========="+var);
-                String value = AppUtil.getValueByType(var,str);
+                String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
                 ((VarItemView)mViewMore.getChildAt(AppStaticVar.currentVarIndex-mainList.size())).setValue(value);
             }
         }catch (Exception e){
@@ -125,7 +125,11 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                             if(AppStaticVar.currentVarIndex>=mainList.size()) {
                                 String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex-mainList.size()), 4, '0');
                                 String cmd = "0x01 0x43 " + noHexStr + "0x00 0x00";
-                                CmdUtils.sendCmd(cmd, new CmdListener() {
+                                Var var = DBManager.getInstance().getVar(noHexStr);
+                                CmdUtils.sendCmd(cmd,
+                                        ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
+                                                ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24
+                                        ,new CmdListener() {
                                     @Override
                                     public void start() {
                                         hasSend = true;
@@ -133,6 +137,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
                                     @Override
                                     public void result(String result) {
+                                        System.out.println("====================更多变量=====接收到通过的数据"+result);
                                         hasSend = false;
                                         dealVar(result);
                                         AppStaticVar.currentVarIndex++;
@@ -144,6 +149,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     @Override
                                     public void failure(String msg) {
                                         hasSend = false;
+                                        AppStaticVar.currentVarIndex++;
                                         if (!AppStaticVar.isSNRMainPause) {
                                             startReadParam();
                                         }
@@ -152,6 +158,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     @Override
                                     public void timeOut(String msg) {
                                         hasSend = false;
+                                        AppStaticVar.currentVarIndex++;
                                         if (!AppStaticVar.isSNRMainPause) {
                                             showToast(getResources().getString(R.string.string_error_msg3));
                                             startReadParam();
@@ -175,10 +182,31 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
                                 currentMain = mainList.get(AppStaticVar.currentVarIndex);
                                 String cmd = "";
+                                int backLength = 0;
                                 if ("0".equals(currentMain.getType())) {
                                     cmd = "0x01 0x43 " + currentMain.getHexNo() + "0x00 0x00";
+                                    Var var = DBManager.getInstance().getVar(currentMain.getHexNo());
+                                    if(var == null){
+                                        AppStaticVar.currentVarIndex++;
+                                        if (!AppStaticVar.isSNRMainPause) {
+                                            startReadParam();
+                                        }
+                                        return;
+                                    }
+                                    backLength = ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
+                                            ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24;
                                 } else if ("1".equals(currentMain.getType())) {
                                     cmd = "0x01 0x44 " + currentMain.getHexNo() + "0x00 0x00";
+                                    Param var = DBManager.getInstance().getParam(currentMain.getHexNo());
+                                    if(var == null){
+                                        AppStaticVar.currentVarIndex++;
+                                        if (!AppStaticVar.isSNRMainPause) {
+                                            startReadParam();
+                                        }
+                                        return;
+                                    }
+                                    backLength = ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
+                                            ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24;
                                 } else {
                                     AppStaticVar.currentVarIndex++;
                                     if (!AppStaticVar.isSNRMainPause) {
@@ -186,7 +214,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     }
                                     return;
                                 }
-                                CmdUtils.sendCmd(cmd, new CmdListener() {
+
+                                CmdUtils.sendCmd(cmd,
+                                        backLength
+                                        ,new CmdListener() {
                                     @Override
                                     public void start() {
                                         hasSend = true;
@@ -196,25 +227,29 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     public void result(String result) {
                                         hasSend = false;
                                         if ("0".equals(currentMain.getType())) {
+                                            System.out.println("==============主屏===变量========接收到通过的数据"+result);
                                             try {
                                                 String str = result.substring(12, result.length() - 4);
                                                 String varHexNo = result.substring(4, 8);
                                                 Var var = DBManager.getInstance().getVar(varHexNo);
                                                 if (var != null) {
-                                                    String value = AppUtil.getValueByType(var, str, AppUtil.parseToInt(currentMain.getCount(), 5));
+                                                    String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
                                                     currentMain.setValue(value);
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                                System.out.println("=================主屏变量========"+e.toString());
                                             }
                                         } else if ("1".equals(currentMain.getType())) {
+                                            System.out.println("===========主屏===参数===========接收到通过的数据"+result);
                                             try {
                                                 Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
                                                 String str = result.substring(12, result.length() - 4);
-                                                String value = AppUtil.getValueByType(param, str, AppUtil.parseToInt(currentMain.getCount(), 5));
+                                                String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, true);
                                                 currentMain.setValue(value);
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                                System.out.println("====================主屏参数====="+e.toString());
                                             }
                                         }
                                         mainView.notifyDataSetChange();
@@ -227,6 +262,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     @Override
                                     public void failure(String msg) {
                                         hasSend = false;
+                                        AppStaticVar.currentVarIndex++;
                                         if (!AppStaticVar.isSNRMainPause) {
                                             startReadParam();
                                         }
@@ -235,6 +271,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     @Override
                                     public void timeOut(String msg) {
                                         hasSend = false;
+                                        AppStaticVar.currentVarIndex++;
                                         if (!AppStaticVar.isSNRMainPause) {
                                             showToast(getResources().getString(R.string.string_error_msg3));
                                             startReadParam();

@@ -541,62 +541,62 @@ public class AppUtil {
         return def;
     }
 
-    public static String getValueByType(Var var, String str) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,false,0);
-    }
+//    public static String getValueByType(Var var, String str) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,false,0);
+//    }
+//
+//    public static String getValueByType(Var var, String str, int youxiaoCount) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,true, youxiaoCount);
+//    }
+//
+//    public static String getValueByType(Var var, String str, boolean isShowUnit) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit, false,0);
+//    }
+//    public static String getValueByType(Var var, String str, int youxiaoCount, boolean isShowUnit) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,true, youxiaoCount);
+//    }
+//
+//    public static String getValueByType(Param var, String str) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true, false,0);
+//    }
+//
+//    public static String getValueByType(Param var, String str, int youxiaoCount) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,true, youxiaoCount);
+//    }
+//
+//    public static String getValueByType(Param var, String str, boolean isShowUnit) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,false, 0);
+//    }
+//
+//    public static String getValueByType(Param var, String str, int youxiaoCount, boolean isShowUnit) {
+//        if (var == null) {
+//            return "";
+//        }
+//        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,true, youxiaoCount);
+//    }
 
-    public static String getValueByType(Var var, String str, int youxiaoCount) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,true, youxiaoCount);
-    }
-
-    public static String getValueByType(Var var, String str, boolean isShowUnit) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit, false,0);
-    }
-    public static String getValueByType(Var var, String str, int youxiaoCount, boolean isShowUnit) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,true, youxiaoCount);
-    }
-
-    public static String getValueByType(Param var, String str) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true, false,0);
-    }
-
-    public static String getValueByType(Param var, String str, int youxiaoCount) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true,true, youxiaoCount);
-    }
-
-    public static String getValueByType(Param var, String str, boolean isShowUnit) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,false, 0);
-    }
-
-    public static String getValueByType(Param var, String str, int youxiaoCount, boolean isShowUnit) {
-        if (var == null) {
-            return "";
-        }
-        return getValueByType(var.getType(), var.getUnit(), var.getCount(), str, isShowUnit,true, youxiaoCount);
-    }
-
-    public static String getValueByType(String type, String unit, String count, String str, boolean isShowUnit, boolean isShowYouXiao, int youxiaoCount) {
+    public static String getValueByType(String type, String unit, String count, String str, boolean isShowUnit) {
         String value = "";
         if ("0".equals(type + "")) {
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
@@ -617,20 +617,12 @@ public class AppUtil {
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
             long v = Long.parseLong(dealStr, 16);
             v = v <= 32767 ? v : (v - 65536);
-            if (isShowYouXiao) {
-                value = dealNoCountResult(String.valueOf((v) / Math.pow(10, AppUtil.parseToInt(count, 0))), youxiaoCount) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
-            } else {
-                value = String.valueOf((v) / Math.pow(10, AppUtil.parseToInt(count, 0))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
-            }
+            value = String.valueOf(v / Math.pow(10, AppUtil.parseToInt(count, 0))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
         } else if ("4".equals(type + "")) {
             //0-65536  然后根据参数来确定小数点位数
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
             long v = Long.parseLong(dealStr, 16);
-            if (isShowYouXiao) {
-                value = dealNoCountResult(String.valueOf((v) / Math.pow(10, AppUtil.parseToInt(count, 0))), youxiaoCount) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
-            }else {
-                value = String.valueOf(v/Math.pow(10,AppUtil.parseToInt(count,0)))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
-            }
+            value = String.valueOf(v/Math.pow(10,AppUtil.parseToInt(count,0)))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
         } else if ("5".equals(type + "")) {
             //小于等于2147483647直接显示  大于2147483647则减去4294967296
             String dealStr = str.substring(6, 8) + str.substring(4, 6) + str.substring(2, 4) + str.substring(0, 2);
@@ -646,7 +638,12 @@ public class AppUtil {
             String dealStr = str.substring(6, 8) + str.substring(4, 6) + str.substring(2, 4) + str.substring(0, 2);
             long i = Long.parseLong(dealStr, 16);
             float v = Float.intBitsToFloat((int) (i <= 2147483647L ? i : (i - 4294967296L)));
-            value = String.valueOf(v) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
+            if (AppUtil.parseToInt(count,0)==0) {
+                value = dealNoCountResult(String.valueOf(v), 5) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
+            }else {
+                value = String.valueOf(AppUtil.numFormatter(v,AppUtil.parseToInt(count,0)))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
+            }
+//            value = String.valueOf(v) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
         } else if ("8".equals(type + "")) {
             //ip地址
             String str1 = Long.parseLong(str.substring(6, 8), 16) + "";
@@ -672,6 +669,14 @@ public class AppUtil {
         } else {
             return significand(v, youxiaoCount) + "";
         }
+    }
+
+    /** 保留几位小数*/
+    public static float numFormatter(float val, int count)
+    {
+        BigDecimal b = new BigDecimal(val);
+        val = b.setScale(count < 0 ? 2 : count, RoundingMode.HALF_UP).floatValue();
+        return val;
     }
 
     /**

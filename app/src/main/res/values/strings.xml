@@ -157,5 +157,6 @@
     <string name="sync_params">Synchronize the update parameters</string>
     <string name="ip_error">Please enter the correct IP address</string>
     <string name="label_cmd">Operation command</string>
+    <string name="cmd_success">The operation command executes successfully.</string>
 
 </resources>

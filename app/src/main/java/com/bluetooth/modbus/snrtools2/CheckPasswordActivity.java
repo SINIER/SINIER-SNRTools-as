@@ -139,11 +139,14 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 						Param param = (Param) obj;
 						String noHexStr = param.getHexNo();
 						String cmd = "0x01 0x44 " + noHexStr + "0x00 0x00";
-						CmdUtils.sendCmd(cmd, new CmdListener() {
+						CmdUtils.sendCmd(cmd,
+								("0".equals(param.getType())||"1".equals(param.getType())||"2".equals(param.getType())
+										||"3".equals(param.getType())||"4".equals(param.getType()))?20:24
+								, new CmdListener() {
 							@Override
 							public void start() {
-								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount*100/mDataList.size() + "/100%)", false);
-//								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount + "/" + mDataList.size() + ")", false);
+//								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount*100/mDataList.size() + "/100%)", false);
+								showProgressDialog(getString(R.string.sync_params) + "(" + currentInitParamCount + "/" + mDataList.size() + ")", false);
 							}
 
 							@Override
@@ -153,7 +156,7 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 								Param param = (Param) mDataList.get(currentInitParamCount);
 								try {
 									String str = result.substring(12, result.length() - 4);
-									String value = AppUtil.getValueByType(param,str);
+									String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, true);
 									param.setValueDisplay(value);
 									param.setValue(str);
 								} catch (Exception e) {
@@ -550,7 +553,7 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 				Object obj = mAdapter.getItem(position);
 				if(obj instanceof Cmd){
 					Cmd cmd = (Cmd) obj;
-					CmdUtils.sendCmd("0x01 0x45 " + cmd.getHexNo() + "0x00 0x00 ", new CmdListener() {
+					CmdUtils.sendCmd("0x01 0x45 " + cmd.getHexNo() + "0x00 0x00 ",16, new CmdListener() {
 						@Override
 						public void start() {
 							showProgressDialog(false);
@@ -561,6 +564,7 @@ public class CheckPasswordActivity extends BaseActivity implements Observer {
 						public void result(String result) {
 							hasSend = false;
 							hideProgressDialog();
+							showToast(getString(R.string.cmd_success));
 						}
 
 						@Override

@@ -3,6 +3,7 @@ package com.bluetooth.modbus.snrtools2.uitls;
 import android.os.Handler;
 import android.os.Message;
 
+import com.bluetooth.modbus.snrtools2.Constans;
 import com.bluetooth.modbus.snrtools2.R;
 import com.bluetooth.modbus.snrtools2.common.CRC16;
 import com.bluetooth.modbus.snrtools2.listener.CmdListener;
@@ -12,6 +13,8 @@ import com.tencent.bugly.crashreport.CrashReport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,16 +24,21 @@ import java.util.TimerTask;
 
 public class CmdUtils {
 
-    public static void sendCmd(final String cmd, final CmdListener listener){
+    public static void sendCmd(final String cmd,final int backValueCount, final CmdListener listener){
         synchronized (AppStaticVar.locks) {
-            sendCmd(cmd,listener,true);
+            sendCmd(cmd,backValueCount,listener,true);
         }
     }
 
-    private static void sendCmd(final String cmd, final CmdListener listener,boolean isNew){
+    private static void sendCmd(final String cmd,final int backValueCount, final CmdListener listener,boolean isNew){
         synchronized (AppStaticVar.locks) {
+            System.out.println("====================\n\n\n\n");
+            System.out.println("====================开始时间=="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
             if(isNew) {
-                AppStaticVar.retryCount = 5;
+                AppStaticVar.retryCount = Constans.RETRY_COUNT;
+                System.out.println("=========================收到待发送命令"+cmd);
+            }else {
+                System.out.println("=========================收到一条重试命令"+cmd);
             }
             if(listener != null&&isNew){
                 listener.start();
@@ -40,18 +48,20 @@ public class CmdUtils {
                     listener.connectFailure(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg14));
                     listener.finish();
                 }
+                System.out.println("=========================socket连接断开");
                 return;
             }
-            if(AppStaticVar.retryCount!=5){
-                CrashReport.postCatchedException(new Throwable("开始第"+(5-AppStaticVar.retryCount)+"次尝试"+cmd));
+            if(AppStaticVar.retryCount!=Constans.RETRY_COUNT){
+                CrashReport.postCatchedException(new Throwable("开始第"+(Constans.RETRY_COUNT-AppStaticVar.retryCount)+"次尝试"+cmd));
             }
             try {
                 OutputStream os = AppStaticVar.mSocket.getOutputStream();
                 byte[] sendB = CRC16.getSendBuf(cmd.replaceAll("0x","").replaceAll(" ",""));
                 os.write(sendB);
                 os.flush();
-
+                System.out.println("=========================命令发送"+cmd);
             } catch (Exception e) {
+                System.out.println("=========================命令发送失败"+e.toString());
                 CrashReport.postCatchedException(e);
                 if(listener != null){
                     listener.timeOut(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg15));
@@ -100,23 +110,41 @@ public class CmdUtils {
                             }
                             break;
                         case 7:
-                            sendCmd(cmd,listener,false);
+                            sendCmd(cmd,backValueCount,listener,false);
                             break;
                     }
                 }
             };
 
+            final StringBuilder stringBuilder = new StringBuilder();
+            final Timer readtimer = new Timer();
             final Timer timer = new Timer();
             timer.schedule(new TimerTask() {
 
                 @Override
                 public void run() {
-                    handler.sendEmptyMessage(6);
+                    System.out.println("=========================读取数据超时"+cmd);
+                    System.out.println("====================超时时间=="+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+                    String emsg = "==读取数据超时==\n发送命令" + cmd;
+                    System.out.println(emsg);
+                    readtimer.cancel();
+                    if (AppStaticVar.retryCount > 0) {
+                        System.out.println("=========================发送重试"+cmd);
+                        if (AppStaticVar.retryCount != Constans.RETRY_COUNT) {
+                            CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试" + emsg));
+                        }
+                        AppStaticVar.retryCount--;
+                        handler.sendEmptyMessageDelayed(7, 500);
+                    } else {
+                        System.out.println("=========================命令重试失败"+cmd);
+                        Message msg = new Message();
+                        msg.what = 3;
+                        msg.obj = emsg;
+                        handler.sendMessage(msg);
+                        CrashReport.postCatchedException(new Throwable("重试结束" + emsg));
+                    }
                 }
-            }, 10000);
-
-            AppStaticVar.readCount = 10;
-            final Timer readtimer = new Timer();
+            }, 1000);
             readtimer.schedule(new TimerTask() {
 
                 @Override
@@ -124,10 +152,12 @@ public class CmdUtils {
                     InputStream mmInStream = null;
                     try {
                         if (AppStaticVar.mSocket == null) {
-                            handler.sendEmptyMessage(1);
                             readtimer.cancel();
+                            timer.cancel();
+                            handler.sendEmptyMessage(1);
                             return;
                         }
+                        System.out.println("=========================开始等待响应"+cmd);
                         mmInStream = AppStaticVar.mSocket.getInputStream();
                         byte[] buffer = new byte[10240];
                         int bytes;
@@ -136,45 +166,27 @@ public class CmdUtils {
                             for (int i = 0; i < bytes; i++) {
                                 buf_data[i] = buffer[i];
                             }
-                            if (CRC16.checkBuf(buf_data)) {
+                            System.out.println("=========================收到响应值"+CRC16.getBufHexStr(buf_data)+"==="+cmd);
+                            stringBuilder.append(CRC16.getBufHexStr(buf_data));
+                            if(stringBuilder.length()==backValueCount){
+                                System.out.println("=========================响应值校验通过"+cmd);
+                                readtimer.cancel();
+                                timer.cancel();
                                 Message msg = new Message();
                                 msg.what = 2;
-                                msg.obj = CRC16.getBufHexStr(buf_data);
+                                msg.obj = stringBuilder.toString();
                                 handler.sendMessage(msg);
-                                if(AppStaticVar.retryCount!=5) {
-                                    CrashReport.postCatchedException(new Throwable("第"+(5-AppStaticVar.retryCount)+"次尝试成功"+cmd));
+                                if (AppStaticVar.retryCount != Constans.RETRY_COUNT) {
+                                    CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试成功" + cmd));
                                 }
-//                                if(AppStaticVar.retryCount>0&&AppStaticVar.retryCount!=5){
-//                                    handler.sendEmptyMessage(5);
-//                                }
-                            } else {
-                                String emsg = "==未通过CRC校验==\n发送命令" + cmd + "\n返回值\n" + CRC16.getBufHexStr(buf_data);
-                                System.out.println(emsg);
-                                if(AppStaticVar.retryCount>0){
-                                    if(AppStaticVar.retryCount!=5) {
-                                        CrashReport.postCatchedException(new Throwable("第"+(5-AppStaticVar.retryCount)+"次尝试"+emsg));
-                                    }
-                                    AppStaticVar.retryCount--;
-                                    handler.sendEmptyMessageDelayed(7,500);
-                                }else {
-                                    Message msg = new Message();
-                                    msg.what = 3;
-                                    msg.obj = emsg;
-                                    handler.sendMessage(msg);
-                                    CrashReport.postCatchedException(new Throwable("重试结束"+emsg));
-                                }
-//                                handler.sendEmptyMessage(3);
                             }
-                            readtimer.cancel();
-                        }else {
-                            if(AppStaticVar.readCount>0) {
-                                AppStaticVar.readCount--;
-                            }else {
-                                handler.sendEmptyMessage(6);
-                            }
+
+
                         }
                     } catch (IOException e1) {
                         readtimer.cancel();
+                        timer.cancel();
+                        System.out.println("=========================接受响应值失败"+ e1.toString());
                         try {
                             if (mmInStream != null) {
                                 mmInStream.close();
@@ -184,16 +196,9 @@ public class CmdUtils {
                             e2.printStackTrace();
                         }
                     } finally {
-                        timer.cancel();
-//                        if(AppStaticVar.retryCount>0&&AppStaticVar.retryCount!=5){
-//                            sendCmd(cmd,listener,false);
-//                        }
-//                        else {
-//                            handler.sendEmptyMessage(5);
-//                        }
                     }
                 }
-            }, 300,300);
+            }, 5,1);
         }
     }
 }

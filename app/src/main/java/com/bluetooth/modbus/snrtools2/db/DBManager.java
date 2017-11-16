@@ -65,6 +65,12 @@ public class DBManager {
     public void saveOfflineString(OfflineString offlineString){
         synchronized (this){
             offlineString.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(offlineString.getId() == null) {
+                OfflineString temp = offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.HexNo.eq(offlineString.getHexNo()), OfflineStringDao.Properties.BtAddress.eq(offlineString.getBtAddress())).unique();
+                if (temp != null) {
+                    offlineString.setId(temp.getId());
+                }
+            }
             offlineStringDao.insertOrReplace(offlineString);
         }
     }
@@ -72,6 +78,12 @@ public class DBManager {
     public void saveCmd(Cmd cmd){
         synchronized (this){
             cmd.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(cmd.getId() == null) {
+                Cmd temp = cmdDao.queryBuilder().where(CmdDao.Properties.HexNo.eq(cmd.getHexNo()), CmdDao.Properties.BtAddress.eq(cmd.getBtAddress())).unique();
+                if (temp != null) {
+                    cmd.setId(temp.getId());
+                }
+            }
             cmdDao.insertOrReplace(cmd);
         }
     }
@@ -79,6 +91,12 @@ public class DBManager {
     public void saveVar(Var var){
         synchronized (this){
             var.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(var.getId() == null) {
+                Var temp = varDao.queryBuilder().where(VarDao.Properties.HexNo.eq(var.getHexNo()), VarDao.Properties.BtAddress.eq(var.getBtAddress())).unique();
+                if (temp != null) {
+                    var.setId(temp.getId());
+                }
+            }
             varDao.insertOrReplace(var);
         }
     }
@@ -93,6 +111,12 @@ public class DBManager {
     public void saveValue(Value value){
         synchronized (this){
             value.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(value.getId() == null) {
+                Value temp = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(value.getKey()), ValueDao.Properties.BtAddress.eq(value.getBtAddress())).unique();
+                if (temp != null) {
+                    value.setId(temp.getId());
+                }
+            }
             valueDao.insertOrReplace(value);
         }
     }
@@ -106,37 +130,37 @@ public class DBManager {
 
     public void clearParam(){
         synchronized (this){
-            paramDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
     public void clearParamGroup(){
         synchronized (this){
-            paramGroupDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
     public void clearCmd(){
         synchronized (this){
-            cmdDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
     public void clearStr(){
         synchronized (this){
-            offlineStringDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
     public void clearValue(){
         synchronized (this){
-            valueDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
     public void clearVar(){
         synchronized (this){
-            varDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
+            varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).buildDelete();
         }
     }
 
@@ -149,6 +173,12 @@ public class DBManager {
     public void saveMain(Main main){
         synchronized (this){
             main.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(main.getId() == null) {
+                Main temp = mainDao.queryBuilder().where(MainDao.Properties.HexNo.eq(main.getHexNo()), MainDao.Properties.BtAddress.eq(main.getBtAddress())).unique();
+                if (temp != null) {
+                    main.setId(temp.getId());
+                }
+            }
             mainDao.insertOrReplace(main);
         }
     }
@@ -177,6 +207,12 @@ public class DBManager {
     public void saveParamGroup(ParamGroup paramGroup){
         synchronized (this){
             paramGroup.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(paramGroup.getId() == null) {
+                ParamGroup temp = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.HexNo.eq(paramGroup.getHexNo()), ParamGroupDao.Properties.BtAddress.eq(paramGroup.getBtAddress())).unique();
+                if (temp != null) {
+                    paramGroup.setId(temp.getId());
+                }
+            }
             paramGroupDao.insertOrReplace(paramGroup);
         }
     }
@@ -197,6 +233,12 @@ public class DBManager {
     public void saveParam(Param param){
         synchronized (this){
             param.setBtAddress(AppStaticVar.mCurrentAddress);
+            if(param.getId() == null) {
+                Param temp = paramDao.queryBuilder().where(ParamDao.Properties.HexNo.eq(param.getHexNo()), ParamDao.Properties.BtAddress.eq(param.getBtAddress())).unique();
+                if (temp != null) {
+                    param.setId(temp.getId());
+                }
+            }
             paramDao.insertOrReplace(param);
         }
     }

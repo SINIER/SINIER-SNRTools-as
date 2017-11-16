@@ -157,5 +157,6 @@
     <string name="sync_params">同步更新参数中</string>
     <string name="ip_error">请输入正确的ip地址</string>
     <string name="label_cmd">操作命令</string>
+    <string name="cmd_success">操作命令执行成功</string>
 
 </resources>
