@@ -10,6 +10,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -45,6 +46,7 @@ import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
 import com.bluetooth.modbus.snrtools2.view.MainView;
 import com.bluetooth.modbus.snrtools2.view.NoFocuseTextview;
 import com.bluetooth.modbus.snrtools2.view.VarItemView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class SNRMainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -69,15 +71,28 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     private Main currentMain;
     private MainView mainView;
     private long totalSyncCount;
+    private int click = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.snr_main_activity);
+        DBManager.getInstance().clearSession();
         mAbHttpUtil = AbHttpUtil.getInstance(this);
         mainList = DBManager.getInstance().getMainList();
         totalSyncCount = mainList.size() + AppStaticVar.mProductInfo.pdVarCount;
         initUI();
+        setTitleClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(click==0){
+                    click = 10;
+                    Intent intent = new Intent(mContext,DBDataActivity.class);
+                    startActivity(intent);
+                }
+                click--;
+            }
+        });
         setTitleContent(AppStaticVar.mCurrentName);
         setRightButtonContent(getResources().getString(R.string.string_settings), R.id.btnRight1);
         hideRightView(R.id.view2);
@@ -103,14 +118,28 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         try {
             String str = result.substring(12,result.length()-4);
             String varHexNo = result.substring(4,8);
-            Var var = DBManager.getInstance().getVar(varHexNo);
-            if(var != null) {
-                System.out.println("varHexNo=========="+varHexNo);
-                System.out.println("result=========="+result);
-                System.out.println("var=========="+var);
-                String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
-                ((VarItemView)mViewMore.getChildAt(AppStaticVar.currentVarIndex-mainList.size())).setValue(value);
+            for(int i=0;i<mViewMore.getChildCount();i++){
+                if(mViewMore.getChildAt(i) instanceof  VarItemView){
+                    VarItemView varItemView = (VarItemView) mViewMore.getChildAt(i);
+                    Var var = (Var) varItemView.getTag();
+                    if(var.getHexNo().equals(varHexNo)){
+                        System.out.println("varHexNo=========="+varHexNo);
+                        System.out.println("result=========="+result);
+                        System.out.println("var=========="+var);
+                        String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
+                        varItemView.setValue(value);
+                        break;
+                    }
+                }
             }
+//            Var var = DBManager.getInstance().getVar(varHexNo);
+//            if(var != null) {
+//                System.out.println("varHexNo=========="+varHexNo);
+//                System.out.println("result=========="+result);
+//                System.out.println("var=========="+var);
+//                String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
+//                ((VarItemView)mViewMore.getChildAt(AppStaticVar.currentVarIndex-mainList.size())).setValue(value);
+//            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -122,6 +151,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                             if (AppStaticVar.currentVarIndex >= totalSyncCount) {
                                 AppStaticVar.currentVarIndex = 0;
                             }
+                        CrashReport.postCatchedException(new Throwable("====================currentVarIndex=="+AppStaticVar.currentVarIndex+"===mainList.size()="+mainList.size()+"===totalSyncCount=="+totalSyncCount));
+                        System.out.println("====================currentVarIndex=="+AppStaticVar.currentVarIndex+"===mainList.size()="+mainList.size()+"===totalSyncCount=="+totalSyncCount);
                             if(AppStaticVar.currentVarIndex>=mainList.size()) {
                                 String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex-mainList.size()), 4, '0');
                                 String cmd = "0x01 0x43 " + noHexStr + "0x00 0x00";
@@ -138,6 +169,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     @Override
                                     public void result(String result) {
                                         System.out.println("====================更多变量=====接收到通过的数据"+result);
+                                        CrashReport.postCatchedException(new Throwable("====================更多变量=====接收到通过的数据"+result));
                                         hasSend = false;
                                         dealVar(result);
                                         AppStaticVar.currentVarIndex++;
@@ -227,6 +259,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     public void result(String result) {
                                         hasSend = false;
                                         if ("0".equals(currentMain.getType())) {
+                                            CrashReport.postCatchedException(new Throwable("==============主屏===变量========接收到通过的数据"+result));
                                             System.out.println("==============主屏===变量========接收到通过的数据"+result);
                                             try {
                                                 String str = result.substring(12, result.length() - 4);
@@ -238,9 +271,11 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                                CrashReport.postCatchedException(new Throwable("=================主屏变量========"+e.toString()));
                                                 System.out.println("=================主屏变量========"+e.toString());
                                             }
                                         } else if ("1".equals(currentMain.getType())) {
+                                            CrashReport.postCatchedException(new Throwable("===========主屏===参数===========接收到通过的数据"+result));
                                             System.out.println("===========主屏===参数===========接收到通过的数据"+result);
                                             try {
                                                 Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
@@ -249,6 +284,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                                 currentMain.setValue(value);
                                             } catch (Exception e) {
                                                 e.printStackTrace();
+                                                CrashReport.postCatchedException(new Throwable("====================主屏参数====="+e.toString()));
                                                 System.out.println("====================主屏参数====="+e.toString());
                                             }
                                         }
@@ -536,9 +572,13 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         mainView.setValues(mainList);
         if(AppStaticVar.mProductInfo!= null) {
             for (int i = 0; i < AppStaticVar.mProductInfo.pdVarCount; i++) {
+                Var var = DBManager.getInstance().getVar(NumberBytes.padLeft(Integer.toHexString(i),4,'0'));
                 VarItemView varItemView = new VarItemView(mContext);
-                varItemView.hideLabel();
+//                varItemView.hideLabel();
+                varItemView.setLabel(var.getName());
                 varItemView.setValue(getString(R.string.string_tips_msg2));
+                varItemView.setTag(var);
+                CrashReport.postCatchedException(new Throwable("==============var=="+var));
                 if (i == AppStaticVar.mProductInfo.pdVarCount - 1) {
                     varItemView.setBottomLineStatus(false);
                 }

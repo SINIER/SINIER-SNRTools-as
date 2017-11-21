@@ -82,6 +82,7 @@ public class SelectDeviceActivity extends BaseActivity
 	private TextView numberText, maxText;
 	private AlertDialog mAlertDialog = null;
 	private long totalSyncCount,currentSyncCount;
+	private int click = 10;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -91,6 +92,17 @@ public class SelectDeviceActivity extends BaseActivity
 		setContentView(R.layout.activity_main);
 		mAbHttpUtil = AbHttpUtil.getInstance(this);
 		AppStaticVar.isBluetoothOpen = AppUtil.checkBluetooth(this,false);
+		setTitleClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(click==0){
+					click = 10;
+					Intent intent = new Intent(mContext,DBDataActivity.class);
+					startActivity(intent);
+				}
+				click--;
+			}
+		});
 		setTitleContent(getResources().getString(R.string.string_tips_msg4));
 		hideRightView(R.id.view2);
 		setRightButtonContent(getResources().getString(R.string.string_search), R.id.btnRight1);
@@ -179,7 +191,8 @@ public class SelectDeviceActivity extends BaseActivity
 				DBManager.getInstance().clearVar();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",24, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",28, new CmdListener() {
+//			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",24, new CmdListener() {
 				@Override
 				public void start() {
 					currentSyncCount++;
@@ -190,11 +203,14 @@ public class SelectDeviceActivity extends BaseActivity
 				@Override
 				public void result(String result) {
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-					String type = Long.parseLong(result.substring(12,14),16)+"";
-					String count = Long.parseLong(result.substring(14,16),16)+"";
-					String unit = result.substring(18,20)+result.substring(16,18);
-//					String unit = Long.parseLong(result.substring(18,20)+result.substring(16,18),16)+"";
+					String nameHexNo = result.substring(14,16)+result.substring(12,14);
+					String name = DBManager.getInstance().getStr(result.substring(14,16)+result.substring(12,14));
+					String type = Long.parseLong(result.substring(16,18),16)+"";
+					String count = Long.parseLong(result.substring(18,20),16)+"";
+					String unit = result.substring(22,24)+result.substring(20,22);
 					Var var = new Var();
+					var.setName(name);
+					var.setNameHexNo(nameHexNo);
 					var.setHexNo(noHexStr);
 					var.setType(type);
 					var.setCount(count);
@@ -202,6 +218,20 @@ public class SelectDeviceActivity extends BaseActivity
 					DBManager.getInstance().saveVar(var);
 					AppStaticVar.currentSyncIndex++;
 					syncVar();
+//					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
+//					String type = Long.parseLong(result.substring(12,14),16)+"";
+//					String count = Long.parseLong(result.substring(14,16),16)+"";
+//					String unit = result.substring(18,20)+result.substring(16,18);
+//					Var var = new Var();
+//					var.setHexNo(noHexStr);
+//					var.setType(type);
+//					var.setCount(count);
+//					var.setUnit(unit);
+//					var.setName(AppStaticVar.currentSyncIndex+"");
+//					var.setNameHexNo("000"+AppStaticVar.currentSyncIndex+"");
+//					DBManager.getInstance().saveVar(var);
+//					AppStaticVar.currentSyncIndex++;
+//					syncVar();
 				}
 
 				@Override

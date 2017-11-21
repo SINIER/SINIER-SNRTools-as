@@ -116,6 +116,13 @@ public abstract class BaseActivity extends Activity {
 		}
 	}
 
+	public void setTitleClickListener(View.OnClickListener listener) {
+		View v = findViewById(R.id.tvTitle);
+		if (v != null && v instanceof TextView) {
+			((TextView) v).setOnClickListener(listener);
+		}
+	}
+
 	/**
 	 * 设置右侧button的内容(xml布局文件中必须引入base_title.xml)
 	 * 

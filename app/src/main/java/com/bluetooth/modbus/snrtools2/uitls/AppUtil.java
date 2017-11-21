@@ -597,6 +597,7 @@ public class AppUtil {
 //    }
 
     public static String getValueByType(String type, String unit, String count, String str, boolean isShowUnit) {
+        CrashReport.postCatchedException(new Throwable("type======"+type+""));
         String value = "";
         if ("0".equals(type + "")) {
             String dealStr = str.substring(2, 4) + str.substring(0, 2);

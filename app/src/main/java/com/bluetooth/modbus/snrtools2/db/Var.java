@@ -16,6 +16,12 @@ public class Var implements java.io.Serializable {
     @Id(autoincrement = true)
     private Long id;
 
+    @Property(nameInDb = "name")
+    private String name;
+
+    @Property(nameInDb = "nameHexNo")
+    private String nameHexNo;
+
     @Property(nameInDb = "hexNo")
     private String hexNo;
 
@@ -43,8 +49,10 @@ public class Var implements java.io.Serializable {
     }
 
     @Generated
-    public Var(Long id, String hexNo, String type, String count, String unit, String btAddress) {
+    public Var(Long id, String name, String nameHexNo, String hexNo, String type, String count, String unit, String btAddress) {
         this.id = id;
+        this.name = name;
+        this.nameHexNo = nameHexNo;
         this.hexNo = hexNo;
         this.type = type;
         this.count = count;
@@ -58,6 +66,34 @@ public class Var implements java.io.Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * 变量名称
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 变量名称
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 变量名称hexNo
+     */
+    public String getNameHexNo() {
+        return nameHexNo;
+    }
+
+    /**
+     * 变量名称hexNo
+     */
+    public void setNameHexNo(String nameHexNo) {
+        this.nameHexNo = nameHexNo;
     }
 
     /**
@@ -134,7 +170,7 @@ public class Var implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return "===========hexNo==="+hexNo+",type==="+type+",count==="+count+",unit==="+unit;
+        return "===========hexNo==="+hexNo+",type==="+type+",count==="+count+",unit==="+unit+",name==="+name+",nameHexNo==="+nameHexNo;
     }
     // KEEP METHODS END
 

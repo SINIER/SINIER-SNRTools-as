@@ -19,7 +19,7 @@ public class OfflineGenerator {
     @Test
     public void testMinimalSchema() throws Exception
     {
-		Schema schema = new Schema(3, "com.bluetooth.modbus.snrtools2.db");
+		Schema schema = new Schema(5, "com.bluetooth.modbus.snrtools2.db");
 
 		addString(schema);
 		addCmd(schema);
@@ -80,6 +80,8 @@ public class OfflineGenerator {
         var.setDbName("Var");
         var.setJavaDoc("实时变量配置");
         var.addIdProperty().autoincrement().primaryKey();
+        var.addStringProperty("name").dbName("name").javaDocGetterAndSetter("变量名称");
+        var.addStringProperty("nameHexNo").dbName("nameHexNo").javaDocGetterAndSetter("变量名称hexNo");
         var.addStringProperty("hexNo").dbName("hexNo").javaDocGetterAndSetter("十六进制编号（例：0000）");
         var.addStringProperty("type").dbName("type").javaDocGetterAndSetter("变量类型");
         var.addStringProperty("count").dbName("count").javaDocGetterAndSetter("变量选项数量/小数位");

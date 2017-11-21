@@ -68,7 +68,7 @@ public class MainView extends View {
     protected void onDraw(Canvas canvas) {
         TEXT_SIZE_SMALL = getWidth() / (8 * 2);
         TEXT_SIZE_NORMAL = TEXT_SIZE_SMALL * 2;
-        TEXT_SIZE_LARGE = TEXT_SIZE_SMALL * 3;
+        TEXT_SIZE_LARGE = TEXT_SIZE_SMALL * 2.8f;
         for (int i = 0; i < values.size(); i++) {
             Main main = values.get(i);
             if ("0".equals(main.getType()) || "1".equals(main.getType()) || "3".equals(main.getType())) {

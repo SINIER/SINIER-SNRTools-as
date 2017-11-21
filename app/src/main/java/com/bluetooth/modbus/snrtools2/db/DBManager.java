@@ -2,6 +2,7 @@ package com.bluetooth.modbus.snrtools2.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
 import com.ab.util.AbSharedUtil;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
@@ -44,6 +45,7 @@ public class DBManager {
     {
         mContext = AppStaticVar.mApplication;
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(mContext, "db", null);
+//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(mContext, Environment.getExternalStoragePublicDirectory("")+"/sinierdb.db", null);
         mDb = helper.getWritableDatabase();
         daoMaster = new DaoMaster(mDb);
         daoSession = daoMaster.newSession(IdentityScopeType.None);
@@ -54,6 +56,10 @@ public class DBManager {
         varDao = daoSession.getVarDao();
         mainDao = daoSession.getMainDao();
         valueDao = daoSession.getValueDao();
+    }
+
+    public void clearSession(){
+        daoSession.clear();
     }
 
     public List<OfflineString> getAllOfflineString(){
@@ -108,6 +114,13 @@ public class DBManager {
         }
     }
 
+    public List<Var> getAllVar(){
+        synchronized (this) {
+            List<Var> var = varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).list();
+            return var;
+        }
+    }
+
     public void saveValue(Value value){
         synchronized (this){
             value.setBtAddress(AppStaticVar.mCurrentAddress);
@@ -125,6 +138,12 @@ public class DBManager {
         synchronized (this) {
             Value var = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(key),ValueDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).unique();
             return var;
+        }
+    }
+    public List<Value> getAllValue(){
+        synchronized (this) {
+            List<Value> var = valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).list();
+            return var==null?new ArrayList<Value>():var;
         }
     }
 
@@ -197,9 +216,23 @@ public class DBManager {
         }
     }
 
+    public List<ParamGroup> getAllParamGroups(){
+        synchronized (this){
+            List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).build().list();
+            return result==null?new ArrayList<ParamGroup>():result;
+        }
+    }
+
     public List<Cmd> getCmds(String level){
         synchronized (this){
             List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.CmdPwd.eq(level),CmdDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).build().list();
+            return result==null?new ArrayList<Cmd>():result;
+        }
+    }
+
+    public List<Cmd> getAllCmds(){
+        synchronized (this){
+            List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).build().list();
             return result==null?new ArrayList<Cmd>():result;
         }
     }
@@ -220,6 +253,13 @@ public class DBManager {
     public List<Param> getParams(String groupHexNo){
         synchronized (this){
             List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.ParamGroupHexNo.eq(groupHexNo),ParamDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).build().list();
+            return result==null?new ArrayList<Param>():result;
+        }
+    }
+
+    public List<Param> getAllParams(){
+        synchronized (this){
+            List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mCurrentAddress)).build().list();
             return result==null?new ArrayList<Param>():result;
         }
     }

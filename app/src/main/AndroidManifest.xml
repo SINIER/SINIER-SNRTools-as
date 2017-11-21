@@ -56,6 +56,9 @@
         <activity android:name="com.bluetooth.modbus.snrtools2.MainActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name="com.bluetooth.modbus.snrtools2.DBDataActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
