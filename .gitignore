@@ -9,3 +9,6 @@
 /captures
 .externalNativeBuild
 app/release
+build/
+performance/
+test-out/
