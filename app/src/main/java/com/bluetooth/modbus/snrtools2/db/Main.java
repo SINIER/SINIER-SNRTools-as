@@ -50,6 +50,7 @@ public class Main implements java.io.Serializable {
     private String btAddress;
 
     // KEEP FIELDS - put your custom fields here
+    private String unitStr="";
     // KEEP FIELDS END
 
     @Generated
@@ -239,6 +240,12 @@ public class Main implements java.io.Serializable {
     }
 
     // KEEP METHODS - put your custom methods here
+    public void setUnitStr(String unitStr){
+        this.unitStr = unitStr;
+    }
+    public String getUnitStr(){
+        return this.unitStr;
+    }
     // KEEP METHODS END
 
 }

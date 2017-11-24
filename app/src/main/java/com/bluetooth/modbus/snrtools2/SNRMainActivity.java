@@ -266,8 +266,9 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                                 String varHexNo = result.substring(4, 8);
                                                 Var var = DBManager.getInstance().getVar(varHexNo);
                                                 if (var != null) {
-                                                    String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
+                                                    String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, false);
                                                     currentMain.setValue(value);
+                                                    currentMain.setUnitStr(DBManager.getInstance().getStr(var.getUnit()));
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -280,8 +281,9 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                             try {
                                                 Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
                                                 String str = result.substring(12, result.length() - 4);
-                                                String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, true);
+                                                String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, false);
                                                 currentMain.setValue(value);
+                                                currentMain.setUnitStr(DBManager.getInstance().getStr(param.getUnit()));
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                                 CrashReport.postCatchedException(new Throwable("====================主屏参数====="+e.toString()));

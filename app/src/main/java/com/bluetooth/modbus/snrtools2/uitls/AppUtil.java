@@ -789,7 +789,7 @@ public class AppUtil {
 
     public static void saveValue(String key, String value) {
         Value value1 = new Value();
-        value1.setBtAddress(AppStaticVar.mCurrentAddress);
+        value1.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
         value1.setKey(key);
         value1.setValue(value);
         DBManager.getInstance().saveValue(value1);

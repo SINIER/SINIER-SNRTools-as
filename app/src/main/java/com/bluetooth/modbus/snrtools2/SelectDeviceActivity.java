@@ -132,14 +132,19 @@ public class SelectDeviceActivity extends BaseActivity
 						if(AppStaticVar.mProductInfo != null) {
 							currentSyncCount = 0;
 							totalSyncCount = 0;
-//					String oldCRC = AbSharedUtil.getString(mContext, "key_crc");
-							String oldCRC = AppUtil.getValue(AppStaticVar.mCurrentAddress+"key_crc","");
+							String oldCRC = AppUtil.getValue("key_crc","");
 							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
 								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
 							}
 							totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
 							totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
-							syncVar();
+
+							AppStaticVar.currentSyncIndex = 0;
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
+								syncStr();
+							}else {
+								syncVar();
+							}
 						}else {
 							syncFailure(getString(R.string.get_setting_error));
 						}
@@ -174,7 +179,7 @@ public class SelectDeviceActivity extends BaseActivity
 		AppStaticVar.mProductInfo.pdModel = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 		AppStaticVar.mProductInfo.pdVersion = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdVersion);
 //		AbSharedUtil.putString(mContext,"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
-		AppUtil.saveValue(AppStaticVar.mCurrentAddress+"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
+		AppUtil.saveValue("key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		// Intent intent = new Intent(mContext, SNRMainActivity.class);
 		startActivity(intent);
@@ -218,6 +223,7 @@ public class SelectDeviceActivity extends BaseActivity
 					DBManager.getInstance().saveVar(var);
 					AppStaticVar.currentSyncIndex++;
 					syncVar();
+
 //					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 //					String type = Long.parseLong(result.substring(12,14),16)+"";
 //					String count = Long.parseLong(result.substring(14,16),16)+"";
@@ -256,14 +262,7 @@ public class SelectDeviceActivity extends BaseActivity
 			});
 		}else {
 			AppStaticVar.currentSyncIndex = 0;
-			String oldCRC = AppUtil.getValue(AppStaticVar.mCurrentAddress+"key_crc","");
-			if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
-				AppStaticVar.currentSyncIndex = 0;
-				syncStr();
-			}else {
-				AppStaticVar.currentSyncIndex = 0;
-				syncMain();
-			}
+			syncMain();
 		}
 	}
 
@@ -587,7 +586,7 @@ public class SelectDeviceActivity extends BaseActivity
 			});
 		}else {
 			AppStaticVar.currentSyncIndex = 0;
-			syncMain();
+			syncVar();
 		}
 	}
 

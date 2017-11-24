@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -88,11 +89,37 @@ public class MainView extends View {
                 }
                 Paint.FontMetrics fm = mPaint.getFontMetrics();
                 double dy = Math.ceil(fm.descent - fm.ascent);
+                float valueWidth = mPaint.measureText(main.getValue());
+                float unitWidth = mPaint.measureText(main.getUnitStr());
                 Path path = new Path();
-                path.moveTo(AppUtil.parseToInt(main.getY(),0) * getWidth() / 128, AppUtil.parseToInt(main.getX(),0) * getWidth() / (2 * 8));
-                path.lineTo((AppUtil.parseToInt(main.getY(),0) + AppUtil.parseToInt(main.getWidth(),0)) * getWidth() / 128, AppUtil.parseToInt(main.getX(),0) * getWidth() / (2 * 8));
-
+                path.moveTo(AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128, AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8));
+                if("1".equals(main.getGravity())&&!TextUtils.isEmpty(main.getUnitStr())){
+                    path.lineTo((AppUtil.parseToInt(main.getY(),0) + AppUtil.parseToInt(main.getWidth(),0)) * getWidth() / 128-unitWidth, AppUtil.parseToInt(main.getX(),0) * getWidth() / (2 * 8));
+                }else {
+                    path.lineTo((AppUtil.parseToInt(main.getY(),0) + AppUtil.parseToInt(main.getWidth(),0)) * getWidth() / 128, AppUtil.parseToInt(main.getX(),0) * getWidth() / (2 * 8));
+                }
                 canvas.drawTextOnPath(main.getValue(), path, 0, (float) dy * 2 / 3, mPaint);
+                if(!TextUtils.isEmpty(main.getUnitStr())) {
+                    path = new Path();
+                    if ("0".equals(main.getFontSize())) {
+                        mPaint.setTextSize(TEXT_SIZE_SMALL);
+                    } else if ("1".equals(main.getFontSize())) {
+                        mPaint.setTextSize(TEXT_SIZE_SMALL);
+                    } else if ("2".equals(main.getFontSize())) {
+                        mPaint.setTextSize(TEXT_SIZE_NORMAL);
+                    }
+                    mPaint.setTextAlign(Paint.Align.LEFT);
+                    if("2".equals(main.getGravity())){
+                        path.moveTo((AppUtil.parseToInt(main.getY(),0) + AppUtil.parseToInt(main.getWidth(),0)/2) * getWidth() / 128 + valueWidth/2, AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8));
+                    }else if("1".equals(main.getGravity())) {
+                        path.moveTo((AppUtil.parseToInt(main.getY(),0) + AppUtil.parseToInt(main.getWidth(),0)) * getWidth() / 128-unitWidth, AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8));
+                    }else {
+                        path.moveTo(AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128 + valueWidth, AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8));
+                    }
+                    path.lineTo((AppUtil.parseToInt(main.getY(), 0) + AppUtil.parseToInt(main.getWidth(), 0)) * getWidth() / 128, AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8));
+                    canvas.drawTextOnPath(main.getUnitStr(), path, 0, (float) dy * 2 / 3, mPaint);
+                }
+
             } else if ("2".equals(main.getType())) {
                 Rect dest = new Rect(AppUtil.parseToInt(main.getY(),0) * getWidth() / 128,
                         AppUtil.parseToInt(main.getX(),0) * getWidth() / (2 * 8),
