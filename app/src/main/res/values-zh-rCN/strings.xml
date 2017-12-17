@@ -158,5 +158,11 @@
     <string name="ip_error">请输入正确的ip地址</string>
     <string name="label_cmd">操作命令</string>
     <string name="cmd_success">操作命令执行成功</string>
+    <string name="warn_info">告警信息</string>
+    <string name="pd_info">产品信息</string>
+    <string name="pd_model">型号：</string>
+    <string name="pd_version">版本：</string>
+    <string name="pd_build_time">编译时间：</string>
+    <string name="pd_sn">序列号：</string>
 
 </resources>

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -72,6 +73,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     private MainView mainView;
     private long totalSyncCount;
     private int click = 10;
+    private boolean isFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,17 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 break;
         }
     }
+
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        if(isFirst){
+//            isFirst = false;
+//            LayoutParams layoutParams = mainView.getLayoutParams();
+//            layoutParams.height = mainView.getWidth()/5*3;
+//            mainView.setLayoutParams(layoutParams);
+//        }
+//        super.onWindowFocusChanged(hasFocus);
+//    }
 
     private void dealVar(String result) {
         try {
@@ -268,7 +281,9 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                                 if (var != null) {
                                                     String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, false);
                                                     currentMain.setValue(value);
-                                                    currentMain.setUnitStr(DBManager.getInstance().getStr(var.getUnit()));
+                                                    if(!"0".equals(var.getType())) {//选项型的不存在单位
+                                                        currentMain.setUnitStr(DBManager.getInstance().getStr(var.getUnit()));
+                                                    }
                                                 }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
@@ -283,7 +298,9 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                                 String str = result.substring(12, result.length() - 4);
                                                 String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, false);
                                                 currentMain.setValue(value);
-                                                currentMain.setUnitStr(DBManager.getInstance().getStr(param.getUnit()));
+                                                if(!"0".equals(param.getType())) {//选项型的不存在单位
+                                                    currentMain.setUnitStr(DBManager.getInstance().getStr(param.getUnit()));
+                                                }
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                                 CrashReport.postCatchedException(new Throwable("====================主屏参数====="+e.toString()));
@@ -338,9 +355,11 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
             case R.id.btnMore:
                 if (mViewMore.getVisibility() == View.VISIBLE) {
                     mViewMore.setVisibility(View.GONE);
+                    findViewById(R.id.llPdInfo).setVisibility(View.VISIBLE);
                     ((Button) v).setText(getResources().getString(R.string.string_more));
                 } else {
                     mViewMore.setVisibility(View.VISIBLE);
+                    findViewById(R.id.llPdInfo).setVisibility(View.GONE);
                     ((Button) v).setText(getResources().getString(R.string.string_shouqi));
                 }
                 break;
@@ -563,6 +582,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initUI() {
+        ((TextView)findViewById(R.id.tvModel)).setText(getString(R.string.pd_model)+AppStaticVar.mProductInfo.pdModel);
+        ((TextView)findViewById(R.id.tvVersion)).setText(getString(R.string.pd_version)+AppStaticVar.mProductInfo.pdVersion);
+        ((TextView)findViewById(R.id.tvTime)).setText(getString(R.string.pd_build_time)+AppStaticVar.mProductInfo.pdBuildTime);
+        ((TextView)findViewById(R.id.tvNo)).setText(getString(R.string.pd_sn)+"20"+AppStaticVar.mProductInfo.pdSN);
         mainView = (MainView) findViewById(R.id.mainview);
         btnMore = (Button) findViewById(R.id.btnMore);
         btnMore.setOnClickListener(this);

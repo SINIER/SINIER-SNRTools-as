@@ -149,43 +149,43 @@ public class DBManager {
 
     public void clearParam(){
         synchronized (this){
-            paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearParamGroup(){
         synchronized (this){
-            paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearCmd(){
         synchronized (this){
-            cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearStr(){
         synchronized (this){
-            offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearValue(){
         synchronized (this){
-            valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearVar(){
         synchronized (this){
-            varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearMain(){
         synchronized (this){
-            mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete();
+            mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
@@ -193,7 +193,7 @@ public class DBManager {
         synchronized (this){
             main.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
             if(main.getId() == null) {
-                Main temp = mainDao.queryBuilder().where(MainDao.Properties.HexNo.eq(main.getHexNo()), MainDao.Properties.BtAddress.eq(main.getBtAddress())).unique();
+                Main temp = mainDao.queryBuilder().where(MainDao.Properties.Type.eq(main.getType()),MainDao.Properties.HexNo.eq(main.getHexNo()), MainDao.Properties.BtAddress.eq(main.getBtAddress())).unique();
                 if (temp != null) {
                     main.setId(temp.getId());
                 }

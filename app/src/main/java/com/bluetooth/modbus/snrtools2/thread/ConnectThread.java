@@ -57,7 +57,18 @@ public class ConnectThread extends Thread {
 		{
 			Log.e("connect", "", e);
 			CrashReport.postCatchedException(e);
-			AppStaticVar.mSocket = null;
+			if (AppStaticVar.mSocket != null)
+			{
+				try
+				{
+					AppStaticVar.mSocket.close();
+				}
+				catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
+				AppStaticVar.mSocket = null;
+			}
 			Message msg = new Message();
 			msg.obj = AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg14);
 			msg.what = Constans.CONNECT_DEVICE_FAILED;

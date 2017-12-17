@@ -158,5 +158,11 @@
     <string name="ip_error">Please enter the correct IP address</string>
     <string name="label_cmd">Operation command</string>
     <string name="cmd_success">The operation command executes successfully.</string>
+    <string name="warn_info">Alarm</string>
+    <string name="pd_info">Product Information</string>
+    <string name="pd_model">Model:</string>
+    <string name="pd_version">Version:</string>
+    <string name="pd_build_time">Build Time:</string>
+    <string name="pd_sn">SN:</string>
 
 </resources>

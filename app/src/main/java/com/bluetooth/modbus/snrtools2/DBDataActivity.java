@@ -28,7 +28,7 @@ public class DBDataActivity extends BaseActivity {
         setContentView(R.layout.db_layout);
         EditText tv = (EditText) findViewById(R.id.tv);
         StringBuilder sb = new StringBuilder("");
-        sb.append("命令");
+        sb.append("命令\n");
         List<Cmd> cmds = DBManager.getInstance().getAllCmds();
         for(int i=0;i<cmds.size();i++){
             Cmd cmd = cmds.get(i);
@@ -42,8 +42,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(cmd.getBtAddress());
             sb.append("  ext=");
             sb.append(cmd.getExt());
+            sb.append("\n");
         }
-        sb.append("\n主界面变量");
+        sb.append("\n\n\n主界面变量\n");
         List<Main> mains = DBManager.getInstance().getMainList();
         for(int i=0;i<mains.size();i++){
             Main main = mains.get(i);
@@ -69,8 +70,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(main.getType());
             sb.append("  value=");
             sb.append(main.getValue());
+            sb.append("\n");
         }
-        sb.append("\n参数");
+        sb.append("\n参数\n");
         List<Param> params = DBManager.getInstance().getAllParams();
         for(int i=0;i<params.size();i++){
             Param param = params.get(i);
@@ -98,8 +100,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(param.getValue());
             sb.append("  valueDisplay=");
             sb.append(param.getValueDisplay());
+            sb.append("\n");
         }
-        sb.append("\n参数组");
+        sb.append("\n参数组\n");
         List<ParamGroup> groups = DBManager.getInstance().getAllParamGroups();
         for(int i=0;i<groups.size();i++){
             ParamGroup paramGroup = groups.get(i);
@@ -111,8 +114,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(paramGroup.getName());
             sb.append("  bt=");
             sb.append(paramGroup.getBtAddress());
+            sb.append("\n");
         }
-        sb.append("\nvalue");
+        sb.append("\nvalue\n");
         List<Value> values = DBManager.getInstance().getAllValue();
         for(int i=0;i<values.size();i++){
             Value value = values.get(i);
@@ -122,8 +126,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(value.getKey());
             sb.append("  value=");
             sb.append(value.getValue());
+            sb.append("\n");
         }
-        sb.append("\n变量");
+        sb.append("\n变量\n");
         List<Var> vars = DBManager.getInstance().getAllVar();
         for(int i=0;i<vars.size();i++){
             Var var = vars.get(i);
@@ -141,8 +146,9 @@ public class DBDataActivity extends BaseActivity {
             sb.append(var.getUnit());
             sb.append("  nameHexNo=");
             sb.append(var.getNameHexNo());
+            sb.append("\n");
         }
-        sb.append("\n字符串");
+        sb.append("\n字符串\n");
         List<OfflineString> strs = DBManager.getInstance().getAllStrs();
         for(int i=0;i<strs.size();i++){
             OfflineString string = strs.get(i);
@@ -154,6 +160,7 @@ public class DBDataActivity extends BaseActivity {
             sb.append(string.getStringZh());
             sb.append("  bt=");
             sb.append(string.getBtAddress());
+            sb.append("\n");
         }
         tv.setText(sb);
     }
