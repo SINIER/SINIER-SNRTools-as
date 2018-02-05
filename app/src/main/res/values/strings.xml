@@ -164,5 +164,7 @@
     <string name="pd_version">Version:</string>
     <string name="pd_build_time">Build Time:</string>
     <string name="pd_sn">SN:</string>
+    <string name="log">Log</string>
+    <string name="no_log">Log is empty!</string>
 
 </resources>

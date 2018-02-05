@@ -29,12 +29,12 @@
 
                 <com.bluetooth.modbus.snrtools2.view.MainView
                     android:id="@+id/mainview"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="170dp"/>
+                    android:layout_marginTop="15dp" />
             </FrameLayout>
 
             <LinearLayout
@@ -52,15 +52,31 @@
                 android:layout_margin="3dp"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btnWarn"
+                <RelativeLayout
+                    android:id="@+id/rlWarn"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_0d9bf9_bg"
-                    android:text="@string/warn_info"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
+                    android:background="@drawable/btn_0d9bf9_bg">
+
+                    <TextView
+                        android:id="@+id/tvWarn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:gravity="center"
+                        android:text="@string/warn_info"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/tvWarnCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/tvWarn"
+                        android:textColor="@color/red"
+                        android:textSize="16sp" />
+                </RelativeLayout>
 
                 <View
                     android:layout_width="3dp"
@@ -75,6 +91,28 @@
                     android:text="@string/string_more"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llWarn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/llWarnContent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
             </LinearLayout>
 
             <LinearLayout

@@ -9,24 +9,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:paddingLeft="12dp"
+        android:paddingRight="12dp"
         android:gravity="center_vertical"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/tvLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:text="@string/string_main_label_ssll"
-            android:textColor="#6BADF6"
-            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tvValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="12dp"
-            android:gravity="right"
+            android:gravity="center"
             android:text="@string/string_tips_msg2"
             android:textColor="#1a1a1a"
             android:textSize="25sp" />

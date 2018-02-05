@@ -15,12 +15,14 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Xml;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -28,6 +30,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ab.http.AbFileHttpResponseListener;
@@ -35,6 +38,7 @@ import com.ab.http.AbHttpUtil;
 import com.ab.util.AbAppUtil;
 import com.ab.util.AbFileUtil;
 import com.ab.view.progress.AbHorizontalProgressBar;
+import com.bluetooth.modbus.snrtools2.bean.RunStatus;
 import com.bluetooth.modbus.snrtools2.db.DBManager;
 import com.bluetooth.modbus.snrtools2.db.Main;
 import com.bluetooth.modbus.snrtools2.db.Param;
@@ -44,6 +48,7 @@ import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
 import com.bluetooth.modbus.snrtools2.uitls.CmdUtils;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
+import com.bluetooth.modbus.snrtools2.view.ErrorItemView;
 import com.bluetooth.modbus.snrtools2.view.MainView;
 import com.bluetooth.modbus.snrtools2.view.NoFocuseTextview;
 import com.bluetooth.modbus.snrtools2.view.VarItemView;
@@ -54,8 +59,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     // private Handler mHandler;
 //    private Thread mThread;
     private NoFocuseTextview mTvAlarm;
-    private LinearLayout mViewMore, llContent;
+    private LinearLayout mViewMore, llWarnContent,llWarn;
+    private RelativeLayout rlWarn;
     private Button btnMore;
+    private TextView tvWarn,tvWarnCount;
     private boolean isSetting = false;
     /**
      * 是否已经有命令发送
@@ -73,7 +80,12 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     private MainView mainView;
     private long totalSyncCount;
     private int click = 10;
+    private RunStatus mRunStatus = new RunStatus();
     private boolean isFirst = true;
+    /**
+     * 运行状态
+     */
+    private static final int STATUS_COUNT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,14 +94,15 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         DBManager.getInstance().clearSession();
         mAbHttpUtil = AbHttpUtil.getInstance(this);
         mainList = DBManager.getInstance().getMainList();
-        totalSyncCount = mainList.size() + AppStaticVar.mProductInfo.pdVarCount;
+        totalSyncCount = mainList.size() + AppStaticVar.mProductInfo.pdVarCount + STATUS_COUNT;
+        AppStaticVar.currentVarIndex = 0;
         initUI();
         setTitleClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(click==0){
+                if (click == 0) {
                     click = 10;
-                    Intent intent = new Intent(mContext,DBDataActivity.class);
+                    Intent intent = new Intent(mContext, DBDataActivity.class);
                     startActivity(intent);
                 }
                 click--;
@@ -129,225 +142,391 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
     private void dealVar(String result) {
         try {
-            String str = result.substring(12,result.length()-4);
-            String varHexNo = result.substring(4,8);
-            for(int i=0;i<mViewMore.getChildCount();i++){
-                if(mViewMore.getChildAt(i) instanceof  VarItemView){
+            String str = result.substring(12, result.length() - 4);
+            String varHexNo = result.substring(4, 8);
+            for (int i = 0; i < mViewMore.getChildCount(); i++) {
+                if (mViewMore.getChildAt(i) instanceof VarItemView) {
                     VarItemView varItemView = (VarItemView) mViewMore.getChildAt(i);
                     Var var = (Var) varItemView.getTag();
-                    if(var.getHexNo().equals(varHexNo)){
-                        System.out.println("varHexNo=========="+varHexNo);
-                        System.out.println("result=========="+result);
-                        System.out.println("var=========="+var);
+                    if (var.getHexNo().equals(varHexNo)) {
+                        System.out.println("varHexNo==========" + varHexNo);
+                        System.out.println("result==========" + result);
+                        System.out.println("var==========" + var);
                         String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
                         varItemView.setValue(value);
                         break;
                     }
                 }
             }
-//            Var var = DBManager.getInstance().getVar(varHexNo);
-//            if(var != null) {
-//                System.out.println("varHexNo=========="+varHexNo);
-//                System.out.println("result=========="+result);
-//                System.out.println("var=========="+var);
-//                String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, true);
-//                ((VarItemView)mViewMore.getChildAt(AppStaticVar.currentVarIndex-mainList.size())).setValue(value);
-//            }
-        }catch (Exception e){
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void dealError(String result) {
+        try {
+            String str = result.substring(result.length() - 6, result.length() - 4)+result.substring(result.length() - 8, result.length() - 6);
+            String errorHexNo = result.substring(4, 8);
+            String value = DBManager.getInstance().getStr(str);
+            if(TextUtils.isEmpty(value)) {
+                return;
+            }
+            boolean has = false;
+            for (int i = 0; i < llWarnContent.getChildCount(); i++) {
+                if (llWarnContent.getChildAt(i) instanceof ErrorItemView) {
+                    ErrorItemView errorItemView = (ErrorItemView) llWarnContent.getChildAt(i);
+                    Var var = (Var) errorItemView.getTag();
+                    if (var.getHexNo().toLowerCase().equals(errorHexNo)) {
+                        System.out.println("errorHexNo==========" + errorHexNo);
+                        System.out.println("result==========" + result);
+                        System.out.println("var==========" + var);
+                        errorItemView.setValue(value);
+                        has = true;
+                        break;
+                    }
+                }
+            }
+            if (!has) {
+                Var var = new Var();
+                var.setHexNo(errorHexNo);
+                ErrorItemView errorItemView = new ErrorItemView(mContext);
+                errorItemView.setValue(DBManager.getInstance().getStr(str));
+                errorItemView.setValueColor(Color.WHITE);
+                errorItemView.setBackGroundColor(Color.RED);
+                errorItemView.setTag(var);
+                CrashReport.postCatchedException(new Throwable("==============errorVar==" + var));
+                if (AppStaticVar.currentVarIndex == mRunStatus.errorCount - 1) {
+                    errorItemView.setBottomLineStatus(false);
+                }
+                llWarnContent.addView(errorItemView);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void startReadParam() {
-                    System.out.println("====主页面开始恢复==pause状态" + AppStaticVar.isSNRMainPause);
-                    if (!AppStaticVar.isSNRMainPause) {
-                            if (AppStaticVar.currentVarIndex >= totalSyncCount) {
-                                AppStaticVar.currentVarIndex = 0;
+        System.out.println("====主页面开始恢复==pause状态" + AppStaticVar.isSNRMainPause);
+        if (!AppStaticVar.isSNRMainPause) {
+            if (llWarn.getVisibility() == View.VISIBLE) {
+                if (AppStaticVar.currentVarIndex >= mRunStatus.errorCount) {
+                    AppStaticVar.currentVarIndex = 0;
+                }
+                CrashReport.postCatchedException(new Throwable("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===errorCount=" + mRunStatus.errorCount));
+                System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===errorCount=" + mRunStatus.errorCount);
+                String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex), 4, '0');
+                String cmd = "0x01 0x52 " + noHexStr + "0x00 0x00";
+                CmdUtils.sendCmd(cmd,
+                        20
+                        , new CmdListener() {
+                            @Override
+                            public void start() {
+                                hasSend = true;
                             }
-                        CrashReport.postCatchedException(new Throwable("====================currentVarIndex=="+AppStaticVar.currentVarIndex+"===mainList.size()="+mainList.size()+"===totalSyncCount=="+totalSyncCount));
-                        System.out.println("====================currentVarIndex=="+AppStaticVar.currentVarIndex+"===mainList.size()="+mainList.size()+"===totalSyncCount=="+totalSyncCount);
-                            if(AppStaticVar.currentVarIndex>=mainList.size()) {
-                                String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex-mainList.size()), 4, '0');
-                                String cmd = "0x01 0x43 " + noHexStr + "0x00 0x00";
-                                Var var = DBManager.getInstance().getVar(noHexStr);
-                                CmdUtils.sendCmd(cmd,
-                                        ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
-                                                ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24
-                                        ,new CmdListener() {
-                                    @Override
-                                    public void start() {
-                                        hasSend = true;
-                                    }
 
-                                    @Override
-                                    public void result(String result) {
-                                        System.out.println("====================更多变量=====接收到通过的数据"+result);
-                                        CrashReport.postCatchedException(new Throwable("====================更多变量=====接收到通过的数据"+result));
-                                        hasSend = false;
-                                        dealVar(result);
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
-                                    }
+                            @Override
+                            public void result(String result) {
+                                System.out.println("====================故障信息=====接收到通过的数据" + result);
+                                CrashReport.postCatchedException(new Throwable("====================故障信息=====接收到通过的数据" + result));
+                                hasSend = false;
+                                dealError(result);
+                                AppStaticVar.currentVarIndex++;
+                                if (!AppStaticVar.isSNRMainPause) {
+                                    startReadParam();
+                                }
+                            }
 
-                                    @Override
-                                    public void failure(String msg) {
-                                        hasSend = false;
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
-                                    }
+                            @Override
+                            public void failure(String msg) {
+                                hasSend = false;
+                                AppStaticVar.currentVarIndex++;
+                                if (!AppStaticVar.isSNRMainPause) {
+                                    startReadParam();
+                                }
+                            }
 
-                                    @Override
-                                    public void timeOut(String msg) {
-                                        hasSend = false;
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            showToast(getResources().getString(R.string.string_error_msg3));
-                                            startReadParam();
-                                        }
-                                    }
+                            @Override
+                            public void timeOut(String msg) {
+                                hasSend = false;
+                                AppStaticVar.currentVarIndex++;
+                                if (!AppStaticVar.isSNRMainPause) {
+                                    showToast(getResources().getString(R.string.string_error_msg3));
+                                    startReadParam();
+                                }
+                            }
 
-                                    @Override
-                                    public void connectFailure(String msg) {
-                                        hasSend = false;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            showConnectDevice();
-                                        }
-                                    }
+                            @Override
+                            public void connectFailure(String msg) {
+                                hasSend = false;
+                                if (!AppStaticVar.isSNRMainPause) {
+                                    showConnectDevice();
+                                }
+                            }
 
-                                    @Override
-                                    public void finish() {
+                            @Override
+                            public void finish() {
 
-                                    }
-                                });
-                            }else {
+                            }
+                        });
+            } else {
+                llWarnContent.removeAllViews();
+                if (AppStaticVar.currentVarIndex >= totalSyncCount) {
+                    AppStaticVar.currentVarIndex = 0;
+                }
+                CrashReport.postCatchedException(new Throwable("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===mainList.size()=" + mainList.size() + "===totalSyncCount==" + totalSyncCount));
+                System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===mainList.size()=" + mainList.size() + "===pdCount" + AppStaticVar.mProductInfo.pdVarCount + "===totalSyncCount==" + totalSyncCount);
+                if (AppStaticVar.currentVarIndex >= mainList.size() + STATUS_COUNT) {
+                    String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex - mainList.size() - STATUS_COUNT), 4, '0');
+                    String cmd = "0x01 0x43 " + noHexStr + "0x00 0x00";
+                    Var var = DBManager.getInstance().getVar(noHexStr);
+                    CmdUtils.sendCmd(cmd,
+                            ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
+                                    || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24
+                            , new CmdListener() {
+                                @Override
+                                public void start() {
+                                    hasSend = true;
+                                }
 
-                                currentMain = mainList.get(AppStaticVar.currentVarIndex);
-                                String cmd = "";
-                                int backLength = 0;
-                                if ("0".equals(currentMain.getType())) {
-                                    cmd = "0x01 0x43 " + currentMain.getHexNo() + "0x00 0x00";
-                                    Var var = DBManager.getInstance().getVar(currentMain.getHexNo());
-                                    if(var == null){
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
-                                        return;
-                                    }
-                                    backLength = ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
-                                            ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24;
-                                } else if ("1".equals(currentMain.getType())) {
-                                    cmd = "0x01 0x44 " + currentMain.getHexNo() + "0x00 0x00";
-                                    Param var = DBManager.getInstance().getParam(currentMain.getHexNo());
-                                    if(var == null){
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
-                                        return;
-                                    }
-                                    backLength = ("0".equals(var.getType())||"1".equals(var.getType())||"2".equals(var.getType())
-                                            ||"3".equals(var.getType())||"4".equals(var.getType()))?20:24;
-                                } else {
+                                @Override
+                                public void result(String result) {
+                                    System.out.println("====================更多变量=====接收到通过的数据" + result);
+                                    CrashReport.postCatchedException(new Throwable("====================更多变量=====接收到通过的数据" + result));
+                                    hasSend = false;
+                                    dealVar(result);
                                     AppStaticVar.currentVarIndex++;
                                     if (!AppStaticVar.isSNRMainPause) {
                                         startReadParam();
                                     }
-                                    return;
                                 }
 
-                                CmdUtils.sendCmd(cmd,
-                                        backLength
-                                        ,new CmdListener() {
-                                    @Override
-                                    public void start() {
-                                        hasSend = true;
+                                @Override
+                                public void failure(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        startReadParam();
                                     }
+                                }
 
-                                    @Override
-                                    public void result(String result) {
-                                        hasSend = false;
-                                        if ("0".equals(currentMain.getType())) {
-                                            CrashReport.postCatchedException(new Throwable("==============主屏===变量========接收到通过的数据"+result));
-                                            System.out.println("==============主屏===变量========接收到通过的数据"+result);
-                                            try {
-                                                String str = result.substring(12, result.length() - 4);
-                                                String varHexNo = result.substring(4, 8);
-                                                Var var = DBManager.getInstance().getVar(varHexNo);
-                                                if (var != null) {
-                                                    String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, false);
-                                                    currentMain.setValue(value);
-                                                    if(!"0".equals(var.getType())) {//选项型的不存在单位
-                                                        currentMain.setUnitStr(DBManager.getInstance().getStr(var.getUnit()));
-                                                    }
-                                                }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                CrashReport.postCatchedException(new Throwable("=================主屏变量========"+e.toString()));
-                                                System.out.println("=================主屏变量========"+e.toString());
-                                            }
-                                        } else if ("1".equals(currentMain.getType())) {
-                                            CrashReport.postCatchedException(new Throwable("===========主屏===参数===========接收到通过的数据"+result));
-                                            System.out.println("===========主屏===参数===========接收到通过的数据"+result);
-                                            try {
-                                                Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
-                                                String str = result.substring(12, result.length() - 4);
-                                                String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, false);
-                                                currentMain.setValue(value);
-                                                if(!"0".equals(param.getType())) {//选项型的不存在单位
-                                                    currentMain.setUnitStr(DBManager.getInstance().getStr(param.getUnit()));
-                                                }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                CrashReport.postCatchedException(new Throwable("====================主屏参数====="+e.toString()));
-                                                System.out.println("====================主屏参数====="+e.toString());
-                                            }
-                                        }
-                                        mainView.notifyDataSetChange();
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
+                                @Override
+                                public void timeOut(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showToast(getResources().getString(R.string.string_error_msg3));
+                                        startReadParam();
                                     }
+                                }
 
-                                    @Override
-                                    public void failure(String msg) {
-                                        hasSend = false;
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            startReadParam();
-                                        }
+                                @Override
+                                public void connectFailure(String msg) {
+                                    hasSend = false;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showConnectDevice();
                                     }
+                                }
 
-                                    @Override
-                                    public void timeOut(String msg) {
-                                        hasSend = false;
-                                        AppStaticVar.currentVarIndex++;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            showToast(getResources().getString(R.string.string_error_msg3));
-                                            startReadParam();
-                                        }
-                                    }
+                                @Override
+                                public void finish() {
 
-                                    @Override
-                                    public void connectFailure(String msg) {
-                                        hasSend = false;
-                                        if (!AppStaticVar.isSNRMainPause) {
-                                            showConnectDevice();
-                                        }
-                                    }
+                                }
+                            });
+                } else if (AppStaticVar.currentVarIndex >= STATUS_COUNT && AppStaticVar.currentVarIndex < mainList.size() + STATUS_COUNT) {
 
-                                    @Override
-                                    public void finish() {
-
-                                    }
-                                });
+                    currentMain = mainList.get(AppStaticVar.currentVarIndex - STATUS_COUNT);
+                    String cmd = "";
+                    int backLength = 0;
+                    if ("0".equals(currentMain.getType())) {
+                        cmd = "0x01 0x43 " + currentMain.getHexNo() + "0x00 0x00";
+                        Var var = DBManager.getInstance().getVar(currentMain.getHexNo());
+                        if (var == null) {
+                            AppStaticVar.currentVarIndex++;
+                            if (!AppStaticVar.isSNRMainPause) {
+                                startReadParam();
                             }
+                            return;
+                        }
+                        backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
+                                || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
+                    } else if ("1".equals(currentMain.getType())) {
+                        cmd = "0x01 0x44 " + currentMain.getHexNo() + "0x00 0x00";
+                        Param var = DBManager.getInstance().getParam(currentMain.getHexNo());
+                        if (var == null) {
+                            AppStaticVar.currentVarIndex++;
+                            if (!AppStaticVar.isSNRMainPause) {
+                                startReadParam();
+                            }
+                            return;
+                        }
+                        backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
+                                || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
+                    } else {
+                        AppStaticVar.currentVarIndex++;
+                        if (!AppStaticVar.isSNRMainPause) {
+                            startReadParam();
+                        }
+                        return;
                     }
+
+                    CmdUtils.sendCmd(cmd,
+                            backLength
+                            , new CmdListener() {
+                                @Override
+                                public void start() {
+                                    hasSend = true;
+                                }
+
+                                @Override
+                                public void result(String result) {
+                                    hasSend = false;
+                                    if ("0".equals(currentMain.getType())) {
+                                        CrashReport.postCatchedException(new Throwable("==============主屏===变量========接收到通过的数据" + result));
+                                        System.out.println("==============主屏===变量========接收到通过的数据" + result);
+                                        try {
+                                            String str = result.substring(12, result.length() - 4);
+                                            String varHexNo = result.substring(4, 8);
+                                            Var var = DBManager.getInstance().getVar(varHexNo);
+                                            if (var != null) {
+                                                String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, false);
+                                                currentMain.setValue(value);
+                                                if (!"0".equals(var.getType())) {//选项型的不存在单位
+                                                    currentMain.setUnitStr(DBManager.getInstance().getStr(var.getUnit()));
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            CrashReport.postCatchedException(new Throwable("=================主屏变量========" + e.toString()));
+                                            System.out.println("=================主屏变量========" + e.toString());
+                                        }
+                                    } else if ("1".equals(currentMain.getType())) {
+                                        CrashReport.postCatchedException(new Throwable("===========主屏===参数===========接收到通过的数据" + result));
+                                        System.out.println("===========主屏===参数===========接收到通过的数据" + result);
+                                        try {
+                                            Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
+                                            String str = result.substring(12, result.length() - 4);
+                                            String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, false);
+                                            currentMain.setValue(value);
+                                            if (!"0".equals(param.getType())) {//选项型的不存在单位
+                                                currentMain.setUnitStr(DBManager.getInstance().getStr(param.getUnit()));
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            CrashReport.postCatchedException(new Throwable("====================主屏参数=====" + e.toString()));
+                                            System.out.println("====================主屏参数=====" + e.toString());
+                                        }
+                                    }
+                                    mainView.notifyDataSetChange();
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void failure(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void timeOut(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showToast(getResources().getString(R.string.string_error_msg3));
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void connectFailure(String msg) {
+                                    hasSend = false;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showConnectDevice();
+                                    }
+                                }
+
+                                @Override
+                                public void finish() {
+
+                                }
+                            });
+                } else if (AppStaticVar.currentVarIndex < STATUS_COUNT) {
+                    String cmd = "0x01 0x41 0x00 0x00 0x00 0x00";
+                    CmdUtils.sendCmd(cmd,
+                            20
+                            , new CmdListener() {
+                                @Override
+                                public void start() {
+                                    hasSend = true;
+                                }
+
+                                @Override
+                                public void result(String result) {
+                                    System.out.println("==================告警===" + result);
+                                    hasSend = false;
+//                                                01c100000002 0584 f3f8
+                                    String temp = NumberBytes.padLeft(Long.toBinaryString(Long.parseLong(result.substring(14, 16) + result.substring(12, 14), 16)), 16, '0');
+                                    String errorFlag = Integer.parseInt(temp.substring(0, 1), 2) + "";
+                                    String workModel = Integer.parseInt("0" + temp.substring(1, 4), 2) + "";
+                                    int errorCount = Integer.parseInt(temp.substring(4, 8), 2);
+                                    int logCount = Integer.parseInt(temp.substring(8, 16), 2);
+                                    System.out.println("=======errFlag" + errorFlag + "==work" + workModel + "==errCount" + errorCount + "==logCount" + logCount);
+                                    mRunStatus.isError = "1".equals(errorFlag);
+                                    mRunStatus.workModel = workModel;
+                                    mRunStatus.errorCount = errorCount;
+                                    mRunStatus.logCount = logCount;
+                                    tvWarnCount.setText(getString(R.string.warn_info));
+                                    if(errorCount>0){
+                                        tvWarnCount.setText(errorCount+"");
+                                    }else {
+                                        tvWarnCount.setText("");
+                                    }
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void failure(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void timeOut(String msg) {
+                                    hasSend = false;
+                                    AppStaticVar.currentVarIndex++;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showToast(getResources().getString(R.string.string_error_msg3));
+                                        startReadParam();
+                                    }
+                                }
+
+                                @Override
+                                public void connectFailure(String msg) {
+                                    hasSend = false;
+                                    if (!AppStaticVar.isSNRMainPause) {
+                                        showConnectDevice();
+                                    }
+                                }
+
+                                @Override
+                                public void finish() {
+
+                                }
+                            });
+                }
+            }
+        }
     }
 
     public void onClick(View v) {
@@ -356,14 +535,30 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 if (mViewMore.getVisibility() == View.VISIBLE) {
                     mViewMore.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.VISIBLE);
-                    ((Button) v).setText(getResources().getString(R.string.string_more));
+                    btnMore.setText(getResources().getString(R.string.string_more));
                 } else {
                     mViewMore.setVisibility(View.VISIBLE);
+                    llWarn.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.GONE);
-                    ((Button) v).setText(getResources().getString(R.string.string_shouqi));
+                    btnMore.setText(getResources().getString(R.string.string_shouqi));
                 }
                 break;
-
+            case R.id.rlWarn:
+                if(mRunStatus.errorCount == 0){
+                    return;
+                }
+                if (llWarn.getVisibility() == View.VISIBLE) {
+                    llWarn.setVisibility(View.GONE);
+                    mViewMore.setVisibility(View.GONE);
+                    findViewById(R.id.llPdInfo).setVisibility(View.VISIBLE);
+                    btnMore.setText(getResources().getString(R.string.string_more));
+                } else {
+                    llWarn.setVisibility(View.VISIBLE);
+                    mViewMore.setVisibility(View.GONE);
+                    findViewById(R.id.llPdInfo).setVisibility(View.GONE);
+                    btnMore.setText(getResources().getString(R.string.string_more));
+                }
+                break;
             case R.id.textView1:// 新功能
                 hideMenu();
                 showDialogOne(getResources().getString(R.string.string_menu_msg1), null);
@@ -385,13 +580,19 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 AbFileUtil.deleteFile(new File(AbFileUtil.getFileDownloadDir(mContext)));
                 AbFileUtil.deleteFile(new File(Constans.Directory.DOWNLOAD));
                 break;
+            case R.id.textView6:// 日志
+                hideMenu();
+                Intent log = new Intent(mContext,LogActivity.class);
+                log.putExtra("totalSyncCount",mRunStatus.logCount);
+                startActivity(log);
+                break;
 
         }
     }
 
     private void showMenu(View v) {
         if (mPop == null) {
-            View contentView = View.inflate(this, R.layout.main_menu, null);
+            View contentView = View.inflate(this, R.layout.main_menu2, null);
             mPop = new PopupWindow(contentView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             mPop.setBackgroundDrawable(new BitmapDrawable());
             mPop.setOutsideTouchable(true);
@@ -582,28 +783,36 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initUI() {
-        ((TextView)findViewById(R.id.tvModel)).setText(getString(R.string.pd_model)+AppStaticVar.mProductInfo.pdModel);
-        ((TextView)findViewById(R.id.tvVersion)).setText(getString(R.string.pd_version)+AppStaticVar.mProductInfo.pdVersion);
-        ((TextView)findViewById(R.id.tvTime)).setText(getString(R.string.pd_build_time)+AppStaticVar.mProductInfo.pdBuildTime);
-        ((TextView)findViewById(R.id.tvNo)).setText(getString(R.string.pd_sn)+"20"+AppStaticVar.mProductInfo.pdSN);
+        ((TextView) findViewById(R.id.tvModel)).setText(getString(R.string.pd_model) + AppStaticVar.mProductInfo.pdModel);
+        ((TextView) findViewById(R.id.tvVersion)).setText(getString(R.string.pd_version) + AppStaticVar.mProductInfo.pdVersion);
+        ((TextView) findViewById(R.id.tvTime)).setText(getString(R.string.pd_build_time) + AppStaticVar.mProductInfo.pdBuildTime);
+        ((TextView) findViewById(R.id.tvNo)).setText(getString(R.string.pd_sn) + "20" + AppStaticVar.mProductInfo.pdSN);
         mainView = (MainView) findViewById(R.id.mainview);
         btnMore = (Button) findViewById(R.id.btnMore);
         btnMore.setOnClickListener(this);
+        rlWarn = (RelativeLayout) findViewById(R.id.rlWarn);
+        rlWarn.setOnClickListener(this);
+        tvWarnCount = (TextView) findViewById(R.id.tvWarnCount);
+        tvWarn = (TextView) findViewById(R.id.tvWarn);
         mViewMore = (LinearLayout) findViewById(R.id.llMore);
-        llContent = (LinearLayout) findViewById(R.id.llContent);
+        llWarn = (LinearLayout) findViewById(R.id.llWarn);
+        llWarnContent = (LinearLayout) findViewById(R.id.llWarnContent);
         mTvAlarm = (NoFocuseTextview) findViewById(R.id.tvAlarm);
         mTvAlarm.setVisibility(View.GONE);
         mTvAlarm.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.anim_alpha));
         mainView.setValues(mainList);
-        if(AppStaticVar.mProductInfo!= null) {
+        if (AppStaticVar.mProductInfo != null) {
             for (int i = 0; i < AppStaticVar.mProductInfo.pdVarCount; i++) {
-                Var var = DBManager.getInstance().getVar(NumberBytes.padLeft(Integer.toHexString(i),4,'0'));
+                Var var = DBManager.getInstance().getVar(NumberBytes.padLeft(Integer.toHexString(i), 4, '0'));
+                if(TextUtils.isEmpty(var.getName())){
+                    continue;
+                }
                 VarItemView varItemView = new VarItemView(mContext);
 //                varItemView.hideLabel();
                 varItemView.setLabel(var.getName());
                 varItemView.setValue(getString(R.string.string_tips_msg2));
                 varItemView.setTag(var);
-                CrashReport.postCatchedException(new Throwable("==============var=="+var));
+                CrashReport.postCatchedException(new Throwable("==============var==" + var));
                 if (i == AppStaticVar.mProductInfo.pdVarCount - 1) {
                     varItemView.setBottomLineStatus(false);
                 }

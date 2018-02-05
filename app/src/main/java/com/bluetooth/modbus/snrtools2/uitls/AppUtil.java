@@ -12,15 +12,23 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.widget.Toast;
 
 import com.ab.util.AbSharedUtil;
@@ -793,5 +801,131 @@ public class AppUtil {
         value1.setKey(key);
         value1.setValue(value);
         DBManager.getInstance().saveValue(value1);
+    }
+
+
+    /**
+     * 实现对一个关键字的高亮
+     *
+     * @param text
+     *            需要实现高亮的文本
+     * @param markStr
+     *            高亮的文字
+     * @param color
+     *            高亮的颜色
+     * @return SpannableStringBuilder
+     */
+    public static SpannableStringBuilder markText(CharSequence text, CharSequence markStr, int color)
+    {
+        return markText(text, markStr, color, -1);
+
+    }
+
+    /**
+     * 实现对一个关键字的高亮
+     *
+     * @param text
+     *            需要实现高亮的文本
+     * @param markStr
+     *            高亮的文字
+     * @param color
+     *            高亮的颜色
+     * @param textSize
+     *            高亮的文字大小(单位为物理像素)
+     * @return SpannableStringBuilder
+     */
+    public static SpannableStringBuilder markText(CharSequence text, CharSequence markStr, int color, int textSize)
+    {
+        if (TextUtils.isEmpty(markStr))
+        {
+            if (text == null)
+            {
+                return new SpannableStringBuilder();
+            }
+            else
+            {
+                return new SpannableStringBuilder(text);
+            }
+        }
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(text);
+        if (text.toString().contains(markStr.toString()))
+        {
+            int searchIndex = 0;
+            while (text.toString().indexOf(markStr.toString(), searchIndex) != -1)
+            {
+                int startIndex = text.toString().indexOf(markStr.toString(), searchIndex);
+                int endIndex = startIndex + markStr.toString().length();
+                builder.setSpan(new ForegroundColorSpan(color), startIndex, endIndex,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (textSize != -1)
+                {
+                    builder.setSpan(new AbsoluteSizeSpan(textSize), startIndex, endIndex,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                searchIndex = endIndex;
+            }
+
+        }
+        return builder;
+
+    }
+
+    /**
+     * 实现对多个关键字的高亮
+     *
+     * @param text
+     *            要实现高亮的文本
+     * @param markList
+     *            如果不为null 可以实现关键字高亮 只要在hashmap 中添加
+     *            "markString","color","markSize"三对键值对即可 其中 markString 为
+     *            String类型 ，color为int类型，markSize 为 int类型 ， 如果list中添加多个hashmap
+     *            则可以实现多个关键字的高亮
+     * @return SpannableStringBuilder
+     */
+    public static SpannableStringBuilder markTexts(CharSequence text, List<HashMap<String, Object>> markList)
+    {
+        if (markList == null)
+        {
+            if (text == null)
+            {
+                return new SpannableStringBuilder();
+            }
+            else
+            {
+                return new SpannableStringBuilder(text);
+            }
+        }
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(text);
+        if (markList != null)
+        {
+            for (int i = 0; i < markList.size(); i++)
+            {
+                HashMap<String, Object> map = markList.get(i);
+                String markString = map.get("markString") == null ? null : map.get("markString").toString();
+                int color;
+                try
+                {
+                    color = map.get("color") == null ? Color.YELLOW : Integer.parseInt(map.get("color").toString());
+                }
+                catch (Exception e)
+                {
+                    color = Color.YELLOW;
+                }
+                int markSize;
+                try
+                {
+                    markSize = map.get("markSize") == null ? -1 : Integer.parseInt(map.get("markSize").toString());
+                }
+                catch (Exception e)
+                {
+                    markSize = -1;
+                }
+                builder = markText(builder, markString, color, markSize);
+            }
+        }
+        return builder;
+
     }
 }

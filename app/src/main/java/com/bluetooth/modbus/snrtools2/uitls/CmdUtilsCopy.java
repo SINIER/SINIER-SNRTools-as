@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,58 +22,7 @@ import java.util.TimerTask;
  * Created by cchen on 2017/8/8.
  */
 
-public class CmdUtils {
-
-    static StringBuilder stringBuilder = new StringBuilder();
-
-    static Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            CmdListener listener = (CmdListener) ((HashMap<String,Object>)msg.obj).get("listener");
-            switch (msg.what){
-                case 1:
-                    if(listener != null){
-                        listener.connectFailure(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg10));
-                        listener.finish();
-                    }
-                    break;
-                case 2:
-                    if (listener != null) {
-                        listener.result(((HashMap<String,Object>)msg.obj).get("msg").toString());
-                        listener.finish();
-                    }
-                    break;
-                case 3:
-                    if (listener != null) {
-                        listener.failure(((HashMap<String,Object>)msg.obj).get("msg").toString());
-                        listener.finish();
-                    }
-                    break;
-                case 4:
-                    if (listener != null) {
-                        listener.connectFailure(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg10));
-                        listener.finish();
-                    }
-                    break;
-//                        case 5:
-//                            if(listener != null) {
-//                                listener.finish();
-//                            }
-//                            break;
-                case 6:
-                    if(listener != null){
-                        listener.timeOut(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg3));
-                        listener.finish();
-                    }
-                    break;
-                case 7:
-                    String cmd = ((HashMap<String,Object>)msg.obj).get("cmd").toString();
-                    int backValueCount = AppUtil.parseToInt(((HashMap<String,Object>)msg.obj).get("backValueCount").toString(),0);
-                    sendCmd(cmd,backValueCount,listener,false);
-                    break;
-            }
-        }
-    };
+public class CmdUtilsCopy {
 
     public static void sendCmd(final String cmd,final int backValueCount, final CmdListener listener){
         synchronized (AppStaticVar.locks) {
@@ -121,9 +69,54 @@ public class CmdUtils {
                 }
                 return;
             }
-            stringBuilder.delete(0,stringBuilder.length());
-            final HashMap<String,Object> obj = new HashMap<>();
-            obj.put("listener",listener);
+
+            final Handler handler = new Handler(){
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what){
+                        case 1:
+                            if(listener != null){
+                                listener.connectFailure(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg10));
+                                listener.finish();
+                            }
+                            break;
+                        case 2:
+                            if (listener != null) {
+                                listener.result(msg.obj.toString());
+                                listener.finish();
+                            }
+                            break;
+                        case 3:
+                            if (listener != null) {
+                                listener.failure(msg.obj.toString());
+                                listener.finish();
+                            }
+                            break;
+                        case 4:
+                            if (listener != null) {
+                                listener.connectFailure(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg10));
+                                listener.finish();
+                            }
+                            break;
+//                        case 5:
+//                            if(listener != null) {
+//                                listener.finish();
+//                            }
+//                            break;
+                        case 6:
+                            if(listener != null){
+                                listener.timeOut(AppStaticVar.mApplication.getResources().getString(R.string.string_error_msg3));
+                                listener.finish();
+                            }
+                            break;
+                        case 7:
+                            sendCmd(cmd,backValueCount,listener,false);
+                            break;
+                    }
+                }
+            };
+
+            final StringBuilder stringBuilder = new StringBuilder();
             final Timer readtimer = new Timer();
             final Timer timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -141,18 +134,12 @@ public class CmdUtils {
                             CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试" + emsg));
                         }
                         AppStaticVar.retryCount--;
-                        obj.put("cmd",cmd);
-                        obj.put("backValueCount",backValueCount);
-                        Message sendMsg = new Message();
-                        sendMsg.what = 7;
-                        sendMsg.obj = obj;
-                        handler.sendMessageDelayed(sendMsg, 500);
+                        handler.sendEmptyMessageDelayed(7, 500);
                     } else {
-                        obj.put("msg",emsg);
                         System.out.println("=========================命令重试失败"+cmd);
                         Message msg = new Message();
                         msg.what = 3;
-                        msg.obj = obj;
+                        msg.obj = emsg;
                         handler.sendMessage(msg);
                         CrashReport.postCatchedException(new Throwable("重试结束" + emsg));
                     }
@@ -167,10 +154,7 @@ public class CmdUtils {
                         if (AppStaticVar.mSocket == null) {
                             readtimer.cancel();
                             timer.cancel();
-                            Message msg = new Message();
-                            msg.what = 1;
-                            msg.obj = obj;
-                            handler.sendMessage(msg);
+                            handler.sendEmptyMessage(1);
                             return;
                         }
                         System.out.println("=========================开始等待响应"+cmd);
@@ -183,10 +167,10 @@ public class CmdUtils {
                                 buf_data[i] = buffer[i];
                             }
                             System.out.println("=========================收到响应值"+CRC16.getBufHexStr(buf_data)+"==="+cmd);
-                            stringBuilder.append(CRC16.getBufHexStr(buf_data).toLowerCase());
+                            stringBuilder.append(CRC16.getBufHexStr(buf_data));
                             System.out.println("=========================当前值"+stringBuilder.toString()+"==="+cmd);
                             if(stringBuilder.length()>=backValueCount){
-                                int index = stringBuilder.indexOf(cmd.replaceAll("0x","").replaceAll(" ","").substring(0,8).toLowerCase());
+                                int index = stringBuilder.indexOf(cmd.replaceAll("0x","").replaceAll(" ","").substring(0,8));
                                 if(index>-1) {
                                     stringBuilder.delete(0,index);
                                     if(stringBuilder.length()==backValueCount) {
@@ -194,10 +178,9 @@ public class CmdUtils {
                                         System.out.println("=========================响应值校验通过==命令" + cmd);
                                         readtimer.cancel();
                                         timer.cancel();
-                                        obj.put("msg",stringBuilder.toString());
                                         Message msg = new Message();
                                         msg.what = 2;
-                                        msg.obj = obj;
+                                        msg.obj = stringBuilder.toString();
                                         handler.sendMessage(msg);
                                         if (AppStaticVar.retryCount != Constans.RETRY_COUNT) {
                                             CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试成功" + cmd));
@@ -216,10 +199,7 @@ public class CmdUtils {
                             if (mmInStream != null) {
                                 mmInStream.close();
                             }
-                            Message msg = new Message();
-                            msg.what = 4;
-                            msg.obj = obj;
-                            handler.sendMessage(msg);
+                            handler.sendEmptyMessage(4);
                         } catch (IOException e2) {
                             e2.printStackTrace();
                         }

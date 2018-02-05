@@ -164,5 +164,7 @@
     <string name="pd_version">版本：</string>
     <string name="pd_build_time">编译时间：</string>
     <string name="pd_sn">序列号：</string>
+    <string name="log">日志</string>
+    <string name="no_log">暂无日志</string>
 
 </resources>
