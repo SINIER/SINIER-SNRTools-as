@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bluetooth.modbus.snrtools2.bean.Parameter;
+import com.bluetooth.modbus.snrtools2.db.DBManager;
 import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
 import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
@@ -24,7 +25,7 @@ import com.bluetooth.modbus.snrtools2.view.IPEdittext;
 public class InputParamActivity extends BaseWriteParamActivity
 {
 
-	private TextView mTvTitle;
+	private TextView mTvTitle,tvRange;
 	private EditText mEtParam;
 	private IPEdittext mEtIp;
 	private Param p;
@@ -41,11 +42,12 @@ public class InputParamActivity extends BaseWriteParamActivity
 	private void initUI()
 	{
 		mTvTitle = (TextView) findViewById(R.id.tvTitle);
+		tvRange = (TextView) findViewById(R.id.tvRange);
 		mEtParam = (EditText) findViewById(R.id.editText1);
 		mEtIp = (IPEdittext) findViewById(R.id.ip);
 		mTvTitle.setText(getIntent().getStringExtra("title"));
-		mEtParam.setHint(getIntent().getStringExtra("value") + "(" + getResources().getString(R.string.string_hint1)
-				+ p.getMin()+p.getUnit() + "~" + p.getMax()+p.getUnit() + ")");
+		mEtParam.setHint(getIntent().getStringExtra("value"));
+		tvRange.setHint("(" + p.getMin() + "~" + p.getMax() + ")"+ DBManager.getInstance().getStr(p.getUnit()));
 		mEtIp.setVisibility(View.GONE);
 		mEtParam.setVisibility(View.VISIBLE);
 		 if ("1".equals(p.getType()+"")||"2".equals(p.getType()+"")||"5".equals(p.getType()+"")||"6".equals(p.getType()+"")) {
@@ -74,6 +76,7 @@ public class InputParamActivity extends BaseWriteParamActivity
 			 });
 			 mEtIp.setVisibility(View.VISIBLE);
 			 mEtParam.setVisibility(View.GONE);
+			 tvRange.setVisibility(View.GONE);
 		 }
 //		 else if (p.type == 2) {
 //		 mEtParam.setInputType(EditorInfo.TYPE_NUMBER_FLAG_DECIMAL);
@@ -122,7 +125,7 @@ public class InputParamActivity extends BaseWriteParamActivity
 							return;
 						}
 						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), valueIn + ""));
-						p.setValueDisplay(valueIn + "");
+						p.setValueDisplay(NumberBytes.subZeroAndDot(valueIn+"")+DBManager.getInstance().getStr(p.getUnit()));
 					}
 					writeParameter(p);
 				}

@@ -38,25 +38,28 @@ public class myClass {
     public static void main(String[] args)
     {
         //54 e4 fc 20
-        long time = NumberBytes.hexStrToLong("20fce454");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            long l2000 = sdf.parse("2000-01-01 00:00:00").getTime();
-            System.out.println(sdf.format(new Date(time*1000+l2000)));
+//        long time = NumberBytes.hexStrToLong("20fce454");
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        try {
+//            long l2000 = sdf.parse("2000-01-01 00:00:00").getTime();
+//            System.out.println(sdf.format(new Date(time*1000+l2000)));
+//
+//        }catch (Exception e){
+//
+//        }
+//        System.out.println(time*1000);
+//        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:MM:ss").format(new Date(time*1000)));
+//
+//
+//        byte[] c = CRC16.HexString2Buf("42617365000000000000000000000000");
+////        byte[] c = CRC16.HexString2Buf("bbf9b1beb2cecafd0000000000000000");
+//        System.out.println("====3======"+Byte2Char(c));
+////0x01 0x61 0x00 0x00 0x00 0x00
+//        byte[] cmd = CRC16.getSendBuf("016100000000");
 
-        }catch (Exception e){
-
-        }
-        System.out.println(time*1000);
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:MM:ss").format(new Date(time*1000)));
-
-
-        byte[] c = CRC16.HexString2Buf("42617365000000000000000000000000");
-//        byte[] c = CRC16.HexString2Buf("bbf9b1beb2cecafd0000000000000000");
-        System.out.println("====3======"+Byte2Char(c));
-//0x01 0x61 0x00 0x00 0x00 0x00
-        byte[] cmd = CRC16.getSendBuf("016100000000");
-
+          System.out.println(NumberBytes.hexStrToLong("FFC528C7"));
+            System.out.println(String.valueOf(1234567890l));
+            System.out.println(String.valueOf(Math.pow(2,32)));
     }
 
 

@@ -12,6 +12,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -626,12 +627,12 @@ public class AppUtil {
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
             long v = Long.parseLong(dealStr, 16);
             v = v <= 32767 ? v : (v - 65536);
-            value = String.valueOf(v / Math.pow(10, AppUtil.parseToInt(count, 0))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
+            value = NumberBytes.subZeroAndDot(String.valueOf(v / Math.pow(10, AppUtil.parseToInt(count, 0)))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
         } else if ("4".equals(type + "")) {
             //0-65536  然后根据参数来确定小数点位数
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
             long v = Long.parseLong(dealStr, 16);
-            value = String.valueOf(v/Math.pow(10,AppUtil.parseToInt(count,0)))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
+            value = NumberBytes.subZeroAndDot(String.valueOf(v/Math.pow(10,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
         } else if ("5".equals(type + "")) {
             //小于等于2147483647直接显示  大于2147483647则减去4294967296
             String dealStr = str.substring(6, 8) + str.substring(4, 6) + str.substring(2, 4) + str.substring(0, 2);
@@ -648,9 +649,9 @@ public class AppUtil {
             long i = Long.parseLong(dealStr, 16);
             float v = Float.intBitsToFloat((int) (i <= 2147483647L ? i : (i - 4294967296L)));
             if (AppUtil.parseToInt(count,0)==0) {
-                value = dealNoCountResult(String.valueOf(v), 5) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
+                value = NumberBytes.subZeroAndDot(dealNoCountResult(String.valueOf(v), 5)) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
             }else {
-                value = String.valueOf(AppUtil.numFormatter(v,AppUtil.parseToInt(count,0)))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
+                value = NumberBytes.subZeroAndDot(String.valueOf(AppUtil.numFormatter(v,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
             }
 //            value = String.valueOf(v) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
         } else if ("8".equals(type + "")) {
@@ -664,8 +665,25 @@ public class AppUtil {
             //字符串
             String dealStr = str.substring(2, 4) + str.substring(0, 2);
             value = DBManager.getInstance().getStr(dealStr);
+        } else if ("11".equals(type+"")){
+            String dealStr = str.substring(6, 8) + str.substring(4, 6) + str.substring(2, 4) + str.substring(0, 2);
+            long v = Long.parseLong(dealStr, 16);
+            v = v <= (long)(Math.pow(2,31)-1) ? v : (long)(v - Math.pow(2,32));
+            value = NumberBytes.subZeroAndDot(getStringValue(v / Math.pow(10, AppUtil.parseToInt(count, 0)))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
+        } else if ("12".equals(type+"")){
+            String dealStr = str.substring(6, 8) + str.substring(4, 6) + str.substring(2, 4) + str.substring(0, 2);
+            long v = Long.parseLong(dealStr, 16);
+            value = NumberBytes.subZeroAndDot(getStringValue(v / Math.pow(10, AppUtil.parseToInt(count, 0)))) + (isShowUnit ? "" + DBManager.getInstance().getStr(unit) : "");
         }
         return value;
+    }
+
+    public static String getStringValue(double value){
+        NumberFormat nf = NumberFormat.getInstance();
+        // 是否以逗号隔开, 默认true以逗号隔开,如[123,456,789.128]
+        nf.setGroupingUsed(false);
+        // 结果未做任何处理
+        return nf.format(value);
     }
 
     public static String dealNoCountResult(String value, int youxiaoCount) {
@@ -783,6 +801,19 @@ public class AppUtil {
                 String ip3 = NumberBytes.padLeft(Long.toHexString(Long.parseLong(ips[1])), 2, '0');
                 String ip4 = NumberBytes.padLeft(Long.toHexString(Long.parseLong(ips[0])), 2, '0');
                 value = ip1 + ip2 + ip3 + ip4;
+            } else if ("11".equals(type+"")){
+                //有符号长定点数	dt_lreal
+                long l = (long) (Double.parseDouble(str) * Math.pow(10, AppUtil.parseToInt(count, 0)));
+                if (l < 0) {
+                    l += 4294967296L;
+                }
+                String temp = NumberBytes.padLeft(Long.toHexString(l), 8, '0');
+                value = temp.substring(6, 8) + temp.substring(4, 6) + temp.substring(2, 4) + temp.substring(0, 2);
+            } else if ("12".equals(type+"")){
+                //无符号长定点数	dt_ulreal
+                long l = (long) (Double.parseDouble(str) * Math.pow(10, AppUtil.parseToInt(count, 0)));
+                String temp = NumberBytes.padLeft(Long.toHexString(l), 8, '0');
+                value = temp.substring(6, 8) + temp.substring(4, 6) + temp.substring(2, 4) + temp.substring(0, 2);
             }
         } catch (Exception e) {
             CrashReport.postCatchedException(e);
@@ -797,7 +828,7 @@ public class AppUtil {
 
     public static void saveValue(String key, String value) {
         Value value1 = new Value();
-        value1.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+        value1.setBtAddress(AppStaticVar.mProductInfo.crcModel);
         value1.setKey(key);
         value1.setValue(value);
         DBManager.getInstance().saveValue(value1);

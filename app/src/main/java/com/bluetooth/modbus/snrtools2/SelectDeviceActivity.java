@@ -133,14 +133,14 @@ public class SelectDeviceActivity extends BaseActivity
 							currentSyncCount = 0;
 							totalSyncCount = 0;
 							String oldCRC = AppUtil.getValue("key_crc","");
-							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
 								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
 							}
 							totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
 							totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
 
 							AppStaticVar.currentSyncIndex = 0;
-							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.pdCfgCrc)){
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
 								syncStr();
 							}else {
 								syncVar();
@@ -179,7 +179,7 @@ public class SelectDeviceActivity extends BaseActivity
 		AppStaticVar.mProductInfo.pdModel = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 		AppStaticVar.mProductInfo.pdVersion = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdVersion);
 //		AbSharedUtil.putString(mContext,"key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
-		AppUtil.saveValue("key_crc",AppStaticVar.mProductInfo.pdCfgCrc);
+		AppUtil.saveValue("key_crc",AppStaticVar.mProductInfo.crcModel);
 		Intent intent = new Intent(mContext, MainActivity.class);
 		// Intent intent = new Intent(mContext, SNRMainActivity.class);
 		startActivity(intent);
@@ -360,7 +360,7 @@ public class SelectDeviceActivity extends BaseActivity
 	private void syncStr(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdStringCount){
 			if(AppStaticVar.currentSyncIndex == 0){
-				DBManager.getInstance().clearStr();
+//				DBManager.getInstance().clearStr();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00",80, new CmdListener() {
@@ -408,6 +408,9 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 			});
 		}else {
+//			String newCrcModel = AppStaticVar.mProductInfo.pdCfgCrc+DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
+//			DBManager.getInstance().updateOfflineStringCrcModel(AppStaticVar.mProductInfo.crcModel,newCrcModel);
+//			AppStaticVar.mProductInfo.crcModel = newCrcModel;
 			AppStaticVar.currentSyncIndex = 0;
 			syncCmd();
 		}
@@ -416,7 +419,7 @@ public class SelectDeviceActivity extends BaseActivity
 	private void syncCmd(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdCmdCount){
 			if(AppStaticVar.currentSyncIndex == 0){
-				DBManager.getInstance().clearCmd();
+//				DBManager.getInstance().clearCmd();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00",32, new CmdListener() {
@@ -472,7 +475,7 @@ public class SelectDeviceActivity extends BaseActivity
 	private void syncParamGroup(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParGroupCount){
 			if(AppStaticVar.currentSyncIndex == 0){
-				DBManager.getInstance().clearParamGroup();
+//				DBManager.getInstance().clearParamGroup();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00",24, new CmdListener() {
@@ -526,7 +529,7 @@ public class SelectDeviceActivity extends BaseActivity
 	private void syncParam(){
 		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParCount){
 			if(AppStaticVar.currentSyncIndex == 0){
-				DBManager.getInstance().clearParam();
+//				DBManager.getInstance().clearParam();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00",48, new CmdListener() {
@@ -547,8 +550,8 @@ public class SelectDeviceActivity extends BaseActivity
 					String linkVariable = result.substring(20,22);
 					String count = Long.parseLong(result.substring(22,24),16)+"";
 					String unit = result.substring(26,28)+result.substring(24,26);
-					String max = AppUtil.getValueByType("7",unit,count,result.substring(28,36),false);
-					String min = AppUtil.getValueByType("7",unit,count,result.substring(36,44),false);
+					String max = NumberBytes.subZeroAndDot(AppUtil.getValueByType("7",unit,count,result.substring(28,36),false));
+					String min = NumberBytes.subZeroAndDot(AppUtil.getValueByType("7",unit,count,result.substring(36,44),false));
 					Param param = new Param();
 					param.setHexNo(noHexStr);
 					param.setParamGroupHexNo(paramGroupHexNo);

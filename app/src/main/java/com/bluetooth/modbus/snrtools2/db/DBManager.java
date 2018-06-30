@@ -64,13 +64,13 @@ public class DBManager {
 
     public List<OfflineString> getAllOfflineString(){
         synchronized (this){
-            return offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).list();
+            return offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
         }
     }
 
     public void saveOfflineString(OfflineString offlineString){
         synchronized (this){
-            offlineString.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            offlineString.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(offlineString.getId() == null) {
                 OfflineString temp = offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.HexNo.eq(offlineString.getHexNo()), OfflineStringDao.Properties.BtAddress.eq(offlineString.getBtAddress())).unique();
                 if (temp != null) {
@@ -81,9 +81,20 @@ public class DBManager {
         }
     }
 
+    public void updateOfflineStringCrcModel(String oldCrcModel,String crcModel){
+        synchronized (this){
+            //UPDATE table_name
+//            SET column1=value1,column2=value2,...
+//            WHERE some_column=some_value;
+            String sql = "UPDATE "+OfflineStringDao.TABLENAME+" SET "+OfflineStringDao.Properties.BtAddress.columnName+" =? "
+                    +" WHERE "+OfflineStringDao.Properties.BtAddress.columnName+" =? ";
+            offlineStringDao.getDatabase().execSQL(sql,new String[]{crcModel,oldCrcModel});
+        }
+    }
+
     public void saveCmd(Cmd cmd){
         synchronized (this){
-            cmd.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            cmd.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(cmd.getId() == null) {
                 Cmd temp = cmdDao.queryBuilder().where(CmdDao.Properties.HexNo.eq(cmd.getHexNo()), CmdDao.Properties.BtAddress.eq(cmd.getBtAddress())).unique();
                 if (temp != null) {
@@ -96,7 +107,7 @@ public class DBManager {
 
     public void saveVar(Var var){
         synchronized (this){
-            var.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            var.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(var.getId() == null) {
                 Var temp = varDao.queryBuilder().where(VarDao.Properties.HexNo.eq(var.getHexNo()), VarDao.Properties.BtAddress.eq(var.getBtAddress())).unique();
                 if (temp != null) {
@@ -109,21 +120,21 @@ public class DBManager {
 
     public Var getVar(String key){
         synchronized (this) {
-            Var var = varDao.queryBuilder().where(VarDao.Properties.HexNo.eq(key),VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).unique();
+            Var var = varDao.queryBuilder().where(VarDao.Properties.HexNo.eq(key),VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
             return var;
         }
     }
 
     public List<Var> getAllVar(){
         synchronized (this) {
-            List<Var> var = varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).list();
+            List<Var> var = varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
             return var;
         }
     }
 
     public void saveValue(Value value){
         synchronized (this){
-            value.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            value.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(value.getId() == null) {
                 Value temp = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(value.getKey()), ValueDao.Properties.BtAddress.eq(value.getBtAddress())).unique();
                 if (temp != null) {
@@ -136,62 +147,62 @@ public class DBManager {
 
     public Value getValue(String key){
         synchronized (this) {
-            Value var = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(key),ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).unique();
+            Value var = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(key),ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
             return var;
         }
     }
     public List<Value> getAllValue(){
         synchronized (this) {
-            List<Value> var = valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).list();
+            List<Value> var = valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
             return var==null?new ArrayList<Value>():var;
         }
     }
 
     public void clearParam(){
         synchronized (this){
-            paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearParamGroup(){
         synchronized (this){
-            paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearCmd(){
         synchronized (this){
-            cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearStr(){
         synchronized (this){
-            offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearValue(){
         synchronized (this){
-            valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearVar(){
         synchronized (this){
-            varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void clearMain(){
         synchronized (this){
-            mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).buildDelete().executeDeleteWithoutDetachingEntities();
+            mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
 
     public void saveMain(Main main){
         synchronized (this){
-            main.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            main.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(main.getId() == null) {
                 Main temp = mainDao.queryBuilder().where(MainDao.Properties.Type.eq(main.getType()),MainDao.Properties.HexNo.eq(main.getHexNo()), MainDao.Properties.BtAddress.eq(main.getBtAddress())).unique();
                 if (temp != null) {
@@ -204,42 +215,42 @@ public class DBManager {
 
     public List<Main> getMainList(){
         synchronized (this) {
-            List<Main> list = mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).list();
+            List<Main> list = mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
             return list==null?new ArrayList<Main>():list;
         }
     }
 
     public List<ParamGroup> getParamGroups(String level){
         synchronized (this){
-            List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.Level.le(level),ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.Level.le(level),ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<ParamGroup>():result;
         }
     }
 
     public List<ParamGroup> getAllParamGroups(){
         synchronized (this){
-            List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<ParamGroup> result = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<ParamGroup>():result;
         }
     }
 
     public List<Cmd> getCmds(String level){
         synchronized (this){
-            List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.CmdPwd.eq(level),CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.CmdPwd.eq(level),CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<Cmd>():result;
         }
     }
 
     public List<Cmd> getAllCmds(){
         synchronized (this){
-            List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<Cmd> result = cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<Cmd>():result;
         }
     }
 
     public void saveParamGroup(ParamGroup paramGroup){
         synchronized (this){
-            paramGroup.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            paramGroup.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(paramGroup.getId() == null) {
                 ParamGroup temp = paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.HexNo.eq(paramGroup.getHexNo()), ParamGroupDao.Properties.BtAddress.eq(paramGroup.getBtAddress())).unique();
                 if (temp != null) {
@@ -252,27 +263,31 @@ public class DBManager {
 
     public List<Param> getParams(String groupHexNo){
         synchronized (this){
-            List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.ParamGroupHexNo.eq(groupHexNo),ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.ParamGroupHexNo.eq(groupHexNo),ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<Param>():result;
         }
     }
 
     public List<Param> getAllParams(){
         synchronized (this){
-            List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).build().list();
+            List<Param> result = paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).build().list();
             return result==null?new ArrayList<Param>():result;
         }
     }
 
     public Param getParam(String paramHexNo){
         synchronized (this){
-            return paramDao.queryBuilder().where(ParamDao.Properties.HexNo.eq(paramHexNo),ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).unique();
+            try {
+                return paramDao.queryBuilder().where(ParamDao.Properties.HexNo.eq(paramHexNo),ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
+            }catch (Exception e){
+                return null;
+            }
         }
     }
 
     public void saveParam(Param param){
         synchronized (this){
-            param.setBtAddress(AppStaticVar.mProductInfo.pdCfgCrc);
+            param.setBtAddress(AppStaticVar.mProductInfo.crcModel);
             if(param.getId() == null) {
                 Param temp = paramDao.queryBuilder().where(ParamDao.Properties.HexNo.eq(param.getHexNo()), ParamDao.Properties.BtAddress.eq(param.getBtAddress())).unique();
                 if (temp != null) {
@@ -285,20 +300,24 @@ public class DBManager {
 
     public List<OfflineString> getAllStrs(){
         synchronized (this){
-            return offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).list();
+            return offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
         }
     }
 
     public String getStr(String key){
         synchronized (this) {
-            OfflineString offlineString = offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.HexNo.eq(key),OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.pdCfgCrc)).unique();
-            if(offlineString == null){
+            try {
+                OfflineString offlineString = offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.HexNo.eq(key),OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
+                if(offlineString == null){
+                    return "";
+                }
+                return (AppStaticVar.isEnglish ? offlineString.getStringEn():offlineString.getStringZh())
+                        .replaceAll("~","³")
+                        .replaceAll("\\^","℃")
+                        .replaceAll("`","²");
+            }catch (Exception e){
                 return "";
             }
-            return (AppStaticVar.isEnglish ? offlineString.getStringEn():offlineString.getStringZh())
-                    .replaceAll("~","³")
-                    .replaceAll("\\^","℃")
-                    .replaceAll("`","²");
         }
     }
 }

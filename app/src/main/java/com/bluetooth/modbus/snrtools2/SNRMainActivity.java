@@ -129,16 +129,16 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        if(isFirst){
-//            isFirst = false;
-//            LayoutParams layoutParams = mainView.getLayoutParams();
-//            layoutParams.height = mainView.getWidth()/5*3;
-//            mainView.setLayoutParams(layoutParams);
-//        }
-//        super.onWindowFocusChanged(hasFocus);
-//    }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if(isFirst){
+            isFirst = false;
+            LayoutParams layoutParams = mainView.getLayoutParams();
+            layoutParams.height = mainView.getWidth()/5*3;
+            mainView.setLayoutParams(layoutParams);
+        }
+        super.onWindowFocusChanged(hasFocus);
+    }
 
     private void dealVar(String result) {
         try {
@@ -804,10 +804,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         if (AppStaticVar.mProductInfo != null) {
             for (int i = 0; i < AppStaticVar.mProductInfo.pdVarCount; i++) {
                 Var var = DBManager.getInstance().getVar(NumberBytes.padLeft(Integer.toHexString(i), 4, '0'));
-                if(TextUtils.isEmpty(var.getName())){
-                    continue;
-                }
                 VarItemView varItemView = new VarItemView(mContext);
+                if(TextUtils.isEmpty(var.getName().trim())){
+                    varItemView.setVisibility(View.GONE);
+                }
 //                varItemView.hideLabel();
                 varItemView.setLabel(var.getName());
                 varItemView.setValue(getString(R.string.string_tips_msg2));

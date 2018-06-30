@@ -32,9 +32,9 @@ public class MainView extends View {
 
     private Paint mPaint;
     private static int COLUMN_COUNT = 128;
-    private static float TEXT_SIZE_SMALL = 128;
-    private static float TEXT_SIZE_NORMAL = 128;
-    private static float TEXT_SIZE_LARGE = 128;
+    private static float TEXT_SIZE_SMALL = 0;
+    private static float TEXT_SIZE_NORMAL = 0;
+    private static float TEXT_SIZE_LARGE = 0;
     private List<Main> values = new ArrayList<>();
     private Bitmap arrow_l, arrow_r, arrow_t, arrow_b,
             battery_empty, battery_error, battery_full, battery_half,
@@ -109,13 +109,47 @@ public class MainView extends View {
         return mPaint.measureText(text);
     }
 
+    private void calcTextSize(){
+        if(TEXT_SIZE_SMALL==0) {
+            String small = "ABCDEFGHIJKLMNOPQRSTU";
+            String normal = "可以容纳八个汉字";
+            String large = "999999999";
+            float index = getWidth()/2;
+            while (TEXT_SIZE_SMALL==0){
+                if(getTextWidth(small,index)<getWidth()){
+                    TEXT_SIZE_SMALL = index;
+                    break;
+                }
+                index--;
+            }
+            index = getWidth()/2;
+            while (TEXT_SIZE_NORMAL==0){
+                if(getTextWidth(normal,index)<getWidth()){
+                    TEXT_SIZE_NORMAL = index;
+                    break;
+                }
+                index--;
+            }
+            index = getWidth()/2;
+            while (TEXT_SIZE_LARGE==0){
+                if(getTextWidth(large,index)<getWidth()){
+                    TEXT_SIZE_LARGE = index;
+                    break;
+                }
+                index--;
+            }
+        }
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         canvas.drawColor(Color.parseColor("#00FFA9"));
-        TEXT_SIZE_SMALL = getWidth() / (8 * 2) / 1.2f;
-        TEXT_SIZE_NORMAL = TEXT_SIZE_SMALL * 2;
-        TEXT_SIZE_LARGE = TEXT_SIZE_SMALL * 2.8f;
+        calcTextSize();
+//        float scale = 1f;
+//        TEXT_SIZE_SMALL = scale*getWidth() / 21f;
+//        TEXT_SIZE_NORMAL = scale*getWidth() / 16f;
+//        TEXT_SIZE_LARGE = scale*getWidth() / 9f;
         for (int i = 0; i < values.size(); i++) {
             Main main = values.get(i);
             if ("0".equals(main.getType()) || "1".equals(main.getType()) || "3".equals(main.getType())) {
@@ -139,7 +173,8 @@ public class MainView extends View {
 //                float valueWidth = mPaint.measureText(main.getValue());
 //                float unitWidth = mPaint.measureText(main.getUnitStr());
                 int startX = AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128;
-                int startY = AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8);
+                int startY = AppUtil.parseToInt(main.getX(), 0) * getHeight() / 8;
+//                int startY = AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8);
                 int viewWidth = AppUtil.parseToInt(main.getWidth(), 0) * getWidth() / 128;//占用宽度
                 Path path = new Path();
                 if ("2".equals(main.getGravity())) {
@@ -281,9 +316,11 @@ public class MainView extends View {
 
     private Rect getDest(Bitmap bitmap, Main main, int scale) {
         int left = AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128;
-        int top = AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8);
+        int top = AppUtil.parseToInt(main.getX(), 0) * getHeight() / 8;
+//        int top = AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8);
         int right = AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128 + (int)(bitmap.getWidth()*((scale* getWidth() / (2f * 8f))/bitmap.getHeight()));
-        int bottom = (AppUtil.parseToInt(main.getX(), 0) + scale) * getWidth() / (2 * 8);
+        int bottom = (AppUtil.parseToInt(main.getX(), 0) + scale) * getHeight() / 8;
+//        int bottom = (AppUtil.parseToInt(main.getX(), 0) + scale) * getWidth() / (2 * 8);
         Rect dest = new Rect(left, top, right,bottom);
         return dest;
     }

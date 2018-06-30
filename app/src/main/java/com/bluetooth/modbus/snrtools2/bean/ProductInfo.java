@@ -2,6 +2,8 @@ package com.bluetooth.modbus.snrtools2.bean;
 
 import android.text.TextUtils;
 
+import com.bluetooth.modbus.snrtools2.db.DBManager;
+import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -50,6 +52,8 @@ public class ProductInfo implements Serializable {
     public String pdDispConfig;//
     /** DWORD-4	出厂序列号*/
     public long pdSN;//
+    /** crc+model*/
+    public String crcModel;//
 
     public static ProductInfo buildModel(String info){
         if(!TextUtils.isEmpty(info)){
@@ -103,6 +107,8 @@ public class ProductInfo implements Serializable {
             productInfo.pdDispConfig = NumberBytes.padLeft(Long.toBinaryString(NumberBytes.hexStrToLong(strings[45]+strings[44]+strings[43]+strings[42])),16,'0');//
             /** DWORD-4	出厂序列号*/
             productInfo.pdSN= NumberBytes.hexStrToLong(strings[49]+strings[48]+strings[47]+strings[46]);
+            productInfo.crcModel = productInfo.pdCfgCrc;//暂时认为crc是唯一标识
+//            productInfo.crcModel = productInfo.pdCfgCrc+DBManager.getInstance().getStr(productInfo.pdModel);
             return productInfo;
         }
         return null;
