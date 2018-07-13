@@ -21,8 +21,8 @@
     <string name="string_ypp">Paired</string>
     <string name="string_update">Exit APP！</string>
     <string name="string_update_label">Update Mode</string>
-    <string name="string_menu_msg1">Welcome！</string>
-    <string name="string_menu_msg2">Tel:+86&#8211;25&#8211;58008686\nFax:+86&#8211;25&#8211;86167199\nEmail:overseas@sinier.com.cn\nAddr:No.6 Xinggu Road, Jiangning District, Nanjing, China.</string>
+    <string name="string_menu_msg1">1. Support SE10E electromagnetism, SE10A electromagnetism, SV21E vortex street \n2. Add alarm information display \n3. Analog instrument display function</string>
+    <string name="string_menu_msg2">Instrument assistant 2\nV1.0.1.4\n more support access:\nwww.sinier.com.cn</string>
     <string name="string_menu1">New Features</string>
     <string name="string_menu2">About</string>
     <string name="string_menu3">Update App</string>

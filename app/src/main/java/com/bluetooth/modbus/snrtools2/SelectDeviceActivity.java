@@ -737,7 +737,7 @@ public class SelectDeviceActivity extends BaseActivity
 
 	private void downloadXml()
 	{
-		String url = "http://www.sinier.com.cn/download/beta2/version.xml";
+		String url = "http://www.sinier.com.cn/download/SNRToolsV2/version.xml";
 		mAbHttpUtil.get(url, new AbFileHttpResponseListener(url)
 		{
 			// 获取数据成功会调用这里
