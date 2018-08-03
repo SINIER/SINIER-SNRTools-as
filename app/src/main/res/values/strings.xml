@@ -22,7 +22,7 @@
     <string name="string_update">Exit APP！</string>
     <string name="string_update_label">Update Mode</string>
     <string name="string_menu_msg1">1. Support SE10E electromagnetism, SE10A electromagnetism, SV21E vortex street \n2. Add alarm information display \n3. Analog instrument display function</string>
-    <string name="string_menu_msg2">Instrument assistant 2\nV1.0.1.4\n more support access:\nwww.sinier.com.cn</string>
+    <string name="string_menu_msg2">Instrument assistant 2\nV%1$s\n more support access:\nwww.sinier.com.cn</string>
     <string name="string_menu1">New Features</string>
     <string name="string_menu2">About</string>
     <string name="string_menu3">Update App</string>

@@ -565,7 +565,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.textView2:// 关于
                 hideMenu();
-                showDialogOne(getResources().getString(R.string.string_menu_msg2), null);
+                showDialogOne(String.format(getResources().getString(R.string.string_menu_msg2),AbAppUtil.getPackageInfo(this).versionName), null);
                 break;
             case R.id.textView3:// 版本更新
                 hideMenu();

@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -958,5 +959,32 @@ public class AppUtil {
         }
         return builder;
 
+    }
+
+    /**
+     * 获取权限
+     *
+     * @param permission
+     *            权限
+     * @param path
+     *            路径
+     */
+    public static void chmod(String permission, String path) {
+        try {
+            String command = "chmod " + permission + " " + path;
+            Runtime runtime = Runtime.getRuntime();
+            runtime.exec(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void installApk(Context context, File file) {
+        Intent intent = new Intent();
+        intent.addFlags(268435456);
+        intent.setAction("android.intent.action.VIEW");
+        intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true); //表明不是未知来源
+        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        context.startActivity(intent);
     }
 }

@@ -695,7 +695,7 @@ public class SelectDeviceActivity extends BaseActivity
 				break;
 			case R.id.textView2:// 关于
 				hideMenu();
-				showDialogOne(getResources().getString(R.string.string_menu_msg2), null);
+				showDialogOne(String.format(getResources().getString(R.string.string_menu_msg2),AbAppUtil.getPackageInfo(this).versionName), null);
 				break;
 			case R.id.textView3:// 版本更新
 				hideMenu();
@@ -738,7 +738,21 @@ public class SelectDeviceActivity extends BaseActivity
 	private void downloadXml()
 	{
 		String url = "http://www.sinier.com.cn/download/SNRToolsV2/version.xml";
-		mAbHttpUtil.get(url, new AbFileHttpResponseListener(url)
+		File xml = new File(Constans.Directory.DOWNLOAD+"version.xml");
+		try
+		{
+			if (!xml.getParentFile().exists())
+			{
+				xml.getParentFile().mkdirs();
+			}
+			xml.delete();
+			xml.createNewFile();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		mAbHttpUtil.get(url, new AbFileHttpResponseListener(xml)
 		{
 			// 获取数据成功会调用这里
 			@Override
@@ -810,7 +824,8 @@ public class SelectDeviceActivity extends BaseActivity
 						// intent.setDataAndType(Uri.fromFile(apk),
 						// "application/vnd.android.package-archive");
 						// startActivity(intent);
-						AbAppUtil.installApk(mContext, apk);
+						AppUtil.chmod("777",apk.getAbsolutePath());
+						AppUtil.installApk(mContext, apk);
 						return;
 					}
 					try
@@ -829,11 +844,8 @@ public class SelectDeviceActivity extends BaseActivity
 					{
 						public void onSuccess(int statusCode, File file)
 						{
-							// Intent intent = new Intent(Intent.ACTION_VIEW);
-							// intent.setDataAndType(Uri.fromFile(file),
-							// "application/vnd.android.package-archive");
-							// startActivity(intent);
-							AbAppUtil.installApk(mContext, file);
+							AppUtil.chmod("777",file.getAbsolutePath());
+							AppUtil.installApk(mContext, file);
 						};
 
 						// 开始执行前

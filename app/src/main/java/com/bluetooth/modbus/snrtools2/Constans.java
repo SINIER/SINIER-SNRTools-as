@@ -3,6 +3,9 @@ package com.bluetooth.modbus.snrtools2;
 import android.content.Context;
 import android.os.Environment;
 
+import com.bluetooth.modbus.snrtools2.common.SNRApplication;
+import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
+
 public class Constans {
 	
 	/** 指定型号名称起始字段*/
@@ -50,7 +53,6 @@ public class Constans {
 	}
 	
 	public static class Directory{
-		public static final String DOWNLOAD = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Sinier/update/";
-		public static final String LOG = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Sinier/log/";
+		public static final String DOWNLOAD = AppStaticVar.mApplication.getFilesDir()+"/";
 	}
 }

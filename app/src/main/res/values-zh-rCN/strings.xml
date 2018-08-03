@@ -22,7 +22,7 @@
     <string name="string_update">程序退出！</string>
     <string name="string_update_label">进入刷机模式</string>
     <string name="string_menu_msg1">1、支持SE10E电磁、SE10A电磁、SV21E涡街\n2、增加报警信息显示\n3、模拟仪表显示屏功能</string>
-    <string name="string_menu_msg2">仪表助手2\nV1.0.1.4\n更多支持访问:\nwww.sinier.com.cn</string>
+    <string name="string_menu_msg2">仪表助手2\nV%1$s\n更多支持访问:\nwww.sinier.com.cn</string>
     <string name="string_menu1">新功能介绍</string>
     <string name="string_menu2">关于仪表助手</string>
     <string name="string_menu3">版本升级</string>
