@@ -1,10 +1,14 @@
 package com.bluetooth.modbus.snrtools2.bean;
 
+import android.text.TextUtils;
+
 public class SiriListItem {
+	private String addr;
 	private String message;
 	private boolean isSiri;
 
-	public SiriListItem(String msg, boolean siri) {
+	public SiriListItem(String addr,String msg, boolean siri) {
+		this.addr = addr;
 		message = msg;
 		isSiri = siri;
 	}
@@ -25,4 +29,20 @@ public class SiriListItem {
 		this.isSiri = isSiri;
 	}
 
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		SiriListItem item = (SiriListItem) obj;
+		if(TextUtils.isEmpty(addr)){
+			return false;
+		}
+		return addr.equals(item.getAddr()+"");
+	}
 }

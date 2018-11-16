@@ -4,7 +4,6 @@ package com.bluetooth.modbus.snrtools2.common;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 
-import com.bluetooth.modbus.snrtools2.MyObservable;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -21,7 +20,7 @@ public class SNRApplication extends Application {
 		AppStaticVar.mApplication = getApplicationContext();
 		Locale locale = getResources().getConfiguration().locale;
 		String language = locale.getLanguage();
-		AppStaticVar.isEnglish = language.endsWith("en");
+		AppStaticVar.isChinese = language.endsWith("zh");
 		CrashReport.initCrashReport(getApplicationContext(), "d0f956be79", false);
 	}
 	

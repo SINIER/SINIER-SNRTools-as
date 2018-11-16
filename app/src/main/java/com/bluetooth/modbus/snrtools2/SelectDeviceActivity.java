@@ -1,15 +1,5 @@
 package com.bluetooth.modbus.snrtools2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Set;
-
-import org.xmlpull.v1.XmlPullParser;
-
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -24,19 +14,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.text.InputType;
-import android.text.method.NumberKeyListener;
-import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -45,7 +30,6 @@ import com.ab.http.AbFileHttpResponseListener;
 import com.ab.http.AbHttpUtil;
 import com.ab.util.AbAppUtil;
 import com.ab.util.AbFileUtil;
-import com.ab.util.AbSharedUtil;
 import com.ab.view.progress.AbHorizontalProgressBar;
 import com.bluetooth.modbus.snrtools2.adapter.DeviceListAdapter;
 import com.bluetooth.modbus.snrtools2.bean.ProductInfo;
@@ -57,15 +41,21 @@ import com.bluetooth.modbus.snrtools2.db.Main;
 import com.bluetooth.modbus.snrtools2.db.OfflineString;
 import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.db.ParamGroup;
-import com.bluetooth.modbus.snrtools2.db.Value;
 import com.bluetooth.modbus.snrtools2.db.Var;
 import com.bluetooth.modbus.snrtools2.listener.CmdListener;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 import com.bluetooth.modbus.snrtools2.uitls.AppUtil;
 import com.bluetooth.modbus.snrtools2.uitls.CmdUtils;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
-import com.bluetooth.modbus.snrtools2.view.IPEdittext;
 import com.bluetooth.modbus.snrtools2.view.MyAlertDialog.MyAlertDialogListener;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class SelectDeviceActivity extends BaseActivity
 {
@@ -110,7 +100,29 @@ public class SelectDeviceActivity extends BaseActivity
 		showRightView(R.id.rlMenu);
 		if (AppUtil.checkBluetooth(mContext))
 		{
-			searchDevice();
+			if(AppStaticVar.mBtAdapter != null) {
+
+				list.clear();
+				Set<BluetoothDevice> pairedDevices = AppStaticVar.mBtAdapter.getBondedDevices();
+				if (pairedDevices.size() > 0) {
+					for (BluetoothDevice device : pairedDevices) {
+						list.add(new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), true));
+						mAdapter.notifyDataSetChanged();
+						mListView.setSelection(list.size() - 1);
+					}
+				} else {
+					list.add(new SiriListItem("-1",NO_DEVICE_CAN_CONNECT, true));
+					mAdapter.notifyDataSetChanged();
+					mListView.setSelection(list.size() - 1);
+					new Handler().postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							searchDevice();
+						}
+					},1000);
+				}
+				mAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
@@ -130,11 +142,16 @@ public class SelectDeviceActivity extends BaseActivity
 					public void result(final String result) {
 						AppStaticVar.mProductInfo = ProductInfo.buildModel(result);
 						if(AppStaticVar.mProductInfo != null) {
+							String value = AppUtil.getValue("sync_language","-1");
+							AppUtil.saveValue("sync_language",AppStaticVar.isChinese?"zh":"en");
+							boolean isNeedUpdate = !value.equals(AppStaticVar.isChinese?"zh":"en");
 							currentSyncCount = 0;
 							totalSyncCount = 0;
 							String oldCRC = AppUtil.getValue("key_crc","");
 							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
 								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
+							}else if(isNeedUpdate){
+								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount;
 							}
 							totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
 							totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
@@ -142,7 +159,9 @@ public class SelectDeviceActivity extends BaseActivity
 							AppStaticVar.currentSyncIndex = 0;
 							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
 								syncStr();
-							}else {
+							} else if(isNeedUpdate){
+								syncCmd();
+							} else {
 								syncVar();
 							}
 						}else {
@@ -623,7 +642,7 @@ public class SelectDeviceActivity extends BaseActivity
 					return;
 				}
 				String info = item.getMessage();
-				if (NO_DEVICE_CAN_CONNECT.equals(info))
+				if ("-1".equals(item.getAddr()+""))
 				{
 					return;
 				}
@@ -973,21 +992,15 @@ public class SelectDeviceActivity extends BaseActivity
 		{
 			showProgressDialog(getResources().getString(R.string.string_progressmsg1), true);
 			list.clear();
-			mAdapter.notifyDataSetChanged();
-
 			Set<BluetoothDevice> pairedDevices = AppStaticVar.mBtAdapter.getBondedDevices();
-			if (pairedDevices.size() > 0)
-			{
-				for (BluetoothDevice device : pairedDevices)
-				{
-						list.add(new SiriListItem(device.getName() + "\n" + device.getAddress(), true));
-						mAdapter.notifyDataSetChanged();
-						mListView.setSelection(list.size() - 1);
+			if (pairedDevices.size() > 0) {
+				for (BluetoothDevice device : pairedDevices) {
+					list.add(new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), true));
+					mAdapter.notifyDataSetChanged();
+					mListView.setSelection(list.size() - 1);
 				}
-			}
-			else
-			{
-				list.add(new SiriListItem(NO_DEVICE_CAN_CONNECT, true));
+			} else {
+				list.add(new SiriListItem("-1",NO_DEVICE_CAN_CONNECT, true));
 				mAdapter.notifyDataSetChanged();
 				mListView.setSelection(list.size() - 1);
 			}
@@ -1028,6 +1041,8 @@ public class SelectDeviceActivity extends BaseActivity
 		super.onDestroy();
 	}
 
+	boolean isDialogShow = false;
+
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -1045,32 +1060,36 @@ public class SelectDeviceActivity extends BaseActivity
 				{
 					if (device.getName() == null || device.getAddress() == null)
 					{
-						searchDevice();
-						showDialog(getResources().getString(R.string.string_tips_msg6),
-								getResources().getString(R.string.string_search),
-								getResources().getString(R.string.string_bluetooth_search), new MyAlertDialogListener()
-								{
-									@Override
-									public void onClick(View view)
-									{
-										switch (view.getId())
-										{
-											case R.id.btnOk:
-												Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
-												startActivity(intent);
-												break;
-											case R.id.btnCancel:
-												searchDevice();
-												break;
-										}
-									}
-								});
+//						searchDevice();
+//							showDialog(getResources().getString(R.string.string_tips_msg6),
+//									getResources().getString(R.string.string_search),
+//									getResources().getString(R.string.string_bluetooth_search), new MyAlertDialogListener() {
+//										@Override
+//										public void onClick(View view) {
+//											isDialogShow = false;
+//											switch (view.getId()) {
+//												case R.id.btnOk:
+//													Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+//													startActivity(intent);
+//													break;
+//												case R.id.btnCancel:
+//													searchDevice();
+//													break;
+//											}
+//										}
+//									});
 					}
 					else
 					{
 						if (device.getName() != null)
 						{
-							list.add(new SiriListItem(device.getName() + "\n" + device.getAddress(), false));
+							if(list.size()==1&&"-1".equals(list.get(0).getAddr()+"")){
+								list.clear();
+							}
+							SiriListItem item = new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), false);
+							if(!list.contains(item)) {
+								list.add(item);
+							}
 							mAdapter.notifyDataSetChanged();
 							mListView.setSelection(list.size() - 1);
 						}
@@ -1093,9 +1112,32 @@ public class SelectDeviceActivity extends BaseActivity
 				setProgressBarIndeterminateVisibility(false);
 				if (mListView.getCount() == 0)
 				{
-					list.add(new SiriListItem(getResources().getString(R.string.string_tips_msg7), false));
+					list.add(new SiriListItem("-1",getResources().getString(R.string.string_tips_msg7), false));
 					mAdapter.notifyDataSetChanged();
 					mListView.setSelection(list.size() - 1);
+				}
+
+				if(list.size()==1&&"-1".equals(list.get(0).getAddr()+"")){
+					if(!isDialogShow) {
+						isDialogShow = true;
+						showDialog(getResources().getString(R.string.string_tips_msg6),
+								getResources().getString(R.string.string_search),
+								getResources().getString(R.string.string_bluetooth_search), new MyAlertDialogListener() {
+									@Override
+									public void onClick(View view) {
+										isDialogShow = false;
+										switch (view.getId()) {
+											case R.id.btnOk:
+												Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+												startActivity(intent);
+												break;
+											case R.id.btnCancel:
+												searchDevice();
+												break;
+										}
+									}
+								});
+					}
 				}
 				setRightButtonContent(getResources().getString(R.string.string_search), R.id.btnRight1);
 			}

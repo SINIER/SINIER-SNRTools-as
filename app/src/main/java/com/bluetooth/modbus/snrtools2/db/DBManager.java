@@ -2,9 +2,7 @@ package com.bluetooth.modbus.snrtools2.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 
-import com.ab.util.AbSharedUtil;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
@@ -311,7 +309,7 @@ public class DBManager {
                 if(offlineString == null){
                     return "";
                 }
-                return (AppStaticVar.isEnglish ? offlineString.getStringEn():offlineString.getStringZh())
+                return (!AppStaticVar.isChinese ? offlineString.getStringEn():offlineString.getStringZh())
                         .replaceAll("~","³")
                         .replaceAll("\\^","℃")
                         .replaceAll("`","²");

@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 public class MD5 {
 
     public static void main(String[] args) {
-        System.out.println(getFileMD5(new File("C:\\work\\github\\SINIER-SNRTools-as\\app\\release\\app-release.apk")));
+        System.out.println(getFileMD5(new File("C:\\work\\github\\SINIER-SNRTools-as\\app\\release\\仪表助手2-1.0.1.6.apk")));
     }
 
     public static String getFileMD5(File file) {

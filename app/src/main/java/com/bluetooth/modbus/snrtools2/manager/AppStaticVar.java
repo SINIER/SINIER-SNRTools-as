@@ -1,13 +1,9 @@
 package com.bluetooth.modbus.snrtools2.manager;
 
-import java.util.List;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 
-import com.bluetooth.modbus.snrtools2.MyObservable;
-import com.bluetooth.modbus.snrtools2.bean.Parameter;
 import com.bluetooth.modbus.snrtools2.bean.ProductInfo;
 
 public class AppStaticVar {
@@ -30,8 +26,8 @@ public class AppStaticVar {
 	/** 是否是主动断开*/
 	public static boolean isExit = false;
 	public static boolean isSNRMainPause = false;
-	/** 是否是英文模式*/
-	public static boolean isEnglish = false;
+	/** 是否是中文模式*/
+	public static boolean isChinese = true;
 	/** 进入程序时，蓝牙是否开启*/
 	public static boolean isBluetoothOpen = false;
 	/** 当前同步的编号*/
