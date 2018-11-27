@@ -1,15 +1,5 @@
 package com.bluetooth.modbus.snrtools2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.xmlpull.v1.XmlPullParser;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -19,10 +9,8 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Xml;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -53,6 +41,13 @@ import com.bluetooth.modbus.snrtools2.view.MainView;
 import com.bluetooth.modbus.snrtools2.view.NoFocuseTextview;
 import com.bluetooth.modbus.snrtools2.view.VarItemView;
 import com.tencent.bugly.crashreport.CrashReport;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
 
 public class SNRMainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -388,6 +383,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                             String varHexNo = result.substring(4, 8);
                                             Var var = DBManager.getInstance().getVar(varHexNo);
                                             if (var != null) {
+                                                var.setCount(currentMain.getCount());
                                                 String value = AppUtil.getValueByType(var.getType(), var.getUnit(), var.getCount(), str, false);
                                                 currentMain.setValue(value);
                                                 if (!"0".equals(var.getType())) {//选项型的不存在单位
@@ -404,6 +400,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                         System.out.println("===========主屏===参数===========接收到通过的数据" + result);
                                         try {
                                             Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
+                                            param.setCount(currentMain.getCount());
                                             String str = result.substring(12, result.length() - 4);
                                             String value = AppUtil.getValueByType(param.getType(), param.getUnit(), param.getCount(), str, false);
                                             currentMain.setValue(value);
