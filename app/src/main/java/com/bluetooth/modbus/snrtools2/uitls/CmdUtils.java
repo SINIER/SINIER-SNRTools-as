@@ -104,7 +104,7 @@ public class CmdUtils {
                 return;
             }
             if(AppStaticVar.retryCount!=Constans.RETRY_COUNT){
-                CrashReport.postCatchedException(new Throwable("开始第"+(Constans.RETRY_COUNT-AppStaticVar.retryCount)+"次尝试"+cmd));
+//                CrashReport.postCatchedException(new Throwable("开始第"+(Constans.RETRY_COUNT-AppStaticVar.retryCount)+"次尝试"+cmd));
             }
             try {
                 OutputStream os = AppStaticVar.mSocket.getOutputStream();
@@ -138,7 +138,7 @@ public class CmdUtils {
                     if (AppStaticVar.retryCount > 0) {
                         System.out.println("=========================发送重试"+cmd);
                         if (AppStaticVar.retryCount != Constans.RETRY_COUNT) {
-                            CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试" + emsg));
+//                            CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试" + emsg));
                         }
                         AppStaticVar.retryCount--;
                         obj.put("cmd",cmd);
@@ -154,7 +154,7 @@ public class CmdUtils {
                         msg.what = 3;
                         msg.obj = obj;
                         handler.sendMessage(msg);
-                        CrashReport.postCatchedException(new Throwable("重试结束" + emsg));
+//                        CrashReport.postCatchedException(new Throwable("重试结束" + emsg));
                     }
                 }
             }, 2000);
@@ -200,7 +200,7 @@ public class CmdUtils {
                                         msg.obj = obj;
                                         handler.sendMessage(msg);
                                         if (AppStaticVar.retryCount != Constans.RETRY_COUNT) {
-                                            CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试成功" + cmd));
+//                                            CrashReport.postCatchedException(new Throwable("第" + (Constans.RETRY_COUNT - AppStaticVar.retryCount) + "次尝试成功" + cmd));
                                         }
                                     }
                                 }

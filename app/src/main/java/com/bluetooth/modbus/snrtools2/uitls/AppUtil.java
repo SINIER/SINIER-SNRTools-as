@@ -1,5 +1,31 @@
 package com.bluetooth.modbus.snrtools2.uitls;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.widget.Toast;
+
+import com.bluetooth.modbus.snrtools2.Constans;
+import com.bluetooth.modbus.snrtools2.R;
+import com.bluetooth.modbus.snrtools2.bean.Command;
+import com.bluetooth.modbus.snrtools2.bean.CommandRead;
+import com.bluetooth.modbus.snrtools2.bean.CommandWrite;
+import com.bluetooth.modbus.snrtools2.common.CRC16;
+import com.bluetooth.modbus.snrtools2.db.DBManager;
+import com.bluetooth.modbus.snrtools2.db.Value;
+import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
+import com.tencent.bugly.crashreport.CrashReport;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,36 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
-import android.widget.Toast;
-
-import com.ab.util.AbSharedUtil;
-import com.bluetooth.modbus.snrtools2.Constans;
-import com.bluetooth.modbus.snrtools2.R;
-import com.bluetooth.modbus.snrtools2.bean.Command;
-import com.bluetooth.modbus.snrtools2.bean.CommandRead;
-import com.bluetooth.modbus.snrtools2.bean.CommandWrite;
-import com.bluetooth.modbus.snrtools2.common.CRC16;
-import com.bluetooth.modbus.snrtools2.db.DBManager;
-import com.bluetooth.modbus.snrtools2.db.Param;
-import com.bluetooth.modbus.snrtools2.db.Value;
-import com.bluetooth.modbus.snrtools2.db.Var;
-import com.bluetooth.modbus.snrtools2.listener.CmdListener;
-import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
-import com.tencent.bugly.crashreport.CrashReport;
 
 public class AppUtil {
 
@@ -607,7 +603,6 @@ public class AppUtil {
 //    }
 
     public static String getValueByType(String type, String unit, String count, String str, boolean isShowUnit) {
-        CrashReport.postCatchedException(new Throwable("type======"+type+""));
         String value = "";
         if ("0".equals(type + "")) {
             String dealStr = str.substring(2, 4) + str.substring(0, 2);

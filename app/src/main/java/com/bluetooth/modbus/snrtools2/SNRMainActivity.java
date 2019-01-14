@@ -189,7 +189,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 errorItemView.setValueColor(Color.WHITE);
                 errorItemView.setBackGroundColor(Color.RED);
                 errorItemView.setTag(var);
-                CrashReport.postCatchedException(new Throwable("==============errorVar==" + var));
                 if (AppStaticVar.currentVarIndex == mRunStatus.errorCount - 1) {
                     errorItemView.setBottomLineStatus(false);
                 }
@@ -207,7 +206,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 if (AppStaticVar.currentVarIndex >= mRunStatus.errorCount) {
                     AppStaticVar.currentVarIndex = 0;
                 }
-                CrashReport.postCatchedException(new Throwable("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===errorCount=" + mRunStatus.errorCount));
                 System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===errorCount=" + mRunStatus.errorCount);
                 String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex), 4, '0');
                 String cmd = "0x01 0x52 " + noHexStr + "0x00 0x00";
@@ -222,7 +220,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                             @Override
                             public void result(String result) {
                                 System.out.println("====================故障信息=====接收到通过的数据" + result);
-                                CrashReport.postCatchedException(new Throwable("====================故障信息=====接收到通过的数据" + result));
                                 hasSend = false;
                                 dealError(result);
                                 AppStaticVar.currentVarIndex++;
@@ -268,7 +265,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 if (AppStaticVar.currentVarIndex >= totalSyncCount) {
                     AppStaticVar.currentVarIndex = 0;
                 }
-                CrashReport.postCatchedException(new Throwable("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===mainList.size()=" + mainList.size() + "===totalSyncCount==" + totalSyncCount));
                 System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===mainList.size()=" + mainList.size() + "===pdCount" + AppStaticVar.mProductInfo.pdVarCount + "===totalSyncCount==" + totalSyncCount);
                 if (AppStaticVar.currentVarIndex >= mainList.size() + STATUS_COUNT) {
                     String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex - mainList.size() - STATUS_COUNT), 4, '0');
@@ -285,8 +281,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
                                 @Override
                                 public void result(String result) {
-                                    System.out.println("====================更多变量=====接收到通过的数据" + result);
-                                    CrashReport.postCatchedException(new Throwable("====================更多变量=====接收到通过的数据" + result));
                                     hasSend = false;
                                     dealVar(result);
                                     AppStaticVar.currentVarIndex++;
@@ -376,7 +370,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                 public void result(String result) {
                                     hasSend = false;
                                     if ("0".equals(currentMain.getType())) {
-                                        CrashReport.postCatchedException(new Throwable("==============主屏===变量========接收到通过的数据" + result));
                                         System.out.println("==============主屏===变量========接收到通过的数据" + result);
                                         try {
                                             String str = result.substring(12, result.length() - 4);
@@ -396,7 +389,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                             System.out.println("=================主屏变量========" + e.toString());
                                         }
                                     } else if ("1".equals(currentMain.getType())) {
-                                        CrashReport.postCatchedException(new Throwable("===========主屏===参数===========接收到通过的数据" + result));
                                         System.out.println("===========主屏===参数===========接收到通过的数据" + result);
                                         try {
                                             Param param = DBManager.getInstance().getParam(currentMain.getHexNo());
@@ -809,7 +801,6 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 varItemView.setLabel(var.getName());
                 varItemView.setValue(getString(R.string.string_tips_msg2));
                 varItemView.setTag(var);
-                CrashReport.postCatchedException(new Throwable("==============var==" + var));
                 if (i == AppStaticVar.mProductInfo.pdVarCount - 1) {
                     varItemView.setBottomLineStatus(false);
                 }
