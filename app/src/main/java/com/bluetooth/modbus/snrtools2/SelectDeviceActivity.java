@@ -59,7 +59,6 @@ import java.util.Set;
 
 public class SelectDeviceActivity extends BaseActivity
 {
-
 	private String NO_DEVICE_CAN_CONNECT;
 	private ListView mListView;
 	private ArrayList<SiriListItem> list;
@@ -82,10 +81,13 @@ public class SelectDeviceActivity extends BaseActivity
 		setContentView(R.layout.activity_main);
 		mAbHttpUtil = AbHttpUtil.getInstance(this);
 		AppStaticVar.isBluetoothOpen = AppUtil.checkBluetooth(this,false);
-		setTitleClickListener(new View.OnClickListener() {
+		setTitleClickListener(new View.OnClickListener()
+		{
 			@Override
-			public void onClick(View v) {
-				if(click==0){
+			public void onClick(View v)
+			{
+				if(click==0)
+				{
 					click = 10;
 					Intent intent = new Intent(mContext,DBDataActivity.class);
 					startActivity(intent);
@@ -100,23 +102,29 @@ public class SelectDeviceActivity extends BaseActivity
 		showRightView(R.id.rlMenu);
 		if (AppUtil.checkBluetooth(mContext))
 		{
-			if(AppStaticVar.mBtAdapter != null) {
-
+			if(AppStaticVar.mBtAdapter != null)
+			{
 				list.clear();
 				Set<BluetoothDevice> pairedDevices = AppStaticVar.mBtAdapter.getBondedDevices();
-				if (pairedDevices.size() > 0) {
-					for (BluetoothDevice device : pairedDevices) {
+				if (pairedDevices.size() > 0)
+				{
+					for (BluetoothDevice device : pairedDevices)
+					{
 						list.add(new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), true));
 						mAdapter.notifyDataSetChanged();
 						mListView.setSelection(list.size() - 1);
 					}
-				} else {
+				}
+				else
+				{
 					list.add(new SiriListItem("-1",NO_DEVICE_CAN_CONNECT, true));
 					mAdapter.notifyDataSetChanged();
 					mListView.setSelection(list.size() - 1);
-					new Handler().postDelayed(new Runnable() {
+					new Handler().postDelayed(new Runnable()
+					{
 						@Override
-						public void run() {
+						public void run()
+						{
 							searchDevice();
 						}
 					},1000);
@@ -127,73 +135,92 @@ public class SelectDeviceActivity extends BaseActivity
 	}
 
 	@Override
+	// 同步产品配置信息
 	public void reconnectSuccss()
 	{
-		new Handler().postDelayed(new Runnable() {
+		new Handler().postDelayed(new Runnable()
+		{
 			@Override
-			public void run() {
-				CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00",104, new CmdListener() {
+			public void run()
+			{
+				CmdUtils.sendCmd("0x01 0x61 0x00 0x00 0x00 0x00",104, new CmdListener()
+				{
 					@Override
-					public void start() {
+					// 启动
+					public void start()
+					{
 						showProgressDialog(getString(R.string.sync_config),false);
 					}
-
+					// 读成功
 					@Override
-					public void result(final String result) {
+					public void result(final String result)
+					{
 						AppStaticVar.mProductInfo = ProductInfo.buildModel(result);
-						if(AppStaticVar.mProductInfo != null) {
+						if(AppStaticVar.mProductInfo != null)
+						{
+							// 判断系统语言
 							String value = AppUtil.getValue("sync_language","-1");
 							AppUtil.saveValue("sync_language",AppStaticVar.isChinese?"zh":"en");
 							boolean isNeedUpdate = !value.equals(AppStaticVar.isChinese?"zh":"en");
 							currentSyncCount = 0;
 							totalSyncCount = 0;
+							// 判断配置块CRC是否被更新
 							String oldCRC = AppUtil.getValue("key_crc","");
-							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel))
+							{
 								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount+AppStaticVar.mProductInfo.pdStringCount;
-							}else if(isNeedUpdate){
+							}
+							else if(isNeedUpdate)
+							{
 								totalSyncCount=AppStaticVar.mProductInfo.pdCmdCount+AppStaticVar.mProductInfo.pdParCount+AppStaticVar.mProductInfo.pdParGroupCount;
 							}
 							totalSyncCount += AppStaticVar.mProductInfo.pdVarCount;
 							totalSyncCount += AppStaticVar.mProductInfo.pdDispMainCount;
-
+							// CRC不符合，重新读取产品配置数据
 							AppStaticVar.currentSyncIndex = 0;
-							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel)){
+							if (!(oldCRC+"").equals(AppStaticVar.mProductInfo.crcModel))
+							{
 								syncStr();
-							} else if(isNeedUpdate){
+							}
+							else if(isNeedUpdate)
+							{
 								syncCmd();
-							} else {
+							}
+							else
+							{
 								syncVar();
 							}
-						}else {
+						}
+						else
+						{
 							syncFailure(getString(R.string.get_setting_error));
 						}
 					}
-
+					// 失败
 					@Override
 					public void connectFailure(String msg) {
 						syncFailure(msg);
 					}
-
+					// 超时
 					@Override
 					public void timeOut(String msg) {
 						syncFailure(msg);
 					}
-
+					// 失败
 					@Override
 					public void failure(String msg) {
 						syncFailure(msg);
 					}
-
+					// 完成
 					@Override
-					public void finish() {
-
-					}
+					public void finish() { 	}
 				});
 			}
-		},500);
+		},100);
 	}
 
-	private void syncSuccess(){
+	private void syncSuccess()
+	{
 		hideProgressDialog();
 		AppStaticVar.mProductInfo.pdModel = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 		AppStaticVar.mProductInfo.pdVersion = DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdVersion);
@@ -204,28 +231,35 @@ public class SelectDeviceActivity extends BaseActivity
 		startActivity(intent);
 	}
 
-	private void syncFailure(String msg){
+	private void syncFailure(String msg)
+	{
 		showToast(msg);
 		hideProgressDialog();
 	}
 
-	private void syncVar(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdVarCount){
-			if(AppStaticVar.currentSyncIndex == 0){
+	// 同步变量
+	private void syncVar()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdVarCount)
+		{
+			if(AppStaticVar.currentSyncIndex == 0)
+			{
 				DBManager.getInstance().clearVar();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",28, new CmdListener() {
-//			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",24, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x66 "+noHexStr+"0x00 0x00",28, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_var)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_var)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
-				public void result(String result) {
+				public void result(String result)
+				{
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 					String nameHexNo = result.substring(14,16)+result.substring(12,14);
 					String name = DBManager.getInstance().getStr(result.substring(14,16)+result.substring(12,14));
@@ -242,21 +276,6 @@ public class SelectDeviceActivity extends BaseActivity
 					DBManager.getInstance().saveVar(var);
 					AppStaticVar.currentSyncIndex++;
 					syncVar();
-
-//					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-//					String type = Long.parseLong(result.substring(12,14),16)+"";
-//					String count = Long.parseLong(result.substring(14,16),16)+"";
-//					String unit = result.substring(18,20)+result.substring(16,18);
-//					Var var = new Var();
-//					var.setHexNo(noHexStr);
-//					var.setType(type);
-//					var.setCount(count);
-//					var.setUnit(unit);
-//					var.setName(AppStaticVar.currentSyncIndex+"");
-//					var.setNameHexNo("000"+AppStaticVar.currentSyncIndex+"");
-//					DBManager.getInstance().saveVar(var);
-//					AppStaticVar.currentSyncIndex++;
-//					syncVar();
 				}
 
 				@Override
@@ -275,52 +294,101 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 
 				@Override
-				public void finish() {
-
-				}
+				public void finish() {}
 			});
-		}else {
+		}
+		else
+		{
 			AppStaticVar.currentSyncIndex = 0;
 			syncMain();
 		}
 	}
-
-	private void syncMain(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdDispMainCount){
-			if(AppStaticVar.currentSyncIndex==0){
+	// 同步主界面配置信息
+	private void syncMain()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdDispMainCount)
+		{
+			if(AppStaticVar.currentSyncIndex==0)
+			{
 				DBManager.getInstance().clearMain();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x62 "+noHexStr+"0x00 0x00",32, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x62 "+noHexStr+"0x00 0x00",32, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_mainview)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_mainview)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
 				public void result(String result) {
-					String type = Long.parseLong(result.substring(12,14),16)+"";
-					String temp = NumberBytes.padLeft(Long.toBinaryString(Long.parseLong(result.substring(14,16),16)),8,'0');
-					String fontSize = Integer.parseInt(temp.substring(0,2),2)+"";
-					String gravity = Integer.parseInt(temp.substring(2,4),2)+"";
-					String count = Integer.parseInt(temp.substring(4,8),2)+"";
-					String x = Long.parseLong(result.substring(16,18),16)+"";
-					String y = Long.parseLong(result.substring(18,20),16)+"";
-					String width = Long.parseLong(result.substring(20,22),16)+"";
-					String height = Long.parseLong(result.substring(22,24),16)+"";
-					String noHexStr = result.substring(26,28)+result.substring(24,26);
+					// 解析主界面显示配置
+					// 类型：0-变量，1-参数，2-图标，3-字符串，4-波形
+					String type = Long.parseLong(result.substring(12, 14), 16) + "";
+					// 显示格式
+					String temp = NumberBytes.padLeft(Long.toBinaryString(Long.parseLong(result.substring(14, 16), 16)), 8, '0');
+					// bit7:bit6 字体（2-大字体，1-小字体，0-普通字体）
+					String fontSize = Integer.parseInt(temp.substring(0, 2), 2) + "";
+					// bit5:bit4 对齐（2-中间，1-右对齐，0-左对齐）
+					String gravity = Integer.parseInt(temp.substring(2, 4), 2) + "";
+					// bit3:bit0 小数点位数（0-7位） 注（1）
+					String count = Integer.parseInt(temp.substring(4, 8), 2) + "";
+					// 显示行坐标：0-7行（以8像素为一个行单位）
+					String x = Long.parseLong(result.substring(16, 18), 16) + "";
+					// 显示列坐标：0-127列
+					String y = Long.parseLong(result.substring(18, 20), 16) + "";
+					// 显示区域宽度：0-128
+					String width = Long.parseLong(result.substring(20, 22), 16) + "";
+					// 显示区域高度(预留未使用)
+					String height = Long.parseLong(result.substring(22, 24), 16) + "";
+					// 数据索引号：变量/参数/字符串/图标编号
+					String noHexStr = result.substring(26, 28) + result.substring(24, 26);
+
+					// 数值
 					String value = "";
-					if("0".equals(type)){
+					if ("0".equals(type))            // 0-变量
+					{
 						value = getString(R.string.string_tips_msg2);
-					}else if("1".equals(type)){
+					} else if ("1".equals(type))        // 1-参数
+					{
 						value = getString(R.string.string_tips_msg2);
-					}else if("2".equals(type)){
+					} else if ("2".equals(type))        // 2-图标
+					{
 						value = noHexStr;
-					}else if("3".equals(type)){
+					} else if ("3".equals(type))        // 3-字符串
+					{
 						value = DBManager.getInstance().getStr(noHexStr);
 					}
+					// 过滤异常数值
+					if (!(("0".equals(type)) || ("1".equals(type)) || ("2".equals(type)) || ("3".equals(type)))) {
+						type = "0";
+						value = "";
+						width = "0";
+					}
+					if (!(("0".equals(fontSize)) || ("1".equals(fontSize)) || ("2".equals(fontSize)))){
+						fontSize = "0";
+						value = "";
+						width = "0";
+					}
+					if (!(("0".equals(gravity)) || ("1".equals(gravity)) || ("2".equals(gravity)))){
+						gravity = "0";
+						value = "";
+						width = "0";
+					}
+					if((AppUtil.parseToInt(x, 0) < 0) || (AppUtil.parseToInt(x, 0) > 7)) {
+						x = "0";
+						value = "";
+						width = "0";
+					}
+					if((AppUtil.parseToInt(y, 0) < 0) || (AppUtil.parseToInt(y, 0) > 127)) {
+						y = "0";
+						value = "";
+						width = "0";
+					}
+
 					Main main = new Main();
 					main.setType(type);
 					main.setFontSize(fontSize);
@@ -332,7 +400,9 @@ public class SelectDeviceActivity extends BaseActivity
 					main.setHeight(height);
 					main.setHexNo(noHexStr);
 					main.setValue(value);
-					DBManager.getInstance().saveMain(main);
+					if(!"0".equals(width)) {
+						DBManager.getInstance().saveMain(main);
+					}
 					AppStaticVar.currentSyncIndex++;
 					syncMain();
 				}
@@ -357,41 +427,36 @@ public class SelectDeviceActivity extends BaseActivity
 
 				}
 			});
-		}else {
-//			for(int i=1;i<13;i++){
-//				Main main = new Main();
-//				main.setType("2");
-//				main.setFontSize("1");
-//				main.setGravity("1");
-//				main.setCount("1");
-//				main.setX(new Random().nextInt(8)+"");
-//				main.setY(i*10+"");
-//				main.setWidth(10+"");
-//				main.setHeight(10+"");
-//				main.setHexNo(i+"");
-//				main.setValue("");
-//				DBManager.getInstance().saveMain(main);
-//			}
+		}
+		else
+		{
 			syncSuccess();
 		}
 	}
 
-	private void syncStr(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdStringCount){
-			if(AppStaticVar.currentSyncIndex == 0){
+	// 同步字符串
+	private void syncStr()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdStringCount)
+		{
+			if(AppStaticVar.currentSyncIndex == 0)
+			{
 //				DBManager.getInstance().clearStr();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00",80, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x6A "+noHexStr+"0x00 0x00",80, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_string)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_string)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
-				public void result(String result) {
+				public void result(String result)
+				{
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 					String zh = NumberBytes.byte2Char(CRC16.HexString2Buf(result.substring(12,44)));
 					String en = NumberBytes.byte2Char(CRC16.HexString2Buf(result.substring(44,76)));
@@ -422,11 +487,11 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 
 				@Override
-				public void finish() {
-
-				}
+				public void finish() {}
 			});
-		}else {
+		}
+		else
+		{
 //			String newCrcModel = AppStaticVar.mProductInfo.pdCfgCrc+DBManager.getInstance().getStr(AppStaticVar.mProductInfo.pdModel);
 //			DBManager.getInstance().updateOfflineStringCrcModel(AppStaticVar.mProductInfo.crcModel,newCrcModel);
 //			AppStaticVar.mProductInfo.crcModel = newCrcModel;
@@ -434,23 +499,28 @@ public class SelectDeviceActivity extends BaseActivity
 			syncCmd();
 		}
 	}
-
-	private void syncCmd(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdCmdCount){
-			if(AppStaticVar.currentSyncIndex == 0){
-//				DBManager.getInstance().clearCmd();
+	// 同步命令
+	private void syncCmd()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdCmdCount)
+		{
+			if(AppStaticVar.currentSyncIndex == 0)
+			{
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00",32, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x69 "+noHexStr+"0x00 0x00",32, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_cmd)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_cmd)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
-				public void result(String result) {
+				public void result(String result)
+				{
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 					String str0 = DBManager.getInstance().getStr(result.substring(14,16)+result.substring(12,14));
 					String str1 = result.substring(16,20);
@@ -481,32 +551,38 @@ public class SelectDeviceActivity extends BaseActivity
 				}
 
 				@Override
-				public void finish() {
-
-				}
+				public void finish() {}
 			});
-		}else {
+		}
+		else
+		{
 			AppStaticVar.currentSyncIndex = 0;
 			syncParamGroup();
 		}
 	}
-
-	private void syncParamGroup(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParGroupCount){
-			if(AppStaticVar.currentSyncIndex == 0){
+	// 同步参数组
+	private void syncParamGroup()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParGroupCount)
+		{
+			if(AppStaticVar.currentSyncIndex == 0)
+			{
 //				DBManager.getInstance().clearParamGroup();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00",24, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x67 "+noHexStr+"0x00 0x00",24, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_params)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_params)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
-				public void result(String result) {
+				public void result(String result)
+				{
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 					String str0 = DBManager.getInstance().getStr(result.substring(14,16)+result.substring(12,14));
 					String str1 = Long.parseLong(result.substring(18,20)+result.substring(16,18),16)+"";
@@ -539,28 +615,36 @@ public class SelectDeviceActivity extends BaseActivity
 
 				}
 			});
-		}else {
+		}
+		else
+		{
 			AppStaticVar.currentSyncIndex = 0;
 			syncParam();
 		}
 	}
-
-	private void syncParam(){
-		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParCount){
-			if(AppStaticVar.currentSyncIndex == 0){
+	// 同步参数
+	private void syncParam()
+	{
+		if(AppStaticVar.currentSyncIndex<AppStaticVar.mProductInfo.pdParCount)
+		{
+			if(AppStaticVar.currentSyncIndex == 0)
+			{
 //				DBManager.getInstance().clearParam();
 			}
 			String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
-			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00",48, new CmdListener() {
+			CmdUtils.sendCmd("0x01 0x68 "+noHexStr+"0x00 0x00",48, new CmdListener()
+			{
 				@Override
-				public void start() {
+				public void start()
+				{
 					currentSyncCount++;
-//					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
-					showProgressDialog(getString(R.string.sync_config)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
+//					showProgressDialog(getString(R.string.sync_params)+"("+currentSyncCount*100/totalSyncCount+"/100%)",false);
+					showProgressDialog(getString(R.string.sync_params)+"("+currentSyncCount+"/"+totalSyncCount+")",false);
 				}
 
 				@Override
-				public void result(String result) {
+				public void result(String result)
+				{
 					System.out.println("==========================="+result);
 					String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentSyncIndex),4,'0');
 					String paramGroupHexNo = NumberBytes.padLeft(result.substring(12,14),4,'0');
@@ -606,13 +690,13 @@ public class SelectDeviceActivity extends BaseActivity
 
 				}
 			});
-		}else {
+		}
+		else
+		{
 			AppStaticVar.currentSyncIndex = 0;
 			syncVar();
 		}
 	}
-
-
 
 	@Override
 	public void BackOnClick(View v)

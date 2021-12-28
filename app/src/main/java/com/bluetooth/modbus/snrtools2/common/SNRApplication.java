@@ -12,9 +12,11 @@ import java.util.Locale;
 /**
  *
  */
-public class SNRApplication extends Application {
+public class SNRApplication extends Application
+{
 	
-	public void onCreate() {
+	public void onCreate()
+	{
 		super.onCreate();
 		AppStaticVar.mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 		AppStaticVar.mApplication = getApplicationContext();

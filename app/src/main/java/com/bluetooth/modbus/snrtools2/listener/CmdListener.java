@@ -1,6 +1,7 @@
 package com.bluetooth.modbus.snrtools2.listener;
 
-public interface CmdListener {
+public interface CmdListener
+{
 
     void start();
 

@@ -1,10 +1,8 @@
 package com.bluetooth.modbus.snrtools2;
 
-import android.content.Context;
-import android.os.Environment;
-
-import com.bluetooth.modbus.snrtools2.common.SNRApplication;
 import com.bluetooth.modbus.snrtools2.manager.AppStaticVar;
+
+import java.util.UUID;
 
 public class Constans {
 	
@@ -34,7 +32,12 @@ public class Constans {
 	public final static int ERROR_START = 0X10009;
 	/** 连接超时*/
 	public final static int TIME_OUT = 0X1000A;
-	
+
+	public final static UUID BLE_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805F9B34FB");
+	public final static UUID BLE_CHARACTERISTIC_READ_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805F9B34FB");
+	public final static UUID BLE_CHARACTERISTIC_WRITE_UUID = UUID.fromString("0000fff2-0000-1000-8000-00805F9B34FB");
+	public final static UUID BLE_DESCRIPTOR_UUID = UUID.fromString("00002901-0000-1000-8000-00805F9B34FB");
+
 	public static class PasswordLevel{
 		/** 等级1 ，无密码*/
 		public static String LEVEL_0 = "";

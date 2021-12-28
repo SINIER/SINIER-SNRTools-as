@@ -213,6 +213,7 @@ public class CRC16
 
 	}
 
+	// CRC计算并添加
 	public static byte[] getSendBuf2(String[] tt)
 	{
 		String tem = "";

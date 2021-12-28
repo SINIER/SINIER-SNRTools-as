@@ -11,7 +11,8 @@ import org.greenrobot.greendao.annotation.*;
  * 参数组
  */
 @Entity(nameInDb = "Param")
-public class Param implements java.io.Serializable {
+public class Param implements java.io.Serializable
+{
 
     @Id(autoincrement = true)
     private Long id;
@@ -56,7 +57,8 @@ public class Param implements java.io.Serializable {
     // KEEP FIELDS END
 
     @Generated
-    public Param() {
+    public Param()
+    {
     }
 
     public Param(Long id) {
@@ -64,7 +66,8 @@ public class Param implements java.io.Serializable {
     }
 
     @Generated
-    public Param(Long id, String hexNo, String paramGroupHexNo, String type, String name, String value, String valueDisplay, String linkVariable, String count, String unit, String max, String min, String btAddress) {
+    public Param(Long id, String hexNo, String paramGroupHexNo, String type, String name, String value, String valueDisplay, String linkVariable, String count, String unit, String max, String min, String btAddress)
+    {
         this.id = id;
         this.hexNo = hexNo;
         this.paramGroupHexNo = paramGroupHexNo;
@@ -112,7 +115,8 @@ public class Param implements java.io.Serializable {
     /**
      * 参数组编号
      */
-    public void setParamGroupHexNo(String paramGroupHexNo) {
+    public void setParamGroupHexNo(String paramGroupHexNo)
+    {
         this.paramGroupHexNo = paramGroupHexNo;
     }
 
@@ -147,9 +151,7 @@ public class Param implements java.io.Serializable {
     /**
      * 值
      */
-    public String getValue() {
-        return value;
-    }
+    public String getValue()    { return value; }
 
     /**
      * 值

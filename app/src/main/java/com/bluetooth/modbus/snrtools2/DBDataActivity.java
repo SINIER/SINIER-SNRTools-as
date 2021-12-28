@@ -28,23 +28,7 @@ public class DBDataActivity extends BaseActivity {
         setContentView(R.layout.db_layout);
         EditText tv = (EditText) findViewById(R.id.tv);
         StringBuilder sb = new StringBuilder("");
-        sb.append("命令\n");
-        List<Cmd> cmds = DBManager.getInstance().getAllCmds();
-        for(int i=0;i<cmds.size();i++){
-            Cmd cmd = cmds.get(i);
-            sb.append("  hexno=");
-            sb.append(cmd.getHexNo());
-            sb.append("  pwd=");
-            sb.append(cmd.getCmdPwd());
-            sb.append("  name=");
-            sb.append(cmd.getCmdName());
-            sb.append("  bt=");
-            sb.append(cmd.getBtAddress());
-            sb.append("  ext=");
-            sb.append(cmd.getExt());
-            sb.append("\n");
-        }
-        sb.append("\n\n\n主界面变量\n");
+        sb.append("\n主界面变量\n");
         List<Main> mains = DBManager.getInstance().getMainList();
         for(int i=0;i<mains.size();i++){
             Main main = mains.get(i);
@@ -114,6 +98,22 @@ public class DBDataActivity extends BaseActivity {
             sb.append(paramGroup.getName());
             sb.append("  bt=");
             sb.append(paramGroup.getBtAddress());
+            sb.append("\n");
+        }
+        sb.append("\n命令\n");
+        List<Cmd> cmds = DBManager.getInstance().getAllCmds();
+        for(int i=0;i<cmds.size();i++){
+            Cmd cmd = cmds.get(i);
+            sb.append("  hexno=");
+            sb.append(cmd.getHexNo());
+            sb.append("  pwd=");
+            sb.append(cmd.getCmdPwd());
+            sb.append("  name=");
+            sb.append(cmd.getCmdName());
+            sb.append("  bt=");
+            sb.append(cmd.getBtAddress());
+            sb.append("  ext=");
+            sb.append(cmd.getExt());
             sb.append("\n");
         }
         sb.append("\nvalue\n");

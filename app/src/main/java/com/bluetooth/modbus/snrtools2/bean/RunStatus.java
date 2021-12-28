@@ -7,7 +7,8 @@ import java.io.Serializable;
  * 创建日期 2017/12/17
  */
 
-public class RunStatus implements Serializable {
+public class RunStatus implements Serializable
+{
 
     public boolean isError;
     /** 0-正常运行

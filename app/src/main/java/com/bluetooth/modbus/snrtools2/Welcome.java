@@ -17,9 +17,10 @@ import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
  * @author donal
  * 
  */
-public class Welcome extends BaseActivity {
-
-	protected void onCreate(Bundle savedInstanceState) {
+public class Welcome extends BaseActivity
+{
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		final View view = View.inflate(this, R.layout.welcome_page, null);
 		setContentView(view);
@@ -27,23 +28,29 @@ public class Welcome extends BaseActivity {
 		AlphaAnimation aa = new AlphaAnimation(0.3f, 1.0f);
 		aa.setDuration(1000);
 		view.startAnimation(aa);
-		aa.setAnimationListener(new AnimationListener() {
-			public void onAnimationEnd(Animation arg0) {
+		aa.setAnimationListener(new AnimationListener()
+		{
+			public void onAnimationEnd(Animation arg0)
+			{
 				redirectTo();
 			}
 
-			public void onAnimationRepeat(Animation animation) {
+			public void onAnimationRepeat(Animation animation)
+			{
 			}
 
-			public void onAnimationStart(Animation animation) {
+			public void onAnimationStart(Animation animation)
+			{
 			}
 
 		});
 	}
 	@Override
-	public void reconnectSuccss() {
+	public void reconnectSuccss()
+	{
 	}
-	private void redirectTo() {
+	private void redirectTo()
+	{
 		Intent intent = new Intent(this, SelectDeviceActivity.class);
 		startActivity(intent);
 		ActivityManager.getInstances().finishActivity(this);

@@ -11,7 +11,8 @@ import org.greenrobot.greendao.annotation.*;
  * 离线命令
  */
 @Entity(nameInDb = "Cmd")
-public class Cmd implements java.io.Serializable {
+public class Cmd implements java.io.Serializable
+{
 
     @Id(autoincrement = true)
     private Long id;
@@ -35,7 +36,8 @@ public class Cmd implements java.io.Serializable {
     // KEEP FIELDS END
 
     @Generated
-    public Cmd() {
+    public Cmd()
+    {
     }
 
     public Cmd(Long id) {
@@ -43,7 +45,8 @@ public class Cmd implements java.io.Serializable {
     }
 
     @Generated
-    public Cmd(Long id, String hexNo, String cmdName, String ext, String cmdPwd, String btAddress) {
+    public Cmd(Long id, String hexNo, String cmdName, String ext, String cmdPwd, String btAddress)
+    {
         this.id = id;
         this.hexNo = hexNo;
         this.cmdName = cmdName;

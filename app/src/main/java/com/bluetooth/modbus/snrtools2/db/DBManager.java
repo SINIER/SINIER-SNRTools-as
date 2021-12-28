@@ -16,13 +16,13 @@ import java.util.List;
 
 public class DBManager {
 
-    private CmdDao cmdDao;
-    private OfflineStringDao offlineStringDao;
-    private ParamGroupDao paramGroupDao;
-    private ParamDao paramDao;
-    private VarDao varDao;
-    private MainDao mainDao;
-    private ValueDao valueDao;
+    private CmdDao cmdDao;                      // 命令
+    private OfflineStringDao offlineStringDao;  // 离线字符串
+    private ParamGroupDao paramGroupDao;        // 参数组
+    private ParamDao paramDao;                  // 参数
+    private VarDao varDao;                      // 变量
+    private MainDao mainDao;                    // 主界面项目
+    private ValueDao valueDao;                  // 数值
     private Context mContext;
     private DaoMaster daoMaster;
     private DaoSession daoSession;
@@ -65,7 +65,7 @@ public class DBManager {
             return offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
         }
     }
-
+    // 保存离线字符串
     public void saveOfflineString(OfflineString offlineString){
         synchronized (this){
             offlineString.setBtAddress(AppStaticVar.mProductInfo.crcModel);
@@ -89,7 +89,7 @@ public class DBManager {
             offlineStringDao.getDatabase().execSQL(sql,new String[]{crcModel,oldCrcModel});
         }
     }
-
+    // 保存命令
     public void saveCmd(Cmd cmd){
         synchronized (this){
             cmd.setBtAddress(AppStaticVar.mProductInfo.crcModel);
@@ -102,7 +102,7 @@ public class DBManager {
             cmdDao.insertOrReplace(cmd);
         }
     }
-
+    // 保存变量
     public void saveVar(Var var){
         synchronized (this){
             var.setBtAddress(AppStaticVar.mProductInfo.crcModel);
@@ -115,21 +115,21 @@ public class DBManager {
             varDao.insertOrReplace(var);
         }
     }
-
+    // 获得变量
     public Var getVar(String key){
         synchronized (this) {
             Var var = varDao.queryBuilder().where(VarDao.Properties.HexNo.eq(key),VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
             return var;
         }
     }
-
+    // 获得所有变量
     public List<Var> getAllVar(){
         synchronized (this) {
             List<Var> var = varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
             return var;
         }
     }
-
+    // 保存数值
     public void saveValue(Value value){
         synchronized (this){
             value.setBtAddress(AppStaticVar.mProductInfo.crcModel);
@@ -142,62 +142,63 @@ public class DBManager {
             valueDao.insertOrReplace(value);
         }
     }
-
+    // 获取数值
     public Value getValue(String key){
         synchronized (this) {
             Value var = valueDao.queryBuilder().where(ValueDao.Properties.Key.eq(key),ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).unique();
             return var;
         }
     }
+    // 获取所有数值
     public List<Value> getAllValue(){
         synchronized (this) {
             List<Value> var = valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();
             return var==null?new ArrayList<Value>():var;
         }
     }
-
+    // 清参数
     public void clearParam(){
         synchronized (this){
             paramDao.queryBuilder().where(ParamDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清参数组
     public void clearParamGroup(){
         synchronized (this){
             paramGroupDao.queryBuilder().where(ParamGroupDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清命令
     public void clearCmd(){
         synchronized (this){
             cmdDao.queryBuilder().where(CmdDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清字符串
     public void clearStr(){
         synchronized (this){
             offlineStringDao.queryBuilder().where(OfflineStringDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清数值
     public void clearValue(){
         synchronized (this){
             valueDao.queryBuilder().where(ValueDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清变量
     public void clearVar(){
         synchronized (this){
             varDao.queryBuilder().where(VarDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 清主界面项目
     public void clearMain(){
         synchronized (this){
             mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).buildDelete().executeDeleteWithoutDetachingEntities();
         }
     }
-
+    // 保存主界面项目
     public void saveMain(Main main){
         synchronized (this){
             main.setBtAddress(AppStaticVar.mProductInfo.crcModel);
@@ -210,7 +211,7 @@ public class DBManager {
             mainDao.insertOrReplace(main);
         }
     }
-
+    // 获取主界面项目数量
     public List<Main> getMainList(){
         synchronized (this) {
             List<Main> list = mainDao.queryBuilder().where(MainDao.Properties.BtAddress.eq(AppStaticVar.mProductInfo.crcModel)).list();

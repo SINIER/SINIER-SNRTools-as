@@ -3,7 +3,8 @@ package com.bluetooth.modbus.snrtools2.bean;
 import java.io.Serializable;
 import java.util.List;
 
-public class Parameter implements Serializable{
+public class Parameter implements Serializable
+{
 	private static final long serialVersionUID = 2556675806486384300L;
 	public String address;
 	public String count;

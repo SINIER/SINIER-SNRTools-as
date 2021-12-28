@@ -1,5 +1,8 @@
 package com.bluetooth.modbus.snrtools2;
 
+/*
+  选项型参数处理
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,38 +23,43 @@ import com.bluetooth.modbus.snrtools2.bean.Selector;
 import com.bluetooth.modbus.snrtools2.db.Param;
 import com.bluetooth.modbus.snrtools2.manager.ActivityManager;
 
-public class SelectActivity extends BaseWriteParamActivity {
-
+public class SelectActivity extends BaseWriteParamActivity
+{
 	private TextView mTvTitle;
 	private ListView mLv;
 	private SelectAdapter mAdapter;
 	private int mPosition;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_activity);
 		initUI();
 		initData();
 	}
 
-	private void initData() {
+	private void initData()
+	{
 		mTvTitle.setText(getIntent().getStringExtra("title"));
 		List<Selector> list = (List<Selector>) getIntent()
 				.getSerializableExtra("list");
-		if (list == null) {
+		if (list == null)
+		{
 			list = new ArrayList<Selector>();
 		}
 		mAdapter = new SelectAdapter(mContext, list);
 		mLv.setAdapter(mAdapter);
-		mLv.setOnItemClickListener(new OnItemClickListener() {
-
+		mLv.setOnItemClickListener(new OnItemClickListener()
+		{
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
+					int position, long id)
+			{
 				mPosition = position;
 				Param p = (Param) getIntent().getSerializableExtra("param");
-				if(p != null){
+				if(p != null)
+				{
 //					p.valueIn = mAdapter.getItem(position).value;
 					p.setValue(mAdapter.getItem(position).value);
 					p.setValueDisplay(mAdapter.getItem(position).name);
@@ -61,24 +69,29 @@ public class SelectActivity extends BaseWriteParamActivity {
 		});
 	}
 	@Override
-	public void reconnectSuccss() {
+	public void reconnectSuccss()
+	{
 	}
-	private void initUI() {
+	private void initUI()
+	{
 		mTvTitle = (TextView) findViewById(R.id.tvTitle);
 		mLv = (ListView) findViewById(R.id.listView1);
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouchEvent(MotionEvent event)
+	{
 		if (event.getAction() == MotionEvent.ACTION_DOWN
-				&& isOutOfBounds(this, event)) {
+				&& isOutOfBounds(this, event))
+		{
 			ActivityManager.getInstances().finishActivity(this);
 			return true;
 		}
 		return super.onTouchEvent(event);
 	}
 
-	private boolean isOutOfBounds(Activity context, MotionEvent event) {
+	private boolean isOutOfBounds(Activity context, MotionEvent event)
+	{
 		final int x = (int) event.getX();
 		final int y = (int) event.getY();
 		final int slop = ViewConfiguration.get(context)
@@ -90,7 +103,8 @@ public class SelectActivity extends BaseWriteParamActivity {
 	}
 
 	@Override
-	public void onSuccess() {
+	public void onSuccess()
+	{
 		Intent intent = new Intent();
 		intent.putExtra("position", getIntent().getIntExtra("position", -1));
 		intent.putExtra("selector", mAdapter.getItem(mPosition));

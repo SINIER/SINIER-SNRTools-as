@@ -58,7 +58,8 @@ public class CmdDao extends AbstractDao<Cmd, Long> {
     }
 
     @Override
-    protected final void bindValues(DatabaseStatement stmt, Cmd entity) {
+    protected final void bindValues(DatabaseStatement stmt, Cmd entity)
+    {
         stmt.clearBindings();
  
         Long id = entity.getId();
@@ -93,7 +94,8 @@ public class CmdDao extends AbstractDao<Cmd, Long> {
     }
 
     @Override
-    protected final void bindValues(SQLiteStatement stmt, Cmd entity) {
+    protected final void bindValues(SQLiteStatement stmt, Cmd entity)
+    {
         stmt.clearBindings();
  
         Long id = entity.getId();

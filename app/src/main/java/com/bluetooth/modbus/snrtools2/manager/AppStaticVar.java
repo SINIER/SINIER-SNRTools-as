@@ -1,6 +1,7 @@
 package com.bluetooth.modbus.snrtools2.manager;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 
@@ -21,6 +22,10 @@ public class AppStaticVar {
 	public static String mCurrentName;
 	/** 蓝牙socket*/
 	public static BluetoothSocket mSocket;
+	/** 低功耗蓝牙gatt*/
+	public static BluetoothGatt mGatt;
+	/** 低功耗蓝牙收到的数据缓存*/
+	public static StringBuilder cacheData = new StringBuilder();
 	/** 密码等级*/
 	public static int PASSWORD_LEVEAL = -1;
 	/** 是否是主动断开*/

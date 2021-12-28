@@ -154,7 +154,11 @@
     <string name="string_param9">测量值</string>
     <string name="get_setting_error">获取配置失败</string>
     <string name="sync_config">同步更新配置中</string>
+    <string name="sync_string">同步字符串</string>
+    <string name="sync_var">同步变量中</string>
+    <string name="sync_mainview">同步主界面中</string>
     <string name="sync_params">同步更新参数中</string>
+    <string name="sync_cmd">同步更新命令中</string>
     <string name="ip_error">请输入正确的ip地址</string>
     <string name="label_cmd">操作命令</string>
     <string name="cmd_success">操作命令执行成功</string>

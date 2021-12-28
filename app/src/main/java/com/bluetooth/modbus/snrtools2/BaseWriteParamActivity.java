@@ -12,9 +12,9 @@ import com.bluetooth.modbus.snrtools2.uitls.CmdUtils;
 import com.bluetooth.modbus.snrtools2.uitls.ModbusUtils;
 import com.bluetooth.modbus.snrtools2.uitls.NumberBytes;
 
-public abstract class BaseWriteParamActivity extends BaseActivity {
-
-//	private Thread mThread;
+public abstract class BaseWriteParamActivity extends BaseActivity
+{
+	//	private Thread mThread;
 	public int RECONNECT_TIME = 3, RECONNECT_TIME1 = 3;
 	private Param mParameter;
 	private boolean hasSend;
@@ -26,16 +26,20 @@ public abstract class BaseWriteParamActivity extends BaseActivity {
 
 	public abstract void onSuccess();
 
-	public void writeParameter(Param param) {
+	public void writeParameter(Param param)
+	{
 		this.mParameter = param;
-		if (this.mParameter != null) {
+		if (this.mParameter != null)
+		{
 			showProgressDialog("");
 			startWriteParam();
 		}
 	}
 
-	private void startWriteParam() {
-		if(hasSend){
+	private void startWriteParam()
+	{
+		if(hasSend)
+		{
 			return;
 		}
 		hasSend = true;
@@ -43,15 +47,18 @@ public abstract class BaseWriteParamActivity extends BaseActivity {
 //
 //			@Override
 //			public void run() {
-				if (RECONNECT_TIME > 0) {
+				if (RECONNECT_TIME > 0)
+				{
 
 					//0x01 0x46 参数编号（2bytes）0x00 len 参数数据（2-4bytes）CRCH CRCL
 					String noHexStr = NumberBytes.padLeft(mParameter.getHexNo(), 4, '0');
 					String len = "0x"+NumberBytes.padLeft(Integer.toHexString(mParameter.getValue().length()/2), 2, '0');
 					String cmd = "0x01 0x46 " + noHexStr + "0x00 "+len+mParameter.getValue();
-					CmdUtils.sendCmd(cmd,16, new CmdListener() {
+					CmdUtils.sendCmd(cmd,16, new CmdListener()
+					{
 						@Override
-						public void start() {
+						public void start()
+						{
 
 						}
 

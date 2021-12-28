@@ -16,8 +16,8 @@ import java.util.Locale;
  * Created by cchen on 2017/8/6.
  */
 
-public class ProductInfo implements Serializable {
-
+public class ProductInfo implements Serializable
+{
     /** DWORD-4	编译时间（注1）*/
     public String pdBuildTime;//
     /** WORD-2	产品型号字符串（注2）*/
@@ -55,23 +55,30 @@ public class ProductInfo implements Serializable {
     /** crc+model*/
     public String crcModel;//
 
-    public static ProductInfo buildModel(String info){
-        if(!TextUtils.isEmpty(info)){
+    public static ProductInfo buildModel(String info)
+    {
+        if(!TextUtils.isEmpty(info))
+        {
             ProductInfo productInfo = new ProductInfo();
             String[] strings = new String[info.length()/2];
-            if(strings.length!=52){
+            if(strings.length!=52)
+            {
                 return null;
             }
-            for(int i=0;i<info.length()/2;i++){
+            for(int i=0;i<info.length()/2;i++)
+            {
                 strings[i] = info.substring(i*2,(i+1)*2);
             }
             //编译时间
             long time = NumberBytes.hexStrToLong(strings[9]+strings[8]+strings[7]+strings[6]);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            try {
+            try
+            {
                 long l2000 = sdf.parse("2000-01-01 00:00:00").getTime();
                 productInfo.pdBuildTime = sdf.format(new Date(time*1000+l2000));
-            }catch (Exception e){
+            }
+            catch (Exception e)
+            {
                 CrashReport.postCatchedException(e);
                 return null;
             }

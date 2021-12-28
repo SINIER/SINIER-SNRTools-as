@@ -11,7 +11,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -111,9 +110,9 @@ public class MainView extends View {
 
     private void calcTextSize(){
         if(TEXT_SIZE_SMALL==0) {
-            String small = "ABCDEFGHIJKLMNOPQRSTU";
-            String normal = "可以容纳八个汉字";
-            String large = "999999999";
+            String small = "ABCDEFGHIJKLMNOPQRSTU"+"AAAA";
+            String normal = "可以容纳八个汉字"+"汉字";
+            String large = "999999999"+"9999";
             float index = getWidth()/2;
             while (TEXT_SIZE_SMALL==0){
                 if(getTextWidth(small,index)<getWidth()){
@@ -152,7 +151,10 @@ public class MainView extends View {
 //        TEXT_SIZE_LARGE = scale*getWidth() / 9f;
         for (int i = 0; i < values.size(); i++) {
             Main main = values.get(i);
+            // 主界面显示ITEM类型
             if ("0".equals(main.getType()) || "1".equals(main.getType()) || "3".equals(main.getType())) {
+                // 数值或字符串
+                // 文字大小
                 float valueSize = 0, unitSize = 0;
                 if ("0".equals(main.getFontSize())) {
                     valueSize = TEXT_SIZE_NORMAL;
@@ -163,7 +165,11 @@ public class MainView extends View {
                 } else if ("2".equals(main.getFontSize())) {
                     valueSize = TEXT_SIZE_LARGE;
                     unitSize = TEXT_SIZE_NORMAL;
+                } else
+                {
+                    continue;
                 }
+                // 计算显示宽度
                 float valueWidth = getTextWidth(main.getValue(), valueSize);
                 float unitWidth = getTextWidth(main.getUnitStr(), unitSize);
                 mPaint.setTextSize(valueSize);
@@ -172,11 +178,19 @@ public class MainView extends View {
                 double dy = Math.ceil(fm.descent - fm.ascent);
 //                float valueWidth = mPaint.measureText(main.getValue());
 //                float unitWidth = mPaint.measureText(main.getUnitStr());
+                // 坐标
+                if(AppUtil.parseToInt(main.getY(), 0) < 0) continue;
+                if(AppUtil.parseToInt(main.getY(), 0) > 127) continue;
                 int startX = AppUtil.parseToInt(main.getY(), 0) * getWidth() / 128;
+                if(AppUtil.parseToInt(main.getX(), 0) < 0) continue;
+                if(AppUtil.parseToInt(main.getX(), 0) > 7) continue;
                 int startY = AppUtil.parseToInt(main.getX(), 0) * getHeight() / 8;
 //                int startY = AppUtil.parseToInt(main.getX(), 0) * getWidth() / (2 * 8);
+                if(AppUtil.parseToInt(main.getWidth(), 0) <= 0) continue;
+                if(AppUtil.parseToInt(main.getWidth(), 0) > 128) continue;
                 int viewWidth = AppUtil.parseToInt(main.getWidth(), 0) * getWidth() / 128;//占用宽度
                 Path path = new Path();
+                // 水平对齐
                 if ("2".equals(main.getGravity())) {
                     mPaint.setTextAlign(Paint.Align.CENTER);
                     path.moveTo(startX + (viewWidth - valueWidth - unitWidth) / 2, startY);
@@ -185,11 +199,15 @@ public class MainView extends View {
                     mPaint.setTextAlign(Paint.Align.RIGHT);
                     path.moveTo(startX + viewWidth - unitWidth - valueWidth, startY);
                     path.lineTo(startX + viewWidth - unitWidth, startY);
-                } else {
+                } else if ("0".equals(main.getGravity())) {
                     path.moveTo(startX, startY);
                     path.lineTo(startX + valueWidth, startY);
+                } else
+                {
+                    continue;
                 }
                 canvas.drawTextOnPath(main.getValue(), path, 0, (float) dy * 2 / 3, mPaint);
+                // 单位
                 if (!TextUtils.isEmpty(main.getUnitStr())) {
                     path = new Path();
                     mPaint.setTextSize(unitSize);
@@ -199,14 +217,18 @@ public class MainView extends View {
                     } else if ("1".equals(main.getGravity())) {
                         mPaint.setTextAlign(Paint.Align.RIGHT);
                         path.moveTo(startX + viewWidth - unitWidth, startY);
-                    } else {
+                    } else if ("0".equals(main.getGravity())) {
                         path.moveTo(startX + valueWidth, startY);
+                    }
+                    else {
+                        continue;
                     }
                     path.lineTo(startX + viewWidth, startY);
                     canvas.drawTextOnPath(main.getUnitStr(), path, 0, (float) dy * 2 / 3, mPaint);
                 }
 
             } else if ("2".equals(main.getType())) {
+                // 图标
                 if ("0".equals(main.getFontSize())) {
                     if ("1".equals(main.getNo())) {
                         Rect src = new Rect(0, 0, arrow_t.getWidth(), arrow_t.getHeight());
@@ -246,6 +268,8 @@ public class MainView extends View {
                     } else if ("13".equals(main.getNo())) {
                         Rect src = new Rect(0, 0, wait.getWidth(), wait.getHeight());
                         canvas.drawBitmap(wait, src, getDest(wait,main,2), mPaint);
+                    }else {
+                        continue;
                     }
                 } else if ("1".equals(main.getFontSize())) {
                     if ("1".equals(main.getNo())) {
@@ -305,6 +329,9 @@ public class MainView extends View {
                     } else if ("19".equals(main.getNo())) {
                         Rect src = new Rect(0, 0, s_chatou.getWidth(), s_chatou.getHeight());
                         canvas.drawBitmap(s_chatou, src, getDest(s_chatou,main,1), mPaint);
+                    }
+                    else {
+                        continue;
                     }
                 }
             } else if ("4".equals(main.getType())) {

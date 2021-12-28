@@ -49,8 +49,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class SNRMainActivity extends BaseActivity implements View.OnClickListener {
-
+public class SNRMainActivity extends BaseActivity implements View.OnClickListener
+{
     // private Handler mHandler;
 //    private Thread mThread;
     private NoFocuseTextview mTvAlarm;
@@ -83,7 +83,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     private static final int STATUS_COUNT = 1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.snr_main_activity);
         DBManager.getInstance().clearSession();
@@ -92,9 +93,11 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         totalSyncCount = mainList.size() + AppStaticVar.mProductInfo.pdVarCount + STATUS_COUNT;
         AppStaticVar.currentVarIndex = 0;
         initUI();
-        setTitleClickListener(new View.OnClickListener() {
+        setTitleClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 if (click == 0) {
                     click = 10;
                     Intent intent = new Intent(mContext, DBDataActivity.class);
@@ -112,7 +115,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void rightButtonOnClick(int id) {
+    public void rightButtonOnClick(int id)
+    {
         switch (id) {
             case R.id.btnRight1:
                 isSetting = true;
@@ -125,8 +129,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if(isFirst){
+    public void onWindowFocusChanged(boolean hasFocus)
+    {
+        if(isFirst)
+        {
             isFirst = false;
             LayoutParams layoutParams = mainView.getLayoutParams();
             layoutParams.height = mainView.getWidth()/5*3;
@@ -135,15 +141,19 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         super.onWindowFocusChanged(hasFocus);
     }
 
-    private void dealVar(String result) {
+    private void dealVar(String result)
+    {
         try {
             String str = result.substring(12, result.length() - 4);
             String varHexNo = result.substring(4, 8);
-            for (int i = 0; i < mViewMore.getChildCount(); i++) {
-                if (mViewMore.getChildAt(i) instanceof VarItemView) {
+            for (int i = 0; i < mViewMore.getChildCount(); i++)
+            {
+                if (mViewMore.getChildAt(i) instanceof VarItemView)
+                {
                     VarItemView varItemView = (VarItemView) mViewMore.getChildAt(i);
                     Var var = (Var) varItemView.getTag();
-                    if (var.getHexNo().equals(varHexNo)) {
+                    if (var.getHexNo().equals(varHexNo))
+                    {
                         System.out.println("varHexNo==========" + varHexNo);
                         System.out.println("result==========" + result);
                         System.out.println("var==========" + var);
@@ -153,25 +163,33 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                     }
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-    private void dealError(String result) {
-        try {
+    private void dealError(String result)
+    {
+        try
+        {
             String str = result.substring(result.length() - 6, result.length() - 4)+result.substring(result.length() - 8, result.length() - 6);
             String errorHexNo = result.substring(4, 8);
             String value = DBManager.getInstance().getStr(str);
-            if(TextUtils.isEmpty(value)) {
+            if(TextUtils.isEmpty(value))
+            {
                 return;
             }
             boolean has = false;
-            for (int i = 0; i < llWarnContent.getChildCount(); i++) {
-                if (llWarnContent.getChildAt(i) instanceof ErrorItemView) {
+            for (int i = 0; i < llWarnContent.getChildCount(); i++)
+            {
+                if (llWarnContent.getChildAt(i) instanceof ErrorItemView)
+                {
                     ErrorItemView errorItemView = (ErrorItemView) llWarnContent.getChildAt(i);
                     Var var = (Var) errorItemView.getTag();
-                    if (var.getHexNo().toLowerCase().equals(errorHexNo)) {
+                    if (var.getHexNo().toLowerCase().equals(errorHexNo))
+                    {
                         System.out.println("errorHexNo==========" + errorHexNo);
                         System.out.println("result==========" + result);
                         System.out.println("var==========" + var);
@@ -181,7 +199,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                     }
                 }
             }
-            if (!has) {
+            if (!has)
+            {
                 Var var = new Var();
                 var.setHexNo(errorHexNo);
                 ErrorItemView errorItemView = new ErrorItemView(mContext);
@@ -189,41 +208,51 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 errorItemView.setValueColor(Color.WHITE);
                 errorItemView.setBackGroundColor(Color.RED);
                 errorItemView.setTag(var);
-                if (AppStaticVar.currentVarIndex == mRunStatus.errorCount - 1) {
+                if (AppStaticVar.currentVarIndex == mRunStatus.errorCount - 1)
+                {
                     errorItemView.setBottomLineStatus(false);
                 }
                 llWarnContent.addView(errorItemView);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
 
-    private void startReadParam() {
+    private void startReadParam()
+    {
         System.out.println("====主页面开始恢复==pause状态" + AppStaticVar.isSNRMainPause);
-        if (!AppStaticVar.isSNRMainPause) {
-            if (llWarn.getVisibility() == View.VISIBLE) {
-                if (AppStaticVar.currentVarIndex >= mRunStatus.errorCount) {
+        if (!AppStaticVar.isSNRMainPause)
+        {
+            // 读故障信息
+            if (llWarn.getVisibility() == View.VISIBLE)
+            {
+                if (AppStaticVar.currentVarIndex >= mRunStatus.errorCount)
+                {
                     AppStaticVar.currentVarIndex = 0;
                 }
                 System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===errorCount=" + mRunStatus.errorCount);
                 String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex), 4, '0');
                 String cmd = "0x01 0x52 " + noHexStr + "0x00 0x00";
-                CmdUtils.sendCmd(cmd,
-                        20
-                        , new CmdListener() {
+                CmdUtils.sendCmd(cmd, 20, new CmdListener()
+                        {
                             @Override
-                            public void start() {
+                            public void start()
+                            {
                                 hasSend = true;
                             }
 
                             @Override
-                            public void result(String result) {
+                            public void result(String result)
+                            {
                                 System.out.println("====================故障信息=====接收到通过的数据" + result);
                                 hasSend = false;
                                 dealError(result);
                                 AppStaticVar.currentVarIndex++;
-                                if (!AppStaticVar.isSNRMainPause) {
+                                if (!AppStaticVar.isSNRMainPause)
+                                {
                                     startReadParam();
                                 }
                             }
@@ -256,50 +285,61 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                             }
 
                             @Override
-                            public void finish() {
+                            public void finish()
+                            {
 
                             }
                         });
             } else {
                 llWarnContent.removeAllViews();
-                if (AppStaticVar.currentVarIndex >= totalSyncCount) {
+                // 读一个变量
+                if (AppStaticVar.currentVarIndex >= totalSyncCount)
+                {
                     AppStaticVar.currentVarIndex = 0;
                 }
                 System.out.println("====================currentVarIndex==" + AppStaticVar.currentVarIndex + "===mainList.size()=" + mainList.size() + "===pdCount" + AppStaticVar.mProductInfo.pdVarCount + "===totalSyncCount==" + totalSyncCount);
-                if (AppStaticVar.currentVarIndex >= mainList.size() + STATUS_COUNT) {
+                if (AppStaticVar.currentVarIndex >= mainList.size() + STATUS_COUNT)
+                {
                     String noHexStr = NumberBytes.padLeft(Integer.toHexString(AppStaticVar.currentVarIndex - mainList.size() - STATUS_COUNT), 4, '0');
                     String cmd = "0x01 0x43 " + noHexStr + "0x00 0x00";
                     Var var = DBManager.getInstance().getVar(noHexStr);
-                    CmdUtils.sendCmd(cmd,
-                            ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
-                                    || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24
-                            , new CmdListener() {
+                    int backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
+                            || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
+                    if("9".equals(var.getType())){
+                        backLength = 48;
+                    }
+                    CmdUtils.sendCmd(cmd,backLength, new CmdListener() {
                                 @Override
                                 public void start() {
                                     hasSend = true;
                                 }
 
                                 @Override
-                                public void result(String result) {
+                                public void result(String result)
+                                {
                                     hasSend = false;
                                     dealVar(result);
                                     AppStaticVar.currentVarIndex++;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         startReadParam();
                                     }
                                 }
 
                                 @Override
-                                public void failure(String msg) {
+                                public void failure(String msg)
+                                {
                                     hasSend = false;
                                     AppStaticVar.currentVarIndex++;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         startReadParam();
                                     }
                                 }
 
                                 @Override
-                                public void timeOut(String msg) {
+                                public void timeOut(String msg)
+                                {
                                     hasSend = false;
                                     AppStaticVar.currentVarIndex++;
                                     if (!AppStaticVar.isSNRMainPause) {
@@ -309,58 +349,72 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                 }
 
                                 @Override
-                                public void connectFailure(String msg) {
+                                public void connectFailure(String msg)
+                                {
                                     hasSend = false;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         showConnectDevice();
                                     }
                                 }
 
                                 @Override
-                                public void finish() {
+                                public void finish()
+                                {
 
                                 }
                             });
-                } else if (AppStaticVar.currentVarIndex >= STATUS_COUNT && AppStaticVar.currentVarIndex < mainList.size() + STATUS_COUNT) {
-
+                } else if (AppStaticVar.currentVarIndex >= STATUS_COUNT && AppStaticVar.currentVarIndex < mainList.size() + STATUS_COUNT)
+                {
                     currentMain = mainList.get(AppStaticVar.currentVarIndex - STATUS_COUNT);
                     String cmd = "";
                     int backLength = 0;
-                    if ("0".equals(currentMain.getType())) {
+                    if ("0".equals(currentMain.getType()))
+                    {
                         cmd = "0x01 0x43 " + currentMain.getHexNo() + "0x00 0x00";
                         Var var = DBManager.getInstance().getVar(currentMain.getHexNo());
-                        if (var == null) {
+                        if (var == null)
+                        {
                             AppStaticVar.currentVarIndex++;
-                            if (!AppStaticVar.isSNRMainPause) {
+                            if (!AppStaticVar.isSNRMainPause)
+                            {
                                 startReadParam();
                             }
                             return;
                         }
                         backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
                                 || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
-                    } else if ("1".equals(currentMain.getType())) {
+                        if("9".equals(var.getType())){
+                            backLength = 48;
+                        }
+                    } else if ("1".equals(currentMain.getType()))
+                    {
                         cmd = "0x01 0x44 " + currentMain.getHexNo() + "0x00 0x00";
                         Param var = DBManager.getInstance().getParam(currentMain.getHexNo());
-                        if (var == null) {
+                        if (var == null)
+                        {
                             AppStaticVar.currentVarIndex++;
-                            if (!AppStaticVar.isSNRMainPause) {
+                            if (!AppStaticVar.isSNRMainPause)
+                            {
                                 startReadParam();
                             }
                             return;
                         }
                         backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
                                 || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
+                        if("9".equals(var.getType())){
+                            backLength = 48;
+                        }
                     } else {
                         AppStaticVar.currentVarIndex++;
-                        if (!AppStaticVar.isSNRMainPause) {
+                        if (!AppStaticVar.isSNRMainPause)
+                        {
                             startReadParam();
                         }
                         return;
                     }
 
-                    CmdUtils.sendCmd(cmd,
-                            backLength
-                            , new CmdListener() {
+                    CmdUtils.sendCmd(cmd, backLength, new CmdListener() {
                                 @Override
                                 public void start() {
                                     hasSend = true;
@@ -445,17 +499,18 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                 }
                             });
                 } else if (AppStaticVar.currentVarIndex < STATUS_COUNT) {
+                    // 读主控运行状态字
                     String cmd = "0x01 0x41 0x00 0x00 0x00 0x00";
-                    CmdUtils.sendCmd(cmd,
-                            20
-                            , new CmdListener() {
+                    CmdUtils.sendCmd(cmd, 20, new CmdListener()
+                            {
                                 @Override
                                 public void start() {
                                     hasSend = true;
                                 }
 
                                 @Override
-                                public void result(String result) {
+                                public void result(String result)
+                                {
                                     System.out.println("==================告警===" + result);
                                     hasSend = false;
 //                                                01c100000002 0584 f3f8
@@ -470,46 +525,57 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                                     mRunStatus.errorCount = errorCount;
                                     mRunStatus.logCount = logCount;
                                     tvWarnCount.setText(getString(R.string.warn_info));
-                                    if(errorCount>0){
+                                    if(errorCount>0)
+                                    {
                                         tvWarnCount.setText(errorCount+"");
-                                    }else {
+                                    }
+                                    else
+                                    {
                                         tvWarnCount.setText("");
                                     }
                                     AppStaticVar.currentVarIndex++;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         startReadParam();
                                     }
                                 }
 
                                 @Override
-                                public void failure(String msg) {
+                                public void failure(String msg)
+                                {
                                     hasSend = false;
                                     AppStaticVar.currentVarIndex++;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         startReadParam();
                                     }
                                 }
 
                                 @Override
-                                public void timeOut(String msg) {
+                                public void timeOut(String msg)
+                                {
                                     hasSend = false;
                                     AppStaticVar.currentVarIndex++;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         showToast(getResources().getString(R.string.string_error_msg3));
                                         startReadParam();
                                     }
                                 }
 
                                 @Override
-                                public void connectFailure(String msg) {
+                                public void connectFailure(String msg)
+                                {
                                     hasSend = false;
-                                    if (!AppStaticVar.isSNRMainPause) {
+                                    if (!AppStaticVar.isSNRMainPause)
+                                    {
                                         showConnectDevice();
                                     }
                                 }
 
                                 @Override
-                                public void finish() {
+                                public void finish()
+                                {
 
                                 }
                             });
@@ -518,14 +584,18 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    public void onClick(View v) {
+    public void onClick(View v)
+    {
         switch (v.getId()) {
             case R.id.btnMore:
-                if (mViewMore.getVisibility() == View.VISIBLE) {
+                if (mViewMore.getVisibility() == View.VISIBLE)
+                {
                     mViewMore.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.VISIBLE);
                     btnMore.setText(getResources().getString(R.string.string_more));
-                } else {
+                }
+                else
+                {
                     mViewMore.setVisibility(View.VISIBLE);
                     llWarn.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.GONE);
@@ -533,15 +603,19 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.rlWarn:
-                if(mRunStatus.errorCount == 0){
+                if(mRunStatus.errorCount == 0)
+                {
                     return;
                 }
-                if (llWarn.getVisibility() == View.VISIBLE) {
+                if (llWarn.getVisibility() == View.VISIBLE)
+                {
                     llWarn.setVisibility(View.GONE);
                     mViewMore.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.VISIBLE);
                     btnMore.setText(getResources().getString(R.string.string_more));
-                } else {
+                }
+                else
+                {
                     llWarn.setVisibility(View.VISIBLE);
                     mViewMore.setVisibility(View.GONE);
                     findViewById(R.id.llPdInfo).setVisibility(View.GONE);
@@ -579,8 +653,10 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void showMenu(View v) {
-        if (mPop == null) {
+    private void showMenu(View v)
+    {
+        if (mPop == null)
+        {
             View contentView = View.inflate(this, R.layout.main_menu2, null);
             mPop = new PopupWindow(contentView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             mPop.setBackgroundDrawable(new BitmapDrawable());
@@ -590,41 +666,54 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         mPop.showAsDropDown(v, R.dimen.menu_x, 20);
     }
 
-    private void hideMenu() {
-        if (mPop != null && mPop.isShowing()) {
+    private void hideMenu()
+    {
+        if (mPop != null && mPop.isShowing())
+        {
             mPop.dismiss();
         }
     }
 
-    private void downloadXml() {
+    private void downloadXml()
+    {
         String url = "http://www.sinier.com.cn/download/SNRToolsV2/version.xml";
-        mAbHttpUtil.get(url, new AbFileHttpResponseListener(url) {
+        mAbHttpUtil.get(url, new AbFileHttpResponseListener(url)
+        {
             // 获取数据成功会调用这里
             @Override
-            public void onSuccess(int statusCode, File file) {
+            public void onSuccess(int statusCode, File file)
+            {
                 int version = 0;
                 String url = "";
                 String md5 = "";
                 XmlPullParser xpp = Xml.newPullParser();
-                try {
+                try
+                {
                     xpp.setInput(new FileInputStream(file), "utf-8");
-
                     int eventType = xpp.getEventType();
-                    while (eventType != XmlPullParser.END_DOCUMENT) {
-                        switch (eventType) {
+                    while (eventType != XmlPullParser.END_DOCUMENT)
+                    {
+                        switch (eventType)
+                        {
                             case XmlPullParser.START_TAG:
-                                if ("version".equals(xpp.getName())) {
-                                    try {
+                                if ("version".equals(xpp.getName()))
+                                {
+                                    try
+                                    {
                                         version = Integer.parseInt(xpp.nextText());
-                                    } catch (NumberFormatException e1) {
+                                    }
+                                    catch (NumberFormatException e1)
+                                    {
                                         e1.printStackTrace();
                                         showToast(getResources().getString(R.string.string_error_msg1));
                                     }
                                 }
-                                if ("url".equals(xpp.getName())) {
+                                if ("url".equals(xpp.getName()))
+                                {
                                     url = xpp.nextText();
                                 }
-                                if ("MD5".equals(xpp.getName())) {
+                                if ("MD5".equals(xpp.getName()))
+                                {
                                     md5 = xpp.nextText();
                                 }
                                 break;
@@ -633,21 +722,28 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                         }
                         eventType = xpp.next();
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     e.printStackTrace();
                 }
                 PackageManager manager;
                 PackageInfo info = null;
                 manager = getPackageManager();
-                try {
+                try
+                {
                     info = manager.getPackageInfo(getPackageName(), 0);
-                } catch (NameNotFoundException e) {
+                }
+                catch (NameNotFoundException e)
+                {
                     e.printStackTrace();
                 }
-                if (version != info.versionCode) {
+                if (version != info.versionCode)
+                {
                     String fileName = url.substring(url.lastIndexOf("/") + 1);
                     File apk = new File(Constans.Directory.DOWNLOAD + fileName);
-                    if (md5.equals(AppUtil.getFileMD5(apk))) {
+                    if (md5.equals(AppUtil.getFileMD5(apk)))
+                    {
                         // Intent intent = new Intent(Intent.ACTION_VIEW);
                         // intent.setDataAndType(Uri.fromFile(apk),
                         // "application/vnd.android.package-archive");
@@ -655,16 +751,22 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                         AbAppUtil.installApk(mContext, apk);
                         return;
                     }
-                    try {
-                        if (!apk.getParentFile().exists()) {
+                    try
+                    {
+                        if (!apk.getParentFile().exists())
+                        {
                             apk.getParentFile().mkdirs();
                         }
                         apk.createNewFile();
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
                         e.printStackTrace();
                     }
-                    mAbHttpUtil.get(url, new AbFileHttpResponseListener(apk) {
-                        public void onSuccess(int statusCode, File file) {
+                    mAbHttpUtil.get(url, new AbFileHttpResponseListener(apk)
+                    {
+                        public void onSuccess(int statusCode, File file)
+                        {
                             // Intent intent = new Intent(Intent.ACTION_VIEW);
                             // intent.setDataAndType(Uri.fromFile(file),
                             // "application/vnd.android.package-archive");
@@ -676,7 +778,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
                         // 开始执行前
                         @Override
-                        public void onStart() {
+                        public void onStart()
+                        {
                             // 打开进度框
                             View v = LayoutInflater.from(mContext).inflate(R.layout.progress_bar_horizontal, null, false);
                             mAbProgressBar = (AbHorizontalProgressBar) v.findViewById(R.id.horizontalProgressBar);
@@ -692,14 +795,17 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
                         // 失败，调用
                         @Override
-                        public void onFailure(int statusCode, String content, Throwable error) {
+                        public void onFailure(int statusCode, String content, Throwable error)
+                        {
                             showToast(error.getMessage());
                         }
 
                         // 下载进度
                         @Override
-                        public void onProgress(long bytesWritten, long totalSize) {
-                            if (totalSize / max == 0) {
+                        public void onProgress(long bytesWritten, long totalSize)
+                        {
+                            if (totalSize / max == 0)
+                            {
                                 onFinish();
                                 showToast(getResources().getString(R.string.string_error_msg2));
                                 return;
@@ -709,18 +815,20 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                         }
 
                         // 完成后调用，失败，成功
-                        public void onFinish() {
+                        public void onFinish()
+                        {
                             // 下载完成取消进度框
-                            if (mAlertDialog != null) {
+                            if (mAlertDialog != null)
+                            {
                                 mAlertDialog.cancel();
                                 mAlertDialog = null;
                             }
-
                         }
-
-                        ;
+                      ;
                     });
-                } else {
+                }
+                else
+                    {
                     showToast(getResources().getString(R.string.string_tips_msg1));
                 }
 
@@ -728,7 +836,8 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
             // 开始执行前
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 // 打开进度框
                 View v = LayoutInflater.from(mContext).inflate(R.layout.progress_bar_horizontal, null, false);
                 mAbProgressBar = (AbHorizontalProgressBar) v.findViewById(R.id.horizontalProgressBar);
@@ -744,14 +853,17 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
             // 失败，调用
             @Override
-            public void onFailure(int statusCode, String content, Throwable error) {
+            public void onFailure(int statusCode, String content, Throwable error)
+            {
                 showToast(error.getMessage());
             }
 
             // 下载进度
             @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                if (totalSize / max == 0) {
+            public void onProgress(long bytesWritten, long totalSize)
+            {
+                if (totalSize / max == 0)
+                {
                     onFinish();
                     showToast(getResources().getString(R.string.string_error_msg2));
                     return;
@@ -761,9 +873,11 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
             }
 
             // 完成后调用，失败，成功
-            public void onFinish() {
+            public void onFinish()
+            {
                 // 下载完成取消进度框
-                if (mAlertDialog != null) {
+                if (mAlertDialog != null)
+                {
                     mAlertDialog.cancel();
                     mAlertDialog = null;
                 }
@@ -790,18 +904,22 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
         mTvAlarm.setVisibility(View.GONE);
         mTvAlarm.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.anim_alpha));
         mainView.setValues(mainList);
-        if (AppStaticVar.mProductInfo != null) {
-            for (int i = 0; i < AppStaticVar.mProductInfo.pdVarCount; i++) {
+        if (AppStaticVar.mProductInfo != null)
+        {
+            for (int i = 0; i < AppStaticVar.mProductInfo.pdVarCount; i++)
+            {
                 Var var = DBManager.getInstance().getVar(NumberBytes.padLeft(Integer.toHexString(i), 4, '0'));
                 VarItemView varItemView = new VarItemView(mContext);
-                if(TextUtils.isEmpty(var.getName().trim())){
+                if(TextUtils.isEmpty(var.getName().trim()))
+                {
                     varItemView.setVisibility(View.GONE);
                 }
 //                varItemView.hideLabel();
                 varItemView.setLabel(var.getName());
                 varItemView.setValue(getString(R.string.string_tips_msg2));
                 varItemView.setTag(var);
-                if (i == AppStaticVar.mProductInfo.pdVarCount - 1) {
+                if (i == AppStaticVar.mProductInfo.pdVarCount - 1)
+                {
                     varItemView.setBottomLineStatus(false);
                 }
                 mViewMore.addView(varItemView);
@@ -810,15 +928,18 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void hasAlarm(String s) {
-        if (mTvAlarm.getVisibility() != View.VISIBLE) {
+        if (mTvAlarm.getVisibility() != View.VISIBLE)
+        {
             mTvAlarm.setVisibility(View.VISIBLE);
         }
-        if (!mTvAlarm.getText().toString().contains(s)) {
+        if (!mTvAlarm.getText().toString().contains(s))
+        {
             mTvAlarm.setText(mTvAlarm.getText() + " " + s);
         }
     }
 
-    private void hasNoAlarm(String s) {
+    private void hasNoAlarm(String s)
+    {
         mTvAlarm.setText(mTvAlarm.getText().toString().replace(" " + s, ""));
         if (TextUtils.isEmpty(mTvAlarm.getText().toString().trim())) {
             mTvAlarm.setVisibility(View.GONE);
@@ -896,8 +1017,27 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
         AppStaticVar.isSNRMainPause = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(AppStaticVar.mGatt != null){
+            AppStaticVar.mGatt.disconnect();
+            AppStaticVar.mGatt.close();
+            AppStaticVar.mGatt = null;
+        }
+        if(AppStaticVar.mSocket != null){
+            try {
+                AppStaticVar.mSocket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            AppStaticVar.mSocket = null;
+        }
+        super.onDestroy();
     }
 }

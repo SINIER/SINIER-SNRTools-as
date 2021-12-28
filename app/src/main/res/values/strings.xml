@@ -154,7 +154,11 @@
     <string name="string_param9">Measure Ouput</string>
     <string name="get_setting_error">Fetch configuration failure</string>
     <string name="sync_config">Synchronize the update configuration</string>
+    <string name="sync_string">Synchronize the update string</string>
+    <string name="sync_var">Synchronize the update variable</string>
+    <string name="sync_mainview">Synchronize the update main view</string>
     <string name="sync_params">Synchronize the update parameters</string>
+    <string name="sync_cmd">Synchronize the update command</string>
     <string name="ip_error">Please enter the correct IP address</string>
     <string name="label_cmd">Operation command</string>
     <string name="cmd_success">The operation command executes successfully.</string>

@@ -1,9 +1,5 @@
 package com.bluetooth.modbus.snrtools2.uitls;
 
-import android.text.TextUtils;
-
-import com.bluetooth.modbus.snrtools2.bean.Command;
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -22,8 +18,8 @@ import java.nio.charset.Charset;
  * double: 双精度浮点数(小数) 占8个字节 64位二进制 byte[0] byte[1] byte[2] byte[3] byte[4]
  * byte[5] byte[6] byte[7]<br>
  */
-public class NumberBytes {
-
+public class NumberBytes
+{
 	/**
 	 * 左补位，右对齐
 	 * 
@@ -35,15 +31,44 @@ public class NumberBytes {
 	 *            补位字符
 	 * @return 目标字符串
 	 */
-	public static String padLeft(String oriStr, int len, char alexin) {
+	public static String padLeft(String oriStr, int len, char alexin)
+	{
 		String str = "";
 		int strlen = oriStr.length();
-		if (strlen < len) {
-			for (int i = 0; i < len - strlen; i++) {
+		if (strlen < len)
+		{
+			for (int i = 0; i < len - strlen; i++)
+			{
 				str = str + alexin;
 			}
 		}
 		str = str + oriStr;
+		return str;
+	}
+
+	/**
+	 * 右补位，左对齐
+	 *
+	 * @param oriStr
+	 *            原字符串
+	 * @param len
+	 *            目标字符串长度
+	 * @param alexin
+	 *            补位字符
+	 * @return 目标字符串
+	 */
+	public static String padRight(String oriStr, int len, char alexin)
+	{
+		String str = "";
+		int strlen = oriStr.length();
+		if (strlen < len)
+		{
+			for (int i = 0; i < len - strlen; i++)
+			{
+				str = str + alexin;
+			}
+		}
+		str = oriStr + str;
 		return str;
 	}
 
@@ -55,13 +80,15 @@ public class NumberBytes {
 	 *            字节数组
 	 * @return char字符
 	 */
-	public static char bytesToChar(byte[] b) {
+	public static char bytesToChar(byte[] b)
+	{
 		char c = (char) ((b[0] << 8) & 0xFF00L);
 		c |= (char) (b[1] & 0xFFL);
 		return c;
 	}
 
-	public static String byte2Char(byte[] b) {
+	public static String byte2Char(byte[] b)
+	{
 		/**
 		 *  通过ByteToCharConverter类转换不可行，sun.io.*包属于内部API，已经不可用
 		 *  ByteToCharConverter converter = ByteToCharConverter.getConverter("gb2312");
@@ -73,7 +100,7 @@ public class NumberBytes {
 		byteBuffer.put(b);
 		byteBuffer.flip();
 		CharBuffer charBuffer = charSet.decode(byteBuffer);
-		return charBuffer.toString();
+		return charBuffer.toString().trim();
 	}
 
 	/**
@@ -108,7 +135,8 @@ public class NumberBytes {
 	 *            字节数组
 	 * @return 整数
 	 */
-	public static int bytesToInt(byte[] b) {
+	public static int bytesToInt(byte[] b)
+	{
 		int i = (b[0] << 24) & 0xFF000000;
 		i |= (b[1] << 16) & 0xFF0000;
 		i |= (b[2] << 8) & 0xFF00;
@@ -124,7 +152,8 @@ public class NumberBytes {
 	 *            字节数组
 	 * @return 长整数
 	 */
-	public static long bytesToLong(byte[] b) {
+	public static long bytesToLong(byte[] b)
+	{
 		long l = ((long) b[0] << 56) & 0xFF00000000000000L;
 		// 如果不强制转换为long，那么默认会当作int，导致最高32位丢失
 		l |= ((long) b[1] << 48) & 0xFF000000000000L;
@@ -144,7 +173,8 @@ public class NumberBytes {
 	 *            字符（java char 2个字节）
 	 * @return 代表字符的字节数组
 	 */
-	public static byte[] charToBytes(char c) {
+	public static byte[] charToBytes(char c)
+	{
 		byte[] b = new byte[8];
 		b[0] = (byte) (c >>> 8);
 		b[1] = (byte) c;
@@ -180,7 +210,8 @@ public class NumberBytes {
 	 *            整数
 	 * @return 代表整数的字节数组
 	 */
-	public static byte[] intToBytes(int i) {
+	public static byte[] intToBytes(int i)
+	{
 		byte[] b = new byte[4];
 		b[0] = (byte) (i >>> 24);
 		b[1] = (byte) (i >>> 16);
@@ -196,7 +227,8 @@ public class NumberBytes {
 	 *            长整数
 	 * @return 代表长整数的字节数组
 	 */
-	public static byte[] longToBytes(long l) {
+	public static byte[] longToBytes(long l)
+	{
 		byte[] b = new byte[8];
 		b[0] = (byte) (l >>> 56);
 		b[1] = (byte) (l >>> 48);
@@ -210,7 +242,8 @@ public class NumberBytes {
 	}
 
 	// 将十六进制字符串转换为float
-	public static float hexStrToFloat(String str) {
+	public static float hexStrToFloat(String str)
+	{
 		float result = 0;
 		try {
 			int temp = Integer.parseInt(str.trim(), 16);
@@ -223,7 +256,8 @@ public class NumberBytes {
 	}
 
 	// 将十六进制字符串转换为Long
-	public static long hexStrToLong(String str) {
+	public static long hexStrToLong(String str)
+	{
 		long result = 0;
 		try {
 			result = Long.parseLong(str.trim(), 16);
@@ -238,7 +272,8 @@ public class NumberBytes {
 	 * @param count 保留几位
 	 * @return
 	 */
-	public static float scaleFloat(float f,int count) {
+	public static float scaleFloat(float f,int count)
+	{
 		BigDecimal b = new BigDecimal(f);
 		float f1 = b.setScale(count, BigDecimal.ROUND_HALF_UP).floatValue();
 		// b.setScale(2, BigDecimal.ROUND_HALF_UP) 表明四舍五入，保留两位小数
@@ -251,7 +286,8 @@ public class NumberBytes {
 	 * @param count 保留几位
 	 * @return
 	 */
-	public static String scaleString(String str,int count) {
+	public static String scaleString(String str,int count)
+	{
 		String s = str;
 		if(s!=null && s.contains(".")){
 			switch(s.substring(s.lastIndexOf(".")+1).length()){
@@ -274,7 +310,8 @@ public class NumberBytes {
 	 * @param s
 	 * @return
 	 */
-	public static String subZeroAndDot(String s){
+	public static String subZeroAndDot(String s)
+	{
 		try {
 			if(s.indexOf(".") > 0){
 				s = s.replaceAll("0+?$", "");//去掉多余的0
