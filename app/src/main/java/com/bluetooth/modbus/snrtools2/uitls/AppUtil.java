@@ -768,7 +768,7 @@ public class AppUtil
             }
             else
             {
-                value = NumberBytes.subZeroAndDot(String.valueOf(AppUtil.numFormatter(v,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
+                value = NumberBytes.subZeroAndDot(String.valueOf(AppUtil.numFormatterStr(v,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
             }
         }
         else if ("8".equals(type + ""))
@@ -862,6 +862,13 @@ public class AppUtil
         BigDecimal b = new BigDecimal(val);
         val = b.setScale(count < 0 ? 2 : count, RoundingMode.HALF_UP).floatValue();
         return val;
+    }
+
+    /** 保留几位小数*/
+    public static String numFormatterStr(float val, int count)
+    {
+        BigDecimal b = new BigDecimal(val);
+        return b.setScale(count < 0 ? 2 : count, RoundingMode.HALF_UP).toString();
     }
 
     /**

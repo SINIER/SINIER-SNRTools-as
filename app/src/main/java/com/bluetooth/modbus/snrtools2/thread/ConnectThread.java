@@ -66,7 +66,7 @@ public class ConnectThread extends Thread {
 						//连接超时
 						connectResult(AppStaticVar.mApplication.getResources().getString(R.string.string_tips_msg14), Constans.CONNECT_DEVICE_FAILED);
 					}
-				},30000);
+				},60000*5);
 
 				if(AppStaticVar.mSocket != null){
 					AppStaticVar.mSocket.close();
