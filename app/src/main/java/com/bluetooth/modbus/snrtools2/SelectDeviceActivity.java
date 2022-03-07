@@ -1,5 +1,6 @@
 package com.bluetooth.modbus.snrtools2;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -55,9 +56,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class SelectDeviceActivity extends BaseActivity
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class SelectDeviceActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks
 {
 	private String NO_DEVICE_CAN_CONNECT;
 	private ListView mListView;
@@ -72,6 +77,12 @@ public class SelectDeviceActivity extends BaseActivity
 	private AlertDialog mAlertDialog = null;
 	private long totalSyncCount,currentSyncCount;
 	private int click = 10;
+
+	private final static int REQEST_PERMS = 0x888;
+	private String[] permissions =
+			{
+					Manifest.permission.ACCESS_FINE_LOCATION
+			};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -102,35 +113,77 @@ public class SelectDeviceActivity extends BaseActivity
 		showRightView(R.id.rlMenu);
 		if (AppUtil.checkBluetooth(mContext))
 		{
-			if(AppStaticVar.mBtAdapter != null)
+			permissionJudge();
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		// Forward results to EasyPermissions
+		EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+	}
+
+	//同意授权
+	@Override
+	public void onPermissionsGranted(int requestCode, List<String> perms) {
+		permissionEnd();
+	}
+
+	//拒绝授权
+	@Override
+	public void onPermissionsDenied(int requestCode, List<String> perms) {
+		permissionEnd();
+	}
+
+	@AfterPermissionGranted(REQEST_PERMS)
+	private void permissionJudge()
+	{
+		// 首先判断权限是否已被授权,防止重复申请权限时,多次回调
+		if (EasyPermissions.hasPermissions(this, permissions))
+		{
+			permissionEnd();
+		}
+		else
+		{
+//			EasyPermissions.requestPermissions(new PermissionRequest.Builder(this, REQEST_PERMS, permissions)
+//					.setRationale(R.string.loc_permission)
+//					.setTheme(R.style.PermissionAlertDialog)
+//					.build());
+			EasyPermissions.requestPermissions(this,getString(R.string.loc_permission), REQEST_PERMS, permissions);
+		}
+	}
+
+	private void permissionEnd(){
+		if(AppStaticVar.mBtAdapter != null)
+		{
+			list.clear();
+			Set<BluetoothDevice> pairedDevices = AppStaticVar.mBtAdapter.getBondedDevices();
+			if (pairedDevices.size() > 0)
 			{
-				list.clear();
-				Set<BluetoothDevice> pairedDevices = AppStaticVar.mBtAdapter.getBondedDevices();
-				if (pairedDevices.size() > 0)
+				for (BluetoothDevice device : pairedDevices)
 				{
-					for (BluetoothDevice device : pairedDevices)
-					{
-						list.add(new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), true));
-						mAdapter.notifyDataSetChanged();
-						mListView.setSelection(list.size() - 1);
-					}
-				}
-				else
-				{
-					list.add(new SiriListItem("-1",NO_DEVICE_CAN_CONNECT, true));
+					list.add(new SiriListItem(device.getAddress(),device.getName() + "\n" + device.getAddress(), true));
 					mAdapter.notifyDataSetChanged();
 					mListView.setSelection(list.size() - 1);
-					new Handler().postDelayed(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							searchDevice();
-						}
-					},1000);
 				}
-				mAdapter.notifyDataSetChanged();
 			}
+			else
+			{
+				list.add(new SiriListItem("-1",NO_DEVICE_CAN_CONNECT, true));
+				mAdapter.notifyDataSetChanged();
+				mListView.setSelection(list.size() - 1);
+				new Handler().postDelayed(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						searchDevice();
+					}
+				},1000);
+			}
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 

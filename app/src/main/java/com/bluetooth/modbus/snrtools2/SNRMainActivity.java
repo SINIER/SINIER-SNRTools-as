@@ -306,7 +306,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                     int backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
                             || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
                     if("9".equals(var.getType())){
-                        backLength = 48;
+                        backLength = 2 * (AppUtil.parseToInt(var.getCount(), 0) + 8);//48;
                     }
                     CmdUtils.sendCmd(cmd,backLength, new CmdListener() {
                                 @Override
@@ -385,7 +385,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                         backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
                                 || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
                         if("9".equals(var.getType())){
-                            backLength = 48;
+                            backLength = 2 * (AppUtil.parseToInt(var.getCount(), 0) + 8);//48;
                         }
                     } else if ("1".equals(currentMain.getType()))
                     {
@@ -403,7 +403,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
                         backLength = ("0".equals(var.getType()) || "1".equals(var.getType()) || "2".equals(var.getType())
                                 || "3".equals(var.getType()) || "4".equals(var.getType())) ? 20 : 24;
                         if("9".equals(var.getType())){
-                            backLength = 48;
+                            backLength = 2 * (AppUtil.parseToInt(var.getCount(), 0) + 8);//48;
                         }
                     } else {
                         AppStaticVar.currentVarIndex++;

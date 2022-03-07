@@ -41,7 +41,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -768,7 +767,7 @@ public class AppUtil
             }
             else
             {
-                value = NumberBytes.subZeroAndDot(String.valueOf(AppUtil.numFormatterStr(v,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
+                value = NumberBytes.subZeroAndDot(String.valueOf(AppUtil.numFormatter(v,AppUtil.parseToInt(count,0))))+(isShowUnit?""+DBManager.getInstance().getStr(unit):"");
             }
         }
         else if ("8".equals(type + ""))
@@ -862,13 +861,6 @@ public class AppUtil
         BigDecimal b = new BigDecimal(val);
         val = b.setScale(count < 0 ? 2 : count, RoundingMode.HALF_UP).floatValue();
         return val;
-    }
-
-    /** 保留几位小数*/
-    public static String numFormatterStr(float val, int count)
-    {
-        BigDecimal b = new BigDecimal(val);
-        return b.setScale(count < 0 ? 2 : count, RoundingMode.HALF_UP).toString();
     }
 
     /**
@@ -1013,7 +1005,8 @@ public class AppUtil
             else if ("9".equals(type + ""))
             {
                 // dt_string 字符串
-                value = NumberBytes.padRight(CRC16.byteToHex(str.getBytes(Charset.forName("GB2312"))),32,'0');
+                //value = NumberBytes.padRight(CRC16.byteToHex(str.getBytes(Charset.forName("GB2312"))),32,'0');
+                value = NumberBytes.padRight(CRC16.byteToHex(str.getBytes(Charset.forName("GB2312"))), AppUtil.parseToInt(count, 0),'0');
             }
             else if ("11".equals(type+""))
             {

@@ -81,14 +81,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/year"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/etMonth"
                     android:inputType="numberSigned|numberDecimal"
@@ -105,14 +97,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/month"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/etDay"
                     android:inputType="numberSigned|numberDecimal"
@@ -129,14 +113,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/day"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -158,14 +134,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/hour"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/etMin"
                     android:inputType="numberSigned|numberDecimal"
@@ -182,14 +150,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/month"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
                 <EditText
                     android:id="@+id/etSec"
                     android:inputType="numberSigned|numberDecimal"
@@ -206,14 +166,6 @@
                     android:textColor="#1a1a1a"
                     android:textColorHint="#d9d9d9"
                     android:textSize="22sp"/>
-                <TextView
-                    android:textColor="#1a1a1a"
-                    android:textColorHint="#d9d9d9"
-                    android:textSize="22sp"
-                    android:text="@string/second"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -223,33 +175,16 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <Button
+            android:id="@+id/button2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/btnNow"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="40dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/btn_0d9bf9_bg"
-                android:onClick="onClick"
-                android:text="@string/str_now"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="40dp"
-                android:layout_margin="5dp"
-                android:background="@drawable/btn_0d9bf9_bg"
-                android:onClick="onClick"
-                android:text="@string/string_ok"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-        </LinearLayout>
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_0d9bf9_bg"
+            android:onClick="onClick"
+            android:text="@string/string_ok"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </RelativeLayout>

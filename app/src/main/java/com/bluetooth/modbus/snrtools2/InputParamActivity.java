@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,7 +32,6 @@ public class InputParamActivity extends BaseWriteParamActivity
 	private EditText mEtParam;
 	private IPEdittext mEtIp;
 	private EditText mEtYear,mEtMonth,mEtDay,mEtHour,mEtMin,mEtSec;
-	private Button btnNow;
 	private LinearLayout llDate;
 	private Param p;
 
@@ -59,13 +57,11 @@ public class InputParamActivity extends BaseWriteParamActivity
 		mEtMin = (EditText) findViewById(R.id.etMin);
 		mEtSec = (EditText) findViewById(R.id.etSec);
 		mEtIp = (IPEdittext) findViewById(R.id.ip);
-		btnNow = (Button) findViewById(R.id.btnNow);
 		mTvTitle.setText(getIntent().getStringExtra("title"));
 		mEtParam.setHint(getIntent().getStringExtra("value"));
 		tvRange.setHint("(" + p.getMin() + "~" + p.getMax() + ")"+ DBManager.getInstance().getStr(p.getUnit()));
 		mEtIp.setVisibility(View.GONE);
 		llDate.setVisibility(View.GONE);
-		btnNow.setVisibility(View.GONE);
 		mEtParam.setVisibility(View.VISIBLE);
 		if ("1".equals(p.getType()+"")||			// dt_short 16位有符号短整数
 			 "2".equals(p.getType()+"")||		// dt_word 16位无符号短整数
@@ -117,26 +113,23 @@ public class InputParamActivity extends BaseWriteParamActivity
 		{
 			// 日期
 			llDate.setVisibility(View.VISIBLE);
-			btnNow.setVisibility(View.VISIBLE);
 			mEtIp.setVisibility(View.GONE);
 			mEtParam.setVisibility(View.GONE);
 			tvRange.setVisibility(View.GONE);
 			try {
 				Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(p.getValueDisplay());
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(date);
-				mEtYear.setHint(String.valueOf(calendar.get(Calendar.YEAR)));
-				mEtYear.setText(String.valueOf(calendar.get(Calendar.YEAR)));
-				mEtMonth.setHint(String.valueOf(calendar.get(Calendar.MONTH)+1));
-				mEtMonth.setText(String.valueOf(calendar.get(Calendar.MONTH)+1));
-				mEtDay.setHint(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-				mEtDay.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-				mEtHour.setHint(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-				mEtHour.setText(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-				mEtMin.setHint(String.valueOf(calendar.get(Calendar.MINUTE)));
-				mEtMin.setText(String.valueOf(calendar.get(Calendar.MINUTE)));
-				mEtSec.setHint(String.valueOf(calendar.get(Calendar.SECOND)));
-				mEtSec.setText(String.valueOf(calendar.get(Calendar.SECOND)));
+				mEtYear.setHint(String.valueOf(date.getYear()));
+				mEtYear.setText(String.valueOf(date.getYear()));
+				mEtMonth.setHint(String.valueOf(date.getMonth()+1));
+				mEtMonth.setText(String.valueOf(date.getMonth()+1));
+				mEtDay.setHint(String.valueOf(date.getDay()));
+				mEtDay.setText(String.valueOf(date.getDay()));
+				mEtHour.setHint(String.valueOf(date.getHours()));
+				mEtHour.setText(String.valueOf(date.getHours()));
+				mEtMin.setHint(String.valueOf(date.getMinutes()));
+				mEtMin.setText(String.valueOf(date.getMinutes()));
+				mEtSec.setHint(String.valueOf(date.getSeconds()));
+				mEtSec.setText(String.valueOf(date.getSeconds()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -238,20 +231,11 @@ public class InputParamActivity extends BaseWriteParamActivity
 							showToast(getResources().getString(R.string.string_tips_msg10) + AppUtil.parseToDouble(p.getMin(), 0) + "!");
 							return;
 						}
-						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), mEtParam.getText().toString().trim()));
-						p.setValueDisplay(NumberBytes.subZeroAndDot(mEtParam.getText().toString().trim())+DBManager.getInstance().getStr(p.getUnit()));
+						p.setValue(AppUtil.getWriteValueByType(p.getType(), p.getCount(), valueIn + ""));
+						p.setValueDisplay(NumberBytes.subZeroAndDot(valueIn+"")+DBManager.getInstance().getStr(p.getUnit()));
 					}
 					writeParameter(p);
 				}
-				break;
-			case R.id.btnNow:
-				Calendar calendar = Calendar.getInstance();
-				mEtYear.setText(String.valueOf(calendar.get(Calendar.YEAR)));
-				mEtMonth.setText(String.valueOf(calendar.get(Calendar.MONTH)+1));
-				mEtDay.setText(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
-				mEtHour.setText(String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)));
-				mEtMin.setText(String.valueOf(calendar.get(Calendar.MINUTE)));
-				mEtSec.setText(String.valueOf(calendar.get(Calendar.SECOND)));
 				break;
 		}
 	}

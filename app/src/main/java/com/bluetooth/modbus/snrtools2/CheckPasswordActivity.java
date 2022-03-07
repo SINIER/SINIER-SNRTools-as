@@ -148,10 +148,11 @@ public class CheckPasswordActivity extends BaseActivity implements Observer
 						Param param = (Param) obj;
 						String noHexStr = param.getHexNo();
 						String cmd = "0x01 0x44 " + noHexStr + "0x00 0x00";
+						// 返回数据长度 = 2 * (数据字节数 + 8)
 						int backLength = ("0".equals(param.getType())||"1".equals(param.getType())||"2".equals(param.getType())
 								||"3".equals(param.getType())||"4".equals(param.getType()))?20:24;
 						if("9".equals(param.getType())){
-							backLength = 48;
+          							backLength = 2 * (AppUtil.parseToInt(param.getCount(), 0) + 8);//48;
 						}
 						CmdUtils.sendCmd(cmd,backLength, new CmdListener()
 								{
