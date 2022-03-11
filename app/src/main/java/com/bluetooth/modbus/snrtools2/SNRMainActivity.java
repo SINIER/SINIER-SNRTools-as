@@ -1025,11 +1025,7 @@ public class SNRMainActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     protected void onDestroy() {
-        if(AppStaticVar.mGatt != null){
-            AppStaticVar.mGatt.disconnect();
-            AppStaticVar.mGatt.close();
-            AppStaticVar.mGatt = null;
-        }
+        AppUtil.closeBLE();
         if(AppStaticVar.mSocket != null){
             try {
                 AppStaticVar.mSocket.close();

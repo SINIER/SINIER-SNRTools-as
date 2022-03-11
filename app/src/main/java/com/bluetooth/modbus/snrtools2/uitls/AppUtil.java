@@ -1256,6 +1256,14 @@ public class AppUtil
         return true;
     }
 
+    public static void closeBLE(){
+        if(AppStaticVar.mGatt != null){
+            AppStaticVar.mGatt.disconnect();
+            AppStaticVar.mGatt.close();
+            AppStaticVar.mGatt = null;
+        }
+    }
+
     /**
      * 发送数据
      *

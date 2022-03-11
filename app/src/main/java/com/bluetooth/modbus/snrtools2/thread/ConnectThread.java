@@ -41,11 +41,7 @@ public class ConnectThread extends Thread {
 				return;
 			}
 			if(mDevice.getType() == BluetoothDevice.DEVICE_TYPE_CLASSIC) {
-				if(AppStaticVar.mGatt != null){
-					AppStaticVar.mGatt.disconnect();
-					AppStaticVar.mGatt.close();
-					AppStaticVar.mGatt = null;
-				}
+				AppUtil.closeBLE();
 				if (AppStaticVar.mSocket == null || !((AppStaticVar.mLastSuccessAddress + "").equals(AppStaticVar.mCurrentAddress + ""))) {
 					AppStaticVar.mSocket = mDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
 				}
@@ -75,12 +71,8 @@ public class ConnectThread extends Thread {
 
 				if (AppStaticVar.mGatt == null || !((AppStaticVar.mLastSuccessAddress + "").equals(AppStaticVar.mCurrentAddress + ""))
 					|| !AppUtil.checkBLEHasConnected()) {
-					if(AppStaticVar.mGatt != null){
-						AppStaticVar.mGatt.disconnect();
-						AppStaticVar.mGatt.close();
-						AppStaticVar.mGatt = null;
-					}
-					mDevice.connectGatt(AppStaticVar.mApplication, true, new BluetoothGattCallback() {
+					AppUtil.closeBLE();
+					mDevice.connectGatt(AppStaticVar.mApplication, false, new BluetoothGattCallback() {
 						@Override
 						public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 							super.onConnectionStateChange(gatt, status, newState);
