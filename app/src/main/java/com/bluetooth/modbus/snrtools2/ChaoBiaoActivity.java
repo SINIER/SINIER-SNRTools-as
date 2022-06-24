@@ -4,7 +4,11 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.ClipData;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.bluetooth.modbus.snrtools2.adapter.ChaoBiaoAdapter;
@@ -36,6 +40,20 @@ public class ChaoBiaoActivity extends BaseActivity{
         mListview = (ListView) findViewById(R.id.listView1);
         adapter = new ChaoBiaoAdapter(this,chaoBiaos);
         mListview.setAdapter(adapter);
+        mListview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    ChaoBiao chaoBiao = chaoBiaos.get(position-mListview.getHeaderViewsCount());
+                    android.content.ClipboardManager cmb = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    cmb.setPrimaryClip(ClipData.newPlainText("data", chaoBiao.yuanshishuju));
+                    showToast(chaoBiao.yuanshishuju);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
 
         mBleScanner = AppStaticVar.mBtAdapter.getBluetoothLeScanner();
         ScanSettings scanSettings = new ScanSettings.Builder()
@@ -83,6 +101,7 @@ public class ChaoBiaoActivity extends BaseActivity{
                     chaoBiao.bianhao = bianHao;
                     chaoBiao.shunshiliuliang = shunShiLiuLiang;
                     chaoBiao.leijiliuliang = leiJiLiuLiang;
+                    chaoBiao.yuanshishuju = str;
                     chaoBiao.shujubao++;
                     adapter.notifyDataSetChanged();
 

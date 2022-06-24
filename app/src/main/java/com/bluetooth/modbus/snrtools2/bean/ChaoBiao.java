@@ -8,4 +8,5 @@ public class ChaoBiao implements Serializable {
     public String shunshiliuliang;
     public String leijiliuliang;
     public int shujubao;
+    public String yuanshishuju;
 }
