@@ -178,5 +178,10 @@
     <string name="second">秒</string>
     <string name="str_now">当前时间</string>
     <string name="loc_permission">请开启定位权限，否则无法扫描获取周边蓝牙设备</string>
+    <string name="chaobiao">抄表</string>
+    <string name="shujubao">数据包</string>
+    <string name="ssll">瞬时流量</string>
+    <string name="ljll">累积流量</string>
+    <string name="code">编号</string>
 
 </resources>

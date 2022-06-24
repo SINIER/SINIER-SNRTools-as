@@ -861,6 +861,11 @@ public class SelectDeviceActivity extends BaseActivity implements EasyPermission
 				hideMenu();
 				onBackPressed();
 				break;
+			case R.id.btnChaoBiao:// 抄表
+				hideMenu();
+				Intent intent = new Intent(mContext,ChaoBiaoActivity.class);
+				startActivity(intent);
+				break;
 			case R.id.textView5:// 清除缓存
 				hideMenu();
 				System.out.println("删除临时文件==="
@@ -874,7 +879,7 @@ public class SelectDeviceActivity extends BaseActivity implements EasyPermission
 	{
 		if (mPop == null)
 		{
-			View contentView = View.inflate(this, R.layout.main_menu, null);
+			View contentView = View.inflate(this, R.layout.main_menu_select_device, null);
 			mPop = new PopupWindow(contentView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			mPop.setBackgroundDrawable(new BitmapDrawable());
 			mPop.setOutsideTouchable(true);

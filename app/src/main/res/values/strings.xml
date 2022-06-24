@@ -178,5 +178,10 @@
     <string name="second">Second</string>
     <string name="str_now">Current Time</string>
     <string name="loc_permission">Enable the locating permission; otherwise, the device cannot be scanned and obtained</string>
+    <string name="chaobiao">Meter Reading</string>
+    <string name="shujubao">Packet</string>
+    <string name="ssll">Volume Flow</string>
+    <string name="ljll">Sum Tolizer</string>
+    <string name="code">Code</string>
 
 </resources>
