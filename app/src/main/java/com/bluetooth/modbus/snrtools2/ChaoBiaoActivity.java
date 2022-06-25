@@ -47,7 +47,7 @@ public class ChaoBiaoActivity extends BaseActivity{
                     ChaoBiao chaoBiao = chaoBiaos.get(position-mListview.getHeaderViewsCount());
                     android.content.ClipboardManager cmb = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     cmb.setPrimaryClip(ClipData.newPlainText("data", chaoBiao.yuanshishuju));
-                    showToast(chaoBiao.yuanshishuju);
+                    showDialogOne(chaoBiao.yuanshishuju,null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
