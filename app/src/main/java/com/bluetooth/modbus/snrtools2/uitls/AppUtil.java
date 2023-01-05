@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 public class AppUtil
 {
@@ -1238,22 +1239,56 @@ public class AppUtil
         }
 
         // 获取蓝牙设备的特征
-        BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(Constans.BLE_CHARACTERISTIC_READ_UUID);
+        BluetoothGattCharacteristic gattCharacteristic = findNotifyCharacteristic(gattService,Constans.BLE_CHARACTERISTIC_READ_UUID);
         if (gattCharacteristic == null) {
             return false;
         }
 
         // 获取蓝牙设备特征的描述符
-        BluetoothGattDescriptor descriptor = gattCharacteristic.getDescriptor(Constans.BLE_DESCRIPTOR_UUID);
-        if(descriptor == null){
+        // 蓝牙设备在数据改变时，通知App，App在收到数据后回调onCharacteristicChanged方法
+
+        boolean success = AppStaticVar.mGatt.setCharacteristicNotification(gattCharacteristic, true);
+        if (success) {
+            boolean has = false;
+            for(BluetoothGattDescriptor dp: gattCharacteristic.getDescriptors()){
+                if (dp != null) {
+                    if ((gattCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+                        dp.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    } else if ((gattCharacteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
+                        dp.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+                    }
+                    AppStaticVar.mGatt.writeDescriptor(dp);
+                    has = true;
+                }
+            }
+            if(!has){
+                return false;
+            }
+        }else {
             return false;
         }
-        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-        if (AppStaticVar.mGatt.writeDescriptor(descriptor)) {
-            // 蓝牙设备在数据改变时，通知App，App在收到数据后回调onCharacteristicChanged方法
-            AppStaticVar.mGatt.setCharacteristicNotification(gattCharacteristic, true);
-        }
         return true;
+    }
+
+    private static BluetoothGattCharacteristic findNotifyCharacteristic(BluetoothGattService service, UUID characteristicUUID) {
+        BluetoothGattCharacteristic characteristic = null;
+        List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+        for (BluetoothGattCharacteristic c : characteristics) {
+            if ((c.getProperties() & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0 && characteristicUUID.equals(c.getUuid())) {
+                characteristic = c;
+                break;
+            }
+        }
+        if (characteristic != null) {
+            return characteristic;
+        }
+        for (BluetoothGattCharacteristic c : characteristics) {
+            if ((c.getProperties() & BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0 && characteristicUUID.equals(c.getUuid())) {
+                characteristic = c;
+                break;
+            }
+        }
+        return characteristic;
     }
 
     public static void closeBLE(){
