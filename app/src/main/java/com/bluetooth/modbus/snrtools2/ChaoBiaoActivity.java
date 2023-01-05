@@ -47,7 +47,7 @@ public class ChaoBiaoActivity extends BaseActivity{
                     ChaoBiao chaoBiao = chaoBiaos.get(position-mListview.getHeaderViewsCount());
                     android.content.ClipboardManager cmb = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     cmb.setPrimaryClip(ClipData.newPlainText("data", chaoBiao.yuanshishuju));
-                    showDialogOne(chaoBiao.yuanshishuju,null);
+                    showToast(chaoBiao.yuanshishuju);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -73,7 +73,7 @@ public class ChaoBiaoActivity extends BaseActivity{
                     // dt_dword 32位无符号整数
                     //0-4294967295
                     long biaoHaoL = Long.parseLong(bianHaoHex.substring(6, 8) + bianHaoHex.substring(4, 6) + bianHaoHex.substring(2, 4) + bianHaoHex.substring(0, 2), 16);
-                    String bianHao = "20"+String.valueOf(biaoHaoL);
+                    String bianHao = String.valueOf(biaoHaoL);
 
                     String leiJiLiuLiangHex = str.substring(26,34);
                     // dt_dword 32位无符号整数
